@@ -14,8 +14,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-geist-sans);
-  background-color: var(--background);
+  font-family: var(--police-texte);
+  background-color: var(--couleur-papier);
 }
 
 .main {
@@ -26,7 +26,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
-  background-color: var(--foreground);
+  background-color: var(--couleur-encre);
   padding: 120px 60px;
 }
 
@@ -86,7 +86,7 @@
 
 a.primary {
   background: var(--text-primary);
-  color: var(--background);
+  color: var(--couleur-papier);
   gap: 8px;
 }
 
@@ -142,7 +142,7 @@ a.secondary {
 }
 
 .code {
-  font-family: var(--font-geist-mono);
+  font-family: var(--police-texte);
   font-size: 0.9em;
   background: color-mix(in srgb, currentColor 8%, transparent);
   padding: 0.1em 0.4em;
