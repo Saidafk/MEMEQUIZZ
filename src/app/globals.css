@@ -16,18 +16,20 @@
   --couleur-succes-fond: #86efac;
   --couleur-succes: #14532d;
   --couleur-erreur-fond: #fecaca;
-  --couleur-erreur: #dc2626;
-  --couleur-desactive: #7083b8;
+  --couleur-erreur: #dc2626; /* 4,8:1 sur papier ; sur erreur-fond (3,3:1) : pictos et gras ≥ 24 px seulement */
+  --couleur-desactive: #7083b8; /* réservé aux éléments désactivés (exemptés de contraste) */
+  --couleur-desactive-trait: #93a3cf;
 
   /* Typographie (polices chargées par next/font dans layout.tsx) */
   --police-titre: var(--font-gaegu), "Comic Sans MS", cursive;
   --police-texte: var(--font-patrick-hand), "Comic Sans MS", cursive;
-  --taille-xs: 0.9375rem; /* 15 px */
-  --taille-s: 1.125rem; /* 18 px */
-  --taille-m: 1.3125rem; /* 21 px : texte courant (police manuscrite, petite à l'œil) */
-  --taille-l: 1.625rem; /* 26 px */
-  --taille-xl: 2rem; /* 32 px */
-  --taille-xxl: 2.75rem; /* 44 px : grands titres mobile */
+  /* Échelle relevée dans la maquette (composants + écrans mobiles). */
+  --taille-xs: 1rem; /* 16 px : mentions, codes */
+  --taille-s: 1.1875rem; /* 19 px : libellés, réponses */
+  --taille-m: 1.375rem; /* 22 px : texte courant, champs */
+  --taille-l: 1.75rem; /* 28 px : boutons */
+  --taille-xl: 2.125rem; /* 34 px : titres de section */
+  --taille-xxl: 2.75rem; /* 44 px : grand titre de l'accueil mobile */
   --interligne: 1.5;
 
   /* Espacements (grille de 4 px) */
