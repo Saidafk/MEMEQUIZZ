@@ -36,3 +36,26 @@ jobs:
 
       - name: Tests
         run: bun run test
+
+  docker:
+    name: Image Docker
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construire l'image
+        run: docker build -t memequizz:ci .
+
+      - name: Vérifier que l'application répond sur le port 3000
+        run: |
+          docker run -d --name app -p 3000:3000 memequizz:ci
+          for i in $(seq 1 20); do
+            curl -fsS http://localhost:3000/ > /dev/null && exit 0
+            sleep 1
+          done
+          docker logs app
+          exit 1
+
+      - name: Vérifier que le conteneur ne tourne pas en root
+        run: test "$(docker exec app id -u)" != "0"
