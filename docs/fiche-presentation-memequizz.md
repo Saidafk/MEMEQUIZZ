@@ -15,19 +15,19 @@ Culture internet et mèmes. Le jeu est sur le principe « reconnais le mème » 
 
 ## Choix techniques
 
-| Élément | Choix |
-|---|---|
-| Méta-framework | **Next.js** (App Router, API intégrée) |
-| Langage | **TypeScript** en mode strict |
-| Interpréteur / gestionnaire de paquets | **Bun** |
-| Base de données | PostgreSQL avec Drizzle ORM |
-| Tests | Vitest (unitaires, intégration) et Playwright (E2E) |
-| Déploiement | Docker (multi-stage) + Caddy (HTTPS) sur mon VPS |
+| Élément                                | Choix                                               |
+| -------------------------------------- | --------------------------------------------------- |
+| Méta-framework                         | **Next.js** (App Router, API intégrée)              |
+| Langage                                | **TypeScript** en mode strict                       |
+| Interpréteur / gestionnaire de paquets | **Bun**                                             |
+| Base de données                        | PostgreSQL avec Drizzle ORM                         |
+| Tests                                  | Vitest (unitaires, intégration) et Playwright (E2E) |
+| Déploiement                            | Docker (multi-stage) + Caddy (HTTPS) sur mon VPS    |
 
 ## IA utilisées
 
 - **Claude (Anthropic)** : aide à la conception, à la planification du backlog, à la rédaction et à la génération de code.
-- *À compléter si d'autres IA sont utilisées (nom, usage).*
+- _À compléter si d'autres IA sont utilisées (nom, usage)._
 
 Toute sortie d'IA est relue, comprise et testée avant d'être intégrée. Une checklist de posture critique et un agent de relecture sont prévus dans le backlog.
 
