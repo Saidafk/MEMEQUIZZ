@@ -10,3 +10,7 @@ Pour toute tâche : suivre le skill [git-workflow](.claude/skills/git-workflow/S
 - Commits au format `<type>(<scope>): <description> (SCRUM-<n>)`.
 - Ticket Jira en « En cours » au démarrage, lien de la PR en commentaire, « Terminé » après le merge.
 - Saïd relit et merge toutes les PR. Ne jamais merger soi-même.
+
+## Avant chaque PR
+
+Passer la [checklist de posture critique](docs/checklist-posture-critique.md) (comprendre, relire, tester) et la résumer dans la section « Utilisation de l'IA » de la PR.
