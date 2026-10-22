@@ -4,6 +4,8 @@ Quiz de mèmes façon Kahoot : une image de mème s'affiche, le joueur choisit p
 
 TP Fullstack (35 h) — M1, MyDigitalSchool.
 
+**Site en ligne : https://memequizz.duckdns.org**
+
 ## Stack
 
 - Next.js (App Router, API intégrée) + TypeScript strict
@@ -37,6 +39,7 @@ Sans Docker : `bun install` puis `bun run dev`. L'app est sur http://localhost:3
 
 - [Fiche de présentation](docs/fiche-presentation-memequizz.md)
 - [Stack et cartographies](docs/memequizz-stack-et-cartographies.md)
+- [Déploiement sur le VPS](docs/deploiement-vps.md)
 
 ## Statut
 
