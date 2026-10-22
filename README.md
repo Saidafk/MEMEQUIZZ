@@ -18,9 +18,20 @@ TP Fullstack (35 h) — M1, MyDigitalSchool.
 docs/     fiche de présentation, stack et cartographies
 src/      code de l'application
 tests/    tests unitaires, d'intégration et E2E
-docker/   fichiers Docker et Caddy
 .claude/  skills et agents IA du projet
+Dockerfile, compose.yaml   image de production et environnement de dev
 ```
+
+## Démarrer
+
+Avec Docker (app + PostgreSQL) :
+
+```
+cp .env.example .env
+docker compose up
+```
+
+Sans Docker : `bun install` puis `bun run dev`. L'app est sur http://localhost:3000.
 
 ## Documentation
 

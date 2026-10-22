@@ -59,3 +59,33 @@ jobs:
 
       - name: Vérifier que le conteneur ne tourne pas en root
         run: test "$(docker exec app id -u)" != "0"
+
+  compose:
+    name: docker compose (dev)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Préparer le .env
+        run: cp .env.example .env
+
+      - name: Démarrer les services
+        run: docker compose up -d
+
+      - name: Vérifier que l'app et la base répondent
+        run: |
+          for i in $(seq 1 90); do
+            curl -fsS http://localhost:3000/ > /dev/null && break
+            sleep 2
+          done
+          curl -fsS http://localhost:3000/ > /dev/null
+          docker compose exec -T db pg_isready -U memequizz -d memequizz
+
+      - name: Logs en cas d'échec
+        if: failure()
+        run: docker compose logs
+
+      - name: Arrêter les services
+        if: always()
+        run: docker compose down -v
