@@ -42,6 +42,7 @@ Format : `<type>(<scope>): <description> (SCRUM-<n>)`
 - corps (optionnel), après une ligne vide : le **pourquoi**, pas le quoi
 
 Exemples :
+
 ```
 feat(api): ajouter la route GET question sans la bonne réponse (SCRUM-39)
 fix(ui): corriger le focus clavier sur les boutons de réponse (SCRUM-33)
@@ -66,18 +67,23 @@ Titre = même format que les commits. Corps :
 
 ```markdown
 ## Ticket
+
 [SCRUM-<n>](https://saidkh26.atlassian.net/browse/SCRUM-<n>) — <titre du ticket>
 
 ## Ce qui change
+
 - …
 
 ## Comment vérifier
+
 - …
 
 ## Utilisation de l'IA
+
 - Ce qui a été généré ou assisté par Claude, et ce qui a été relu/testé.
 
 ## Checklist
+
 - [ ] Critère d'acceptation du ticket rempli
 - [ ] Lint, types et tests OK
 - [ ] Pas de secret ni de fichier hors sujet

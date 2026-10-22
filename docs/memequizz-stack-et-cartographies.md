@@ -6,21 +6,22 @@ TP Fullstack (35h) — quiz de mèmes style Kahoot : une image de mème, 4 noms 
 
 ## 1. Stack retenue
 
-| Couche | Choix | Pourquoi |
-|---|---|---|
-| Runtime / paquets | **Bun** (fallback Node pour le runtime final, comparaison prévue dans SCRUM-80) | Rapide, installe et lance TypeScript directement |
-| Framework | **Next.js** (App Router, route handlers, sortie `standalone`) + **TypeScript strict** | Exigé par le TP (méta-framework + TS), permet CSR / SSR / SSG |
-| Base de données | **PostgreSQL** + **Drizzle ORM** (migrations + seed) | Relationnel, typé, adapté à Merise |
-| Validation | **Zod** (schémas partagés client / serveur) | Entrées invalides rejetées en 400 |
-| UI / accessibilité | Maquette **Figma** → composants React, WCAG 2.2, axe, Lighthouse | Exigé par le TP |
-| PWA | Manifest, service worker, mode hors-ligne, push (VAPID) | Exigé par le TP |
-| Tests | **Vitest** (unitaires + intégration), **Playwright** (E2E + axe) | Couverture + seuil en CI |
-| Sécurité | CSP avec nonce (middleware), XSS, CSRF, secrets en `.env`, rate limiting | Exigé par le TP |
-| Déploiement | **Docker** multi-stage (image non-root + healthcheck) + `docker-compose` (app + PostgreSQL + volume) + **Caddy** (reverse proxy + HTTPS auto) sur ton **VPS** | HTTPS obligatoire pour la PWA et le push |
-| Temps réel (bonus) | **SSE** d'abord ; WebSocket Bun séparé seulement si SSE ne suffit pas | Les réponses restent des POST |
-| Données mèmes | **memegen.link** (id, nom, image) + fiches complétées avec **Wikipédia FR** (année, origine, source) ; sélection manuelle d'environ 40 mèmes | Pas d'API française toute prête |
+| Couche             | Choix                                                                                                                                                         | Pourquoi                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Runtime / paquets  | **Bun** (fallback Node pour le runtime final, comparaison prévue dans SCRUM-80)                                                                               | Rapide, installe et lance TypeScript directement              |
+| Framework          | **Next.js** (App Router, route handlers, sortie `standalone`) + **TypeScript strict**                                                                         | Exigé par le TP (méta-framework + TS), permet CSR / SSR / SSG |
+| Base de données    | **PostgreSQL** + **Drizzle ORM** (migrations + seed)                                                                                                          | Relationnel, typé, adapté à Merise                            |
+| Validation         | **Zod** (schémas partagés client / serveur)                                                                                                                   | Entrées invalides rejetées en 400                             |
+| UI / accessibilité | Maquette **Figma** → composants React, WCAG 2.2, axe, Lighthouse                                                                                              | Exigé par le TP                                               |
+| PWA                | Manifest, service worker, mode hors-ligne, push (VAPID)                                                                                                       | Exigé par le TP                                               |
+| Tests              | **Vitest** (unitaires + intégration), **Playwright** (E2E + axe)                                                                                              | Couverture + seuil en CI                                      |
+| Sécurité           | CSP avec nonce (middleware), XSS, CSRF, secrets en `.env`, rate limiting                                                                                      | Exigé par le TP                                               |
+| Déploiement        | **Docker** multi-stage (image non-root + healthcheck) + `docker-compose` (app + PostgreSQL + volume) + **Caddy** (reverse proxy + HTTPS auto) sur ton **VPS** | HTTPS obligatoire pour la PWA et le push                      |
+| Temps réel (bonus) | **SSE** d'abord ; WebSocket Bun séparé seulement si SSE ne suffit pas                                                                                         | Les réponses restent des POST                                 |
+| Données mèmes      | **memegen.link** (id, nom, image) + fiches complétées avec **Wikipédia FR** (année, origine, source) ; sélection manuelle d'environ 40 mèmes                  | Pas d'API française toute prête                               |
 
 Points d'attention déjà identifiés :
+
 - Les images de mèmes sont protégées par le droit d'auteur : décision écrite à prendre (SCRUM-34).
 - Les noms de memegen.link sont en anglais et certains sont des phrases : curation manuelle indispensable.
 - Wikipédia FR est sous licence CC BY-SA : reformuler et citer la source.
@@ -29,16 +30,16 @@ Points d'attention déjà identifiés :
 
 ## 2. Arborescence cible et rendu par page
 
-| Route | Rôle | Rendu |
-|---|---|---|
-| `/` | Accueil, pseudo, lancer une partie | SSG |
-| `/jeu` | Partie (10 questions, chrono 15 s) | CSR (interactif) |
-| `/resultat/[partieId]` | Score final | SSR |
-| `/classement` | Meilleurs scores | SSR (données fraîches) |
-| `/memes/[slug]` | Fiche d'un mème | SSG (`generateStaticParams`) |
-| `/stats-csr`, `/stats-ssr`, `/stats-ssg` | Même page de stats en 3 modes pour comparer les Web Vitals | CSR / SSR / SSG |
-| `/hors-ligne` | Page de secours PWA | Statique |
-| `/entrainement` | Mode hors-ligne avec questions en cache | CSR + service worker |
+| Route                                    | Rôle                                                       | Rendu                        |
+| ---------------------------------------- | ---------------------------------------------------------- | ---------------------------- |
+| `/`                                      | Accueil, pseudo, lancer une partie                         | SSG                          |
+| `/jeu`                                   | Partie (10 questions, chrono 15 s)                         | CSR (interactif)             |
+| `/resultat/[partieId]`                   | Score final                                                | SSR                          |
+| `/classement`                            | Meilleurs scores                                           | SSR (données fraîches)       |
+| `/memes/[slug]`                          | Fiche d'un mème                                            | SSG (`generateStaticParams`) |
+| `/stats-csr`, `/stats-ssr`, `/stats-ssg` | Même page de stats en 3 modes pour comparer les Web Vitals | CSR / SSR / SSG              |
+| `/hors-ligne`                            | Page de secours PWA                                        | Statique                     |
+| `/entrainement`                          | Mode hors-ligne avec questions en cache                    | CSR + service worker         |
 
 ---
 
@@ -46,18 +47,18 @@ Points d'attention déjà identifiés :
 
 À faire dans l'ordre, chacun alimente le suivant. La colonne « Version » correspond aux versions Jira (label `vX.Y`).
 
-| # | Livrable | Contenu | Outil conseillé | Version |
-|---|---|---|---|---|
-| 1 | **Cartographie fonctionnelle** | Acteurs (joueur, admin/seed) et cas d'usage : jouer, voir le classement, consulter une fiche, installer la PWA, recevoir le quiz du jour | draw.io ou Mermaid | v0.2 |
-| 2 | **Parcours utilisateur (user flow)** | Accueil → pseudo → 10 questions → résultat → classement, + parcours hors-ligne | Figma / FigJam | v0.2 |
-| 3 | **Arborescence du site** | Tableau de la section 2 | Markdown | v0.2 |
-| 4 | **Merise : MCD, MLD, MPD** + dictionnaire de données | Voir section 4 | Looping (gratuit, Merise français) ou draw.io | v0.3 |
-| 5 | **Cartographie des API** | Endpoints, méthode, entrée Zod, sortie, codes d'erreur (voir section 5) | Markdown / OpenAPI | v0.3 |
-| 6 | **Diagramme de séquence d'une partie** | Navigateur → API → base : question, réponse, calcul du score côté serveur | Mermaid | v0.3 |
-| 7 | **Cartographie du rendu** | Quelle page est CSR / SSR / SSG et pourquoi, avec le tableau comparatif des Web Vitals | Markdown | v0.5 |
-| 8 | **Schéma d'architecture de déploiement** | Internet → Caddy (HTTPS) → conteneur Next.js → PostgreSQL (volume), sauvegarde `pg_dump` | draw.io | v0.8 |
-| 9 | **Cartographie sécurité (menaces)** | Pour chaque flux : menace (XSS, CSRF, triche sur le score, fuite de secrets, abus de l'API) → parade → test associé | Tableau | v0.7 |
-| 10 | **Matrice exigences du TP ↔ tickets** | Chaque exigence du sujet reliée à un ticket SCRUM et à une preuve (capture, test) | Tableau | v1.0 |
+| #   | Livrable                                             | Contenu                                                                                                                                  | Outil conseillé                               | Version |
+| --- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | ------- |
+| 1   | **Cartographie fonctionnelle**                       | Acteurs (joueur, admin/seed) et cas d'usage : jouer, voir le classement, consulter une fiche, installer la PWA, recevoir le quiz du jour | draw.io ou Mermaid                            | v0.2    |
+| 2   | **Parcours utilisateur (user flow)**                 | Accueil → pseudo → 10 questions → résultat → classement, + parcours hors-ligne                                                           | Figma / FigJam                                | v0.2    |
+| 3   | **Arborescence du site**                             | Tableau de la section 2                                                                                                                  | Markdown                                      | v0.2    |
+| 4   | **Merise : MCD, MLD, MPD** + dictionnaire de données | Voir section 4                                                                                                                           | Looping (gratuit, Merise français) ou draw.io | v0.3    |
+| 5   | **Cartographie des API**                             | Endpoints, méthode, entrée Zod, sortie, codes d'erreur (voir section 5)                                                                  | Markdown / OpenAPI                            | v0.3    |
+| 6   | **Diagramme de séquence d'une partie**               | Navigateur → API → base : question, réponse, calcul du score côté serveur                                                                | Mermaid                                       | v0.3    |
+| 7   | **Cartographie du rendu**                            | Quelle page est CSR / SSR / SSG et pourquoi, avec le tableau comparatif des Web Vitals                                                   | Markdown                                      | v0.5    |
+| 8   | **Schéma d'architecture de déploiement**             | Internet → Caddy (HTTPS) → conteneur Next.js → PostgreSQL (volume), sauvegarde `pg_dump`                                                 | draw.io                                       | v0.8    |
+| 9   | **Cartographie sécurité (menaces)**                  | Pour chaque flux : menace (XSS, CSRF, triche sur le score, fuite de secrets, abus de l'API) → parade → test associé                      | Tableau                                       | v0.7    |
+| 10  | **Matrice exigences du TP ↔ tickets**                | Chaque exigence du sujet reliée à un ticket SCRUM et à une preuve (capture, test)                                                        | Tableau                                       | v1.0    |
 
 ---
 
@@ -75,16 +76,16 @@ Points d'attention déjà identifiés :
 
 ### 4.2 Dictionnaire de données (extrait)
 
-| Donnée | Type | Règle |
-|---|---|---|
-| pseudo | texte, 3 à 20 caractères | nettoyé, échappé à l'affichage |
-| nom_meme | texte | nom affiché comme bonne réponse |
-| template_id | texte | identifiant memegen.link (ex. `drake`) |
-| annee_origine | entier | nullable |
-| source_url | texte | lien vers l'article Wikipédia FR |
-| statut_partie | énumération | en_cours, terminee, abandonnee |
-| delai_reponse_ms | entier | calculé serveur |
-| points | entier | 0 si faux, sinon fonction décroissante du délai |
+| Donnée           | Type                     | Règle                                           |
+| ---------------- | ------------------------ | ----------------------------------------------- |
+| pseudo           | texte, 3 à 20 caractères | nettoyé, échappé à l'affichage                  |
+| nom_meme         | texte                    | nom affiché comme bonne réponse                 |
+| template_id      | texte                    | identifiant memegen.link (ex. `drake`)          |
+| annee_origine    | entier                   | nullable                                        |
+| source_url       | texte                    | lien vers l'article Wikipédia FR                |
+| statut_partie    | énumération              | en_cours, terminee, abandonnee                  |
+| delai_reponse_ms | entier                   | calculé serveur                                 |
+| points           | entier                   | 0 si faux, sinon fonction décroissante du délai |
 
 ### 4.3 MCD (entités, associations, cardinalités)
 
@@ -179,14 +180,14 @@ erDiagram
 
 ## 5. Cartographie des API (première version)
 
-| Méthode | Route | Entrée (Zod) | Sortie | Erreurs |
-|---|---|---|---|---|
-| POST | `/api/parties` | `{ pseudo }` | `{ partieId }` | 400 pseudo invalide, 429 |
-| GET | `/api/parties/:id/question` | — | `{ rang, imageUrl, choix[4] }` (sans la bonne réponse) | 404, 409 partie terminée |
-| POST | `/api/parties/:id/reponse` | `{ rang, choixId }` + jeton CSRF | `{ correct, points, scoreTotal, bonneReponse }` | 400, 403 CSRF, 409 déjà répondu |
-| GET | `/api/classement` | `?limite=` | `[{ pseudo, score }]` | — |
-| GET | `/api/memes/:slug` | — | fiche du mème | 404 |
-| POST | `/api/push/abonnement` | abonnement push | `204` | 400 |
+| Méthode | Route                       | Entrée (Zod)                     | Sortie                                                 | Erreurs                         |
+| ------- | --------------------------- | -------------------------------- | ------------------------------------------------------ | ------------------------------- |
+| POST    | `/api/parties`              | `{ pseudo }`                     | `{ partieId }`                                         | 400 pseudo invalide, 429        |
+| GET     | `/api/parties/:id/question` | —                                | `{ rang, imageUrl, choix[4] }` (sans la bonne réponse) | 404, 409 partie terminée        |
+| POST    | `/api/parties/:id/reponse`  | `{ rang, choixId }` + jeton CSRF | `{ correct, points, scoreTotal, bonneReponse }`        | 400, 403 CSRF, 409 déjà répondu |
+| GET     | `/api/classement`           | `?limite=`                       | `[{ pseudo, score }]`                                  | —                               |
+| GET     | `/api/memes/:slug`          | —                                | fiche du mème                                          | 404                             |
+| POST    | `/api/push/abonnement`      | abonnement push                  | `204`                                                  | 400                             |
 
 La bonne réponse n'est révélée qu'**après** le POST de réponse.
 
