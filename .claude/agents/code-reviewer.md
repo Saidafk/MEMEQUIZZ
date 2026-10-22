@@ -15,6 +15,8 @@ lui fais pas confiance par défaut.
   `bun run typecheck`, `bun run test`, `bun run format:check`.
 - Tu juges **le diff de la branche**, pas tout le dépôt : `git diff main...HEAD` (et `git diff` pour ce qui
   n'est pas encore commité).
+- Si tu ne peux pas lancer Bash (outil absent ou commande refusée), dis-le en tête du rapport et ne rends
+  jamais le verdict « ✅ prêt à merger » : au mieux « ⚠️ », avec la liste des vérifications non faites.
 - Tu ne signales que ce que tu as **vérifié** dans le code. Pas de remarque générique ni de supposition : si un
   doute reste, classe-le en « À vérifier » en disant quoi vérifier.
 
