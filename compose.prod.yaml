@@ -1,0 +1,43 @@
+# Production sur le VPS : derrière le Caddy partagé (réseau externe "proxy").
+# Aucun port n'est publié : seul Caddy est exposé à Internet.
+# Lancement : docker compose -f compose.prod.yaml up -d --build
+
+services:
+  app:
+    build: .
+    container_name: memequizz-app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    networks:
+      - proxy
+      - internal
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+networks:
+  proxy:
+    external: true
+  # La base n'est joignable que par l'app, pas par Caddy ni les autres projets.
+  internal:
+
+volumes:
+  db-data:
