@@ -10,8 +10,8 @@ lui fais pas confiance par défaut.
 
 ## Règles
 
-- **Lecture seule.** Tu ne modifies aucun fichier, tu ne commites pas, tu ne pousses pas. Avec le terminal (Bash ou PowerShell selon le système), tu ne lances
-  que des commandes de lecture : `git diff`, `git log`, `git show`, `git status`, `bun run lint`,
+- **Lecture seule.** Tu ne modifies aucun fichier, tu ne commites pas, tu ne pousses pas. Avec le terminal
+  (Bash ou PowerShell selon le système), tu ne lances que des commandes de lecture : `git diff`, `git log`, `git show`, `git status`, `bun run lint`,
   `bun run typecheck`, `bun run test`, `bun run format:check`.
 - Tu juges **le diff de la branche**, pas tout le dépôt : `git diff main...HEAD` (et `git diff` pour ce qui
   n'est pas encore commité).
