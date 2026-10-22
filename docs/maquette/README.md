@@ -11,7 +11,6 @@ Exploration des directions (Claude Design) : https://claude.ai/artifact/LPnfYm7D
 
 | Fichiers                    | Contenu                                                                       |
 | --------------------------- | ----------------------------------------------------------------------------- |
-| `wireframe-01` à `05`       | Wireframes basse fidélité mobile (gris, structure seulement)                  |
 | `maquette-mobile-01` à `05` | Maquette mobile (375 × 812) : accueil, question, retour, résultat, classement |
 | `maquette-bureau-01` à `05` | Maquette bureau (1440 × 900), mêmes écrans                                    |
 | `maquette-composants.svg`   | États du bouton de réponse, boutons, champ, chrono, score, couleurs           |
@@ -22,10 +21,11 @@ Polices : **Gaegu** (titres) et **Patrick Hand** (texte), deux Google Fonts disp
 
 Fichier Figma : **MEMEQUIZZ — Wireframes & Maquette** (https://www.figma.com/design/pRoEuml3S0P9ihgZ3pjVCC).
 
-1. Page **1 · Wireframes** : glisser-déposer les 5 fichiers `wireframe-*.svg` sur le canevas.
-2. Page **2 · Maquette** : glisser-déposer les `maquette-mobile-*` puis les `maquette-bureau-*`.
-3. Page **3 · Composants** : glisser-déposer `maquette-composants.svg`.
-4. Ranger les écrans : tout sélectionner puis _Tidy up_ (`Ctrl + Alt + T`).
+Être **connecté** à son compte Figma (sinon le fichier s'ouvre en lecture seule et refuse l'import).
+
+1. Page **2 · Maquette** : glisser-déposer les `maquette-mobile-*` puis les `maquette-bureau-*`.
+2. Page **3 · Composants** : glisser-déposer `maquette-composants.svg`.
+3. Ranger les écrans : tout sélectionner puis _Tidy up_ (`Ctrl + Alt + T`).
 
 Chaque SVG devient un groupe de calques modifiables, avec des noms lisibles
 (« Réponse B (focus) », « Chrono », « Bouton Jouer », « Papier ligné »…).
