@@ -53,8 +53,9 @@ Commits petits et cohérents : un commit = un changement compréhensible seul. J
 
 ## 4. Avant d'ouvrir la PR
 
-- Lint, types et tests passent (dès qu'ils existent : `bun run lint`, `bun run typecheck`, `bun test`).
+- Lint, types et tests passent : `bun run lint`, `bun run typecheck`, `bun run test`.
 - Relire son propre diff (`git diff main...HEAD`) : pas de code mort, de `console.log` ou de fichier hors sujet.
+- Lancer l'agent `code-reviewer` sur la branche, corriger le bloquant, et reporter son verdict dans la section « Utilisation de l'IA » de la PR.
 
 ## 5. Pull request
 

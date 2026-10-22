@@ -13,4 +13,5 @@ Pour toute tâche : suivre le skill [git-workflow](.claude/skills/git-workflow/S
 
 ## Avant chaque PR
 
-Passer la [checklist de posture critique](docs/checklist-posture-critique.md) (comprendre, relire, tester) et la résumer dans la section « Utilisation de l'IA » de la PR.
+1. Lancer l'agent [code-reviewer](.claude/agents/code-reviewer.md) sur la branche et corriger ce qu'il remonte de bloquant.
+2. Passer la [checklist de posture critique](docs/checklist-posture-critique.md) (comprendre, relire, tester) et la résumer, avec le verdict du code-reviewer, dans la section « Utilisation de l'IA » de la PR.
