@@ -40,6 +40,7 @@ Sans Docker : `bun install` puis `bun run dev`. L'app est sur http://localhost:3
 - [Fiche de présentation](docs/fiche-presentation-memequizz.md)
 - [Stack et cartographies](docs/memequizz-stack-et-cartographies.md)
 - [Déploiement sur le VPS](docs/deploiement-vps.md)
+- [Checklist de posture critique (code généré par IA)](docs/checklist-posture-critique.md)
 
 ## Statut
 
