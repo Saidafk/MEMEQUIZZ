@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { BandeauResultat } from "@/components/BandeauResultat";
 import { BarreScore } from "@/components/BarreScore";
 import { BoutonReponse, type EtatReponse } from "@/components/BoutonReponse";
@@ -14,6 +14,8 @@ import type { LettreReponse } from "@/lib/types";
 import styles from "./Partie.module.css";
 
 const TOUCHES: Record<string, LettreReponse> = { a: "A", b: "B", c: "C", d: "D" };
+
+const PALIERS_ANNONCES_S = [10, 5];
 
 type Phase = "question" | "retour";
 
@@ -62,23 +64,20 @@ export function Partie() {
     return () => clearInterval(id);
   }, [phase, repondre]);
 
-  // Clavier : touches A à D pour répondre.
-  useEffect(() => {
-    if (phase !== "question") return;
-    const surTouche = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      const lettre = TOUCHES[e.key.toLowerCase()];
-      if (lettre) repondre(lettre);
-    };
-    window.addEventListener("keydown", surTouche);
-    return () => window.removeEventListener("keydown", surTouche);
-  }, [phase, repondre]);
+  // Clavier : touches A à D pour répondre. Le raccourci n'est actif que lorsque le focus est
+  // dans la zone de jeu (WCAG 2.1.4, raccourcis à une seule touche) : il ne gêne ni la
+  // navigation d'un lecteur d'écran ni la saisie ailleurs dans la page.
+  function surTouche(e: KeyboardEvent<HTMLDivElement>) {
+    if (phase !== "question" || e.ctrlKey || e.metaKey || e.altKey) return;
+    const lettre = TOUCHES[e.key.toLowerCase()];
+    if (lettre) repondre(lettre);
+  }
 
-  // Gestion du focus (utilisateur clavier) : après une réponse, sur « suivante » ; à la
-  // question suivante, sur l'intitulé, car le bouton « suivante » a disparu.
+  // Gestion du focus (utilisateur clavier) : à l'arrivée et à chaque question, sur l'intitulé,
+  // pour que les touches A à D fonctionnent tout de suite ; après une réponse, sur « suivante ».
   useEffect(() => {
     if (phase === "retour") boutonSuivant.current?.focus();
-    else if (index > 0) titreQuestion.current?.focus();
+    else titreQuestion.current?.focus();
   }, [phase, index]);
 
   if (!question) return null;
@@ -107,13 +106,19 @@ export function Partie() {
   const detail = choisie === null ? "temps écoulé" : `en ${libelleSecondes(secondesMises)}`;
 
   return (
-    <div className={styles.partie}>
+    <div className={styles.partie} onKeyDown={surTouche}>
       <div className={styles.barre}>
         <BarreScore question={index + 1} totalQuestions={total} score={score} />
       </div>
 
       <div className={styles.etat}>
         {phase === "question" && <Chrono restant={restant} />}
+        {/* Le chrono n'est pas lu à chaque seconde : seuls les paliers sont annoncés. */}
+        <div className="masque-visuel" aria-live="polite" aria-atomic="true">
+          {phase === "question" && PALIERS_ANNONCES_S.includes(restant)
+            ? `${libelleSecondes(restant)} restantes`
+            : ""}
+        </div>
         {/* Toujours monté : seul son contenu change, ce qui est annoncé de façon fiable. */}
         <div role="status">
           {phase === "retour" && <BandeauResultat reussi={reussi} points={gagne} detail={detail} />}
