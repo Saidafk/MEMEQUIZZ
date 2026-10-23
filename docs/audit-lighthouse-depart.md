@@ -1,4 +1,4 @@
-﻿# Audit Lighthouse de départ — accessibilité
+# Audit Lighthouse de départ — accessibilité
 
 Date : 2026-10-23 · Version : v0.2 (après SCRUM-30) · Outil : Lighthouse 12, catégorie accessibilité, build de production (`bun run build` puis `bun run start`), Chrome headless.
 
