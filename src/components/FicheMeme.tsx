@@ -21,9 +21,14 @@ export function FicheMeme({ fiche, credits }: Props) {
         <p className={styles.source}>
           Image : {credits.auteur} · {libelleLicence(credits.licence)}
           {imageAdaptee(credits.licence) ? " · image redimensionnée" : ""} ·{" "}
-          <a href={credits.sourceUrl} target="_blank" rel="noopener noreferrer">
-            source<span className="masque-visuel"> (s&apos;ouvre dans un nouvel onglet)</span>
-          </a>
+          {/* Lien rendu seulement pour une adresse https : jamais un `javascript:` venu des données. */}
+          {credits.sourceUrl.startsWith("https://") ? (
+            <a href={credits.sourceUrl} target="_blank" rel="noopener noreferrer">
+              source<span className="masque-visuel"> (s&apos;ouvre dans un nouvel onglet)</span>
+            </a>
+          ) : (
+            "source non disponible"
+          )}
         </p>
       )}
     </article>

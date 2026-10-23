@@ -1,15 +1,16 @@
 # Écarts maquette ↔ intégration (SCRUM-30)
 
 Méthode : chaque route est capturée dans Edge (mobile : cadre de 375 px ; bureau : 1440 × 900) puis
-comparée au SVG correspondant de ce dossier. Données fictives (`src/lib/donnees-demo.ts`) en attendant l'API.
+comparée au SVG correspondant de ce dossier. Depuis SCRUM-43, l'accueil, le jeu et le résultat utilisent l'API ;
+seul le classement reste sur des données fictives (`src/lib/donnees-demo.ts`, SCRUM-44).
 
-| Écran             | Route                  | Maquettes                                  |
-| ----------------- | ---------------------- | ------------------------------------------ |
-| Accueil           | `/`                    | `maquette-mobile-01`, `maquette-bureau-01` |
-| Question          | `/jeu`                 | `maquette-mobile-02`, `maquette-bureau-02` |
-| Retour de réponse | `/jeu` (après réponse) | `maquette-mobile-03`, `maquette-bureau-03` |
-| Résultat          | `/resultat/[partieId]` | `maquette-mobile-04`, `maquette-bureau-04` |
-| Classement        | `/classement`          | `maquette-mobile-05`, `maquette-bureau-05` |
+| Écran             | Route                             | Maquettes                                  |
+| ----------------- | --------------------------------- | ------------------------------------------ |
+| Accueil           | `/`                               | `maquette-mobile-01`, `maquette-bureau-01` |
+| Question          | `/jeu/[partieId]`                 | `maquette-mobile-02`, `maquette-bureau-02` |
+| Retour de réponse | `/jeu/[partieId]` (après réponse) | `maquette-mobile-03`, `maquette-bureau-03` |
+| Résultat          | `/resultat/[partieId]`            | `maquette-mobile-04`, `maquette-bureau-04` |
+| Classement        | `/classement`                     | `maquette-mobile-05`, `maquette-bureau-05` |
 
 ## Écarts relevés et corrigés
 
@@ -31,12 +32,16 @@ comparée au SVG correspondant de ce dossier. Données fictives (`src/lib/donnee
 - **Mini-bonhomme du résultat (bureau)** : placé en bas à droite de la page (position libre dans la maquette).
 - **Textes de démonstration** : noms de mèmes, fiche (`Origine : [à compléter]`, `Source : [à définir]`) et
   classement sont fictifs jusqu'à la v0.3 et SCRUM-34.
-- **Accueil** : le champ pseudo n'est pas encore transmis à la partie (aucune base ni session avant la v0.3).
-  Il n'y a donc volontairement pas de `<form>` : le clic sur « C'est parti » et la touche Entrée se comportent pareil.
-- **Résultat** : `/resultat/[partieId]` affiche toujours le résultat de démonstration (`RESULTAT_DEMO`) ; le score
-  réellement obtenu pendant la partie n'est pas transmis avant la v0.3 (pas de base).
-- **Classement** : l'onglet « Depuis toujours » est un lien vers la même page, conservé pour fidélité à la maquette.
-- **Chrono** : décompte par `setInterval`, qui dérive quand l'onglet est en arrière-plan ; temps serveur en v0.3.
+- **Accueil** (SCRUM-43) : le champ pseudo est dans un `<form>` ; il est contrôlé avec le schéma du serveur,
+  puis la partie démarre. Le bouton reste inactif tant que la page n'est pas interactive.
+- **Résultat** (SCRUM-43) : `/resultat/[partieId]` lit la vraie partie en base, pour son propriétaire seulement.
+- **Classement** : toujours des données de démonstration (SCRUM-44). L'onglet « Depuis toujours » est un lien vers
+  la même page, conservé pour fidélité à la maquette.
+- **Chrono** (SCRUM-43) : décompte calculé depuis une échéance (plus de dérive en arrière-plan) ; le temps et les
+  points font foi côté serveur. À zéro, la correction est demandée une seule fois ; en cas d'échec réseau,
+  bouton « Réessayer ».
+- **Fiche de correction** (SCRUM-43) : nom, année et origine quand elles existent, crédits de l'image (auteur,
+  licence, lien source). Le texte « description » de la maquette n'a pas d'équivalent en base avant SCRUM-38.
 
 ## Corrections après relecture (code-reviewer)
 
@@ -46,6 +51,18 @@ comparée au SVG correspondant de ce dossier. Données fictives (`src/lib/donnee
 - Calcul du score extrait dans `src/lib/score.ts` et couvert par `tests/unit/score.test.ts`.
 
 ## À vérifier à la main
+
+**SCRUM-43 : le parcours branché sur l'API n'a pas été testé dans un navigateur** (seuls lint, types, tests
+des API et build de production ont tourné). À jouer une fois, sur mobile (375 px) et bureau (1440 px) :
+
+- Accueil : pseudo trop court → message d'erreur annoncé et focus sur le champ ; pseudo valide → arrivée sur la question 1.
+- Question : l'image s'affiche, le chrono descend, touches A à D et clic répondent ; après la réponse, le focus
+  est sur « Question suivante » et le bandeau est annoncé ; la fiche montre les crédits de l'image.
+- Chrono expiré : « temps écoulé », 0 point, la correction s'affiche.
+- Recharger la page en pleine partie : on reprend à la bonne question ; après la 10ᵉ, on arrive au résultat.
+- Écrans à comparer aux maquettes `maquette-*-02` et `maquette-*-03` (question et retour de réponse).
+
+Points hérités de SCRUM-30 :
 
 - **Retour de réponse** (`maquette-*-03`) : l'état s'obtient en jouant (clic ou touche A à D), il n'a pas
   été capturé automatiquement. Parcours à tester : répondre juste, répondre faux, laisser le chrono expirer,

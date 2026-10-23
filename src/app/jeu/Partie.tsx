@@ -54,6 +54,8 @@ export function Partie({ idPartie }: { idPartie: number }) {
   const [envoi, setEnvoi] = useState(false);
   const [erreurEnvoi, setErreurEnvoi] = useState<string | null>(null);
   const envoiEnCours = useRef(false);
+  const expirationEnvoyee = useRef<number | null>(null);
+  const derniereReponse = useRef<number | null>(null);
   const demarre = useRef(false);
   const boutonSuivant = useRef<HTMLButtonElement>(null);
   const titreQuestion = useRef<HTMLHeadingElement>(null);
@@ -125,6 +127,7 @@ export function Partie({ idPartie }: { idPartie: number }) {
     async (idMeme: number | null) => {
       if (etat.phase !== "question" || envoiEnCours.current) return;
       envoiEnCours.current = true;
+      derniereReponse.current = idMeme;
       setEnvoi(true);
       setErreurEnvoi(null);
       try {
@@ -160,14 +163,19 @@ export function Partie({ idPartie }: { idPartie: number }) {
   );
 
   // Décompte : calculé depuis l'échéance (pas de dérive en arrière-plan). À zéro, on demande la
-  // correction sans mème choisi : la question est close avec zéro point.
+  // correction sans mème choisi : la question est close avec zéro point. L'envoi automatique n'a
+  // lieu qu'une fois par question : en cas d'échec réseau, c'est le bouton « Réessayer » qui reprend,
+  // pas une requête toutes les 250 ms.
   useEffect(() => {
     if (etat.phase !== "question") return;
-    const { fin } = etat;
+    const { fin, question } = etat;
     const id = setInterval(() => {
       const secondes = secondesRestantes(fin, Date.now());
       setRestant(secondes);
-      if (secondes <= 0) void repondre(null);
+      if (secondes <= 0 && expirationEnvoyee.current !== question.rang) {
+        expirationEnvoyee.current = question.rang;
+        void repondre(null);
+      }
     }, 250);
     return () => clearInterval(id);
   }, [etat, repondre]);
@@ -260,6 +268,15 @@ export function Partie({ idPartie }: { idPartie: number }) {
         <p role="alert" className={styles.alerte}>
           {erreurEnvoi ? `✗ ${erreurEnvoi}` : ""}
         </p>
+        {erreurEnvoi && (
+          <button
+            type="button"
+            className={styles.suivante}
+            onClick={() => void repondre(derniereReponse.current)}
+          >
+            Réessayer
+          </button>
+        )}
       </div>
 
       <div className={styles.image}>
