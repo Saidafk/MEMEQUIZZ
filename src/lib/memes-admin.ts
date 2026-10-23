@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { and, asc, count, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 
-import { LICENCES_IMAGE, meme } from "@/db/schema";
+import { LICENCES_LIBRES, meme } from "@/db/schema";
 import { convertirEnWebp } from "@/lib/image-meme";
 import type { BaseDonnees } from "@/lib/questions";
 
@@ -44,7 +44,7 @@ export const ficheMemeSchema = z.strictObject({
   auteur: z
     .preprocess(vide, z.string().trim().max(200).optional())
     .transform((v) => v ?? "Auteur inconnu"),
-  licence: z.enum(LICENCES_IMAGE, {
+  licence: z.enum(LICENCES_LIBRES, {
     error: "Choisis une licence libre : domaine public, CC0, CC BY ou CC BY-SA.",
   }),
   // Facultative : sans source, chaîne vide (l'affichage indique « source non disponible »).

@@ -10,6 +10,8 @@ Décision prise par Saïd le 2026-10-23.
 - Seules les images sous licence libre sont retenues : domaine public, CC0, CC BY, CC BY-SA.
 - Un mème dont la licence n'est pas claire n'entre pas dans le jeu de données.
 
+> **Exception (SCRUM-97)** : l'import des modèles memegen.link utilise la licence `non_verifiee` ; voir `docs/import-memegen.md`. Elle ne sert qu'à ce script et ne peut pas être choisie dans le backoffice.
+
 ## Pourquoi
 
 - **PWA hors ligne** : une image hébergée ailleurs n'est pas fiablement mise en cache par le service worker (réponses cross-origin opaques). Une image servie par notre domaine l'est.

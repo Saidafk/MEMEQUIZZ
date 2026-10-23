@@ -3,7 +3,7 @@ import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { MEMES } from "@/db/data/memes";
-import { LICENCES_IMAGE } from "@/db/schema";
+import { LICENCES_LIBRES } from "@/db/schema";
 
 describe("liste des mèmes (skill meme-data)", () => {
   test("contient au moins 10 mèmes", () => {
@@ -20,7 +20,7 @@ describe("liste des mèmes (skill meme-data)", () => {
 
   test("chaque fiche a une licence libre, un auteur et une source Commons", () => {
     for (const m of MEMES) {
-      expect(LICENCES_IMAGE).toContain(m.licence);
+      expect(LICENCES_LIBRES).toContain(m.licence);
       expect(m.auteur.trim()).not.toBe("");
       expect(m.source_url).toStartWith("https://commons.wikimedia.org/wiki/File:");
     }

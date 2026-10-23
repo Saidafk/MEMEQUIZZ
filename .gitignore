@@ -15,6 +15,10 @@ test-results/
 .env*
 !.env.example
 
+# Images et SQL de l'import memegen.link (SCRUM-97) : œuvres protégées, jamais dans le dépôt public.
+public/memes/memegen-*.webp
+memegen-import.sql
+
 # Divers
 *.log
 *.tsbuildinfo

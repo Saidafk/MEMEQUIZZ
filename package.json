@@ -16,6 +16,7 @@
     "db:up": "docker compose up -d --wait db",
     "vapid": "bun scripts/generer-cles-vapid.ts",
     "icones": "bun scripts/generer-icones.ts",
+    "import:memegen": "bun src/db/importer-memegen.ts",
     "db:images": "bun src/db/importer-images.ts",
     "db:seed": "bun src/db/seed.ts",
     "db:reset": "bun src/db/reset.ts",
