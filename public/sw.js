@@ -81,3 +81,34 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(reseauDabord(event, requete));
   }
 });
+
+// Notifications push du quiz du jour (SCRUM-49). La charge est un JSON { titre, corps, url }
+// envoyé par le serveur ; une charge illisible donne un message par défaut.
+self.addEventListener("push", (event) => {
+  let message = {};
+  try {
+    message = event.data ? event.data.json() : {};
+  } catch {
+    // Charge non JSON : message par défaut ci-dessous.
+  }
+  const { titre = "MEMEQUIZZ", corps = "Le quiz du jour est prêt !", url = "/" } = message;
+  event.waitUntil(
+    self.registration.showNotification(titre, {
+      body: corps,
+      icon: "/icons/icon-192.png",
+      data: { url },
+    }),
+  );
+});
+
+// Un clic ramène sur une fenêtre ouverte du site, sinon en ouvre une.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.url ?? "/", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((fenetres) => {
+      const ouverte = fenetres.find((f) => new URL(f.url).origin === self.location.origin);
+      return ouverte ? ouverte.focus() : self.clients.openWindow(url);
+    }),
+  );
+});

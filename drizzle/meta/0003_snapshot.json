@@ -1,0 +1,474 @@
+{
+  "id": "ae571b6e-9a90-4360-befa-79969bd23459",
+  "prevId": "e124a1c7-5419-49bf-9d56-f5c5a71a485b",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.abonnement_push": {
+      "name": "abonnement_push",
+      "schema": "",
+      "columns": {
+        "id_abonnement": {
+          "name": "id_abonnement",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "endpoint": {
+          "name": "endpoint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cle_p256dh": {
+          "name": "cle_p256dh",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cle_auth": {
+          "name": "cle_auth",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "abonnement_push_endpoint_unique": {
+          "name": "abonnement_push_endpoint_unique",
+          "nullsNotDistinct": false,
+          "columns": ["endpoint"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.joueur": {
+      "name": "joueur",
+      "schema": "",
+      "columns": {
+        "id_joueur": {
+          "name": "id_joueur",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "pseudo": {
+          "name": "pseudo",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_session_hash": {
+          "name": "token_session_hash",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "joueur_token_session_hash_unique": {
+          "name": "joueur_token_session_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": ["token_session_hash"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "joueur_pseudo_longueur_check": {
+          "name": "joueur_pseudo_longueur_check",
+          "value": "char_length(\"joueur\".\"pseudo\") >= 3"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.meme": {
+      "name": "meme",
+      "schema": "",
+      "columns": {
+        "id_meme": {
+          "name": "id_meme",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nom": {
+          "name": "nom",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "annee_origine": {
+          "name": "annee_origine",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "origine": {
+          "name": "origine",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "article_url": {
+          "name": "article_url",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image_chemin": {
+          "name": "image_chemin",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "auteur": {
+          "name": "auteur",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "licence": {
+          "name": "licence",
+          "type": "licence_image",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actif": {
+          "name": "actif",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {
+        "meme_actif_idx": {
+          "name": "meme_actif_idx",
+          "columns": [
+            {
+              "expression": "actif",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "meme_slug_unique": {
+          "name": "meme_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": ["slug"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.partie": {
+      "name": "partie",
+      "schema": "",
+      "columns": {
+        "id_partie": {
+          "name": "id_partie",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id_joueur": {
+          "name": "id_joueur",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "statut": {
+          "name": "statut",
+          "type": "statut_partie",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'en_cours'"
+        },
+        "commence_le": {
+          "name": "commence_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "termine_le": {
+          "name": "termine_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "score_total": {
+          "name": "score_total",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "partie_score_total_idx": {
+          "name": "partie_score_total_idx",
+          "columns": [
+            {
+              "expression": "score_total",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "partie_id_joueur_idx": {
+          "name": "partie_id_joueur_idx",
+          "columns": [
+            {
+              "expression": "id_joueur",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "partie_id_joueur_joueur_id_joueur_fk": {
+          "name": "partie_id_joueur_joueur_id_joueur_fk",
+          "tableFrom": "partie",
+          "tableTo": "joueur",
+          "columnsFrom": ["id_joueur"],
+          "columnsTo": ["id_joueur"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "partie_score_total_check": {
+          "name": "partie_score_total_check",
+          "value": "\"partie\".\"score_total\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.partie_question": {
+      "name": "partie_question",
+      "schema": "",
+      "columns": {
+        "id_partie": {
+          "name": "id_partie",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rang": {
+          "name": "rang",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_meme": {
+          "name": "id_meme",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "choix_ids": {
+          "name": "choix_ids",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "envoye_le": {
+          "name": "envoye_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reponse_id_meme": {
+          "name": "reponse_id_meme",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repondu_le": {
+          "name": "repondu_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "points": {
+          "name": "points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "partie_question_id_meme_idx": {
+          "name": "partie_question_id_meme_idx",
+          "columns": [
+            {
+              "expression": "id_meme",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "partie_question_reponse_id_meme_idx": {
+          "name": "partie_question_reponse_id_meme_idx",
+          "columns": [
+            {
+              "expression": "reponse_id_meme",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "partie_question_id_partie_partie_id_partie_fk": {
+          "name": "partie_question_id_partie_partie_id_partie_fk",
+          "tableFrom": "partie_question",
+          "tableTo": "partie",
+          "columnsFrom": ["id_partie"],
+          "columnsTo": ["id_partie"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "partie_question_id_meme_meme_id_meme_fk": {
+          "name": "partie_question_id_meme_meme_id_meme_fk",
+          "tableFrom": "partie_question",
+          "tableTo": "meme",
+          "columnsFrom": ["id_meme"],
+          "columnsTo": ["id_meme"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "partie_question_reponse_id_meme_meme_id_meme_fk": {
+          "name": "partie_question_reponse_id_meme_meme_id_meme_fk",
+          "tableFrom": "partie_question",
+          "tableTo": "meme",
+          "columnsFrom": ["reponse_id_meme"],
+          "columnsTo": ["id_meme"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "partie_question_id_partie_rang_pk": {
+          "name": "partie_question_id_partie_rang_pk",
+          "columns": ["id_partie", "rang"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "partie_question_rang_check": {
+          "name": "partie_question_rang_check",
+          "value": "\"partie_question\".\"rang\" >= 1"
+        },
+        "partie_question_choix_check": {
+          "name": "partie_question_choix_check",
+          "value": "\"partie_question\".\"choix_ids\" is null or jsonb_array_length(\"partie_question\".\"choix_ids\") = 4"
+        },
+        "partie_question_envoi_check": {
+          "name": "partie_question_envoi_check",
+          "value": "(\"partie_question\".\"choix_ids\" is null) = (\"partie_question\".\"envoye_le\" is null)"
+        },
+        "partie_question_points_check": {
+          "name": "partie_question_points_check",
+          "value": "\"partie_question\".\"points\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.licence_image": {
+      "name": "licence_image",
+      "schema": "public",
+      "values": ["domaine_public", "cc0", "cc_by", "cc_by_sa"]
+    },
+    "public.statut_partie": {
+      "name": "statut_partie",
+      "schema": "public",
+      "values": ["en_cours", "terminee", "abandonnee"]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
