@@ -69,9 +69,11 @@ describe.skipIf(!BASE_TEST_ACTIVE)("backoffice des mèmes (SCRUM-96)", () => {
     expect(Math.max(meta.width ?? 0, meta.height ?? 0)).toBeLessThanOrEqual(800);
   });
 
-  test("refuse un envoi sans licence libre, sans auteur ou sans image, et n'écrit rien", async () => {
+  test("refuse un envoi sans licence libre, avec une source non https ou sans image, et n'écrit rien", async () => {
     expect((await creerMeme(db, await formulaire({ licence: "" }))).ok).toBe(false);
-    expect((await creerMeme(db, await formulaire({ auteur: " " }))).ok).toBe(false);
+    expect((await creerMeme(db, await formulaire({ source_url: "javascript:alert(1)" }))).ok).toBe(
+      false,
+    );
     expect((await creerMeme(db, await formulaire({}, false))).ok).toBe(false);
     expect(await db.select().from(schema.meme)).toHaveLength(0);
     expect(await readdir(dossier)).toHaveLength(0);

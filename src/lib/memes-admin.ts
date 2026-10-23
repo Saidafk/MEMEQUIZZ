@@ -9,7 +9,7 @@ import { convertirEnWebp } from "@/lib/image-meme";
 import type { BaseDonnees } from "@/lib/questions";
 
 // Gestion des mèmes depuis le backoffice (SCRUM-96). Les règles de validation sont celles du
-// skill meme-data : licence libre obligatoire, auteur non vide, slug unique, image WebP ≤ 800 px
+// skill meme-data : licence libre obligatoire, slug unique, image WebP ≤ 800 px
 // et ≤ 100 Ko (convertie à l'envoi).
 export const IMAGE_ENVOI_MAX_OCTETS = 8 * 1024 * 1024;
 export const MIN_MEMES_ACTIFS = 4;
@@ -38,15 +38,20 @@ export const ficheMemeSchema = z.strictObject({
     )
     .transform((v) => v ?? null),
   origine: texteFacultatif(500),
+  // Facultatif : sans auteur, « Auteur inconnu » (la colonne est obligatoire, voir meme-data).
   auteur: z
-    .string()
-    .trim()
-    .min(1, "L'auteur est obligatoire (« Auteur inconnu » si besoin).")
-    .max(200),
+    .preprocess(vide, z.string().trim().max(200).optional())
+    .transform((v) => v ?? "Auteur inconnu"),
   licence: z.enum(LICENCES_IMAGE, {
     error: "Choisis une licence libre : domaine public, CC0, CC BY ou CC BY-SA.",
   }),
-  source_url: urlHttps("La source doit être une adresse https (page Commons de l'image)."),
+  // Facultative : sans source, chaîne vide (l'affichage indique « source non disponible »).
+  source_url: z
+    .preprocess(
+      vide,
+      urlHttps("La source doit être une adresse https (page Commons de l'image).").optional(),
+    )
+    .transform((v) => v ?? ""),
   article_url: z
     .preprocess(
       vide,

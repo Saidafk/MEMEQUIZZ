@@ -78,8 +78,13 @@ describe("ficheMemeSchema", () => {
     expect(ficheMemeSchema.safeParse({ ...valide, licence: "" }).success).toBe(false);
   });
 
-  test("refuse un auteur vide", () => {
-    expect(ficheMemeSchema.safeParse({ ...valide, auteur: "   " }).success).toBe(false);
+  test("auteur et source sont facultatifs : valeurs par défaut", () => {
+    const r = ficheMemeSchema.safeParse({ ...valide, auteur: "   ", source_url: "" });
+    expect(r.success).toBe(true);
+    if (r.success) {
+      expect(r.data.auteur).toBe("Auteur inconnu");
+      expect(r.data.source_url).toBe("");
+    }
   });
 
   test("n'accepte que des liens https, l'article sur wikipedia.org", () => {

@@ -14,8 +14,8 @@ Permet d'ajouter, modifier et désactiver des mèmes depuis l'application, sans 
 Formulaire : nom, image, année (facultative), origine (facultative, reformulée), auteur, licence libre, page Commons, article Wikipédia (facultatif). Règles du skill `meme-data` appliquées à l'envoi :
 
 - licence obligatoire parmi `domaine_public`, `cc0`, `cc_by`, `cc_by_sa` ;
-- auteur non vide (« Auteur inconnu » si besoin) ;
-- `source_url` en https, `article_url` en https sur `wikipedia.org` ;
+- auteur et page source facultatifs : sans auteur, « Auteur inconnu » ; sans source, l'affichage indique « source non renseignée ». Pour une image sous CC BY ou CC BY-SA, la licence exige l'auteur et la source : à renseigner ;
+- si elles sont données, `source_url` et `article_url` sont en https (article sur `wikipedia.org`) ;
 - slug dérivé du nom (minuscules, sans accents) et unique ; il ne change jamais ;
 - image JPEG, PNG ou WebP de 8 Mo maximum, convertie en WebP, 800 px et 100 Ko maximum.
 

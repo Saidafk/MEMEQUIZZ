@@ -72,11 +72,12 @@ export function FormulaireMeme({ action, valeurs, imageObligatoire }: Props) {
         className={styles.champ}
       />
 
-      <label htmlFor="auteur">Auteur de l&apos;image (« Auteur inconnu » si besoin)</label>
+      <label htmlFor="auteur">
+        Auteur de l&apos;image (facultatif, « Auteur inconnu » par défaut)
+      </label>
       <input
         id="auteur"
         name="auteur"
-        required
         maxLength={200}
         defaultValue={valeurs?.auteur}
         className={styles.champ}
@@ -100,12 +101,11 @@ export function FormulaireMeme({ action, valeurs, imageObligatoire }: Props) {
         ))}
       </select>
 
-      <label htmlFor="source_url">Page Wikimedia Commons du fichier (https)</label>
+      <label htmlFor="source_url">Page Wikimedia Commons du fichier (facultatif, https)</label>
       <input
         id="source_url"
         name="source_url"
         type="url"
-        required
         maxLength={500}
         defaultValue={valeurs?.source_url}
         className={styles.champ}

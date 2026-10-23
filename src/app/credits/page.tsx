@@ -20,10 +20,17 @@ async function Liste() {
         <li key={m.id_meme}>
           <strong>{m.nom}</strong> — image de {m.auteur}, {libelleLicence(m.licence)}
           {imageAdaptee(m.licence) ? ", réduite et convertie en WebP" : ""}.{" "}
-          <a href={m.source_url} target="_blank" rel="noopener noreferrer">
-            Source
-            <span className="masque-visuel"> de {m.nom} (s&apos;ouvre dans un nouvel onglet)</span>
-          </a>
+          {m.source_url ? (
+            <a href={m.source_url} target="_blank" rel="noopener noreferrer">
+              Source
+              <span className="masque-visuel">
+                {" "}
+                de {m.nom} (s&apos;ouvre dans un nouvel onglet)
+              </span>
+            </a>
+          ) : (
+            "Source non renseignée."
+          )}
         </li>
       ))}
     </ul>
