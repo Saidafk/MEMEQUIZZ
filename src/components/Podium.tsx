@@ -12,11 +12,21 @@ export function Podium({ joueurs }: { joueurs: Joueur[] }) {
       {RANGS.map((libelleRang, i) => {
         const joueur = joueurs[i];
         if (!joueur) return null;
-        const rang = i + 1;
+        // La disposition suit l'ordre d'affichage ; le rang annoncé est le vrai (égalité : 1er, 1er, 3e).
+        const position = i + 1;
+        const rang = joueur.rang ?? position;
+        const libelle = joueur.rang === undefined ? libelleRang : rang === 1 ? "1er" : `${rang}e`;
         return (
-          <li key={rang} className={`${styles.marche} ${styles[`rang${rang}`]}`} value={rang}>
-            <span className="masque-visuel">{libelleRang} : </span>
-            <span className={styles.nom}>{joueur.pseudo}</span>
+          <li
+            key={position}
+            className={`${styles.marche} ${styles[`rang${position}`]}`}
+            value={rang}
+          >
+            <span className="masque-visuel">{libelle} : </span>
+            <span className={styles.nom}>
+              {joueur.pseudo}
+              {joueur.moi && <span className="masque-visuel"> (toi)</span>}
+            </span>
             <span className={styles.points}>{formatPoints.format(joueur.score)}</span>
             <span className="masque-visuel"> pts</span>
             <span className={styles.bloc} aria-hidden="true">
