@@ -1,0 +1,12 @@
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-2);
+}
+
+.nom {
+  font-family: var(--police-titre);
+  font-size: var(--taille-xl);
+  font-weight: 700;
+  letter-spacing: 1px;
+}

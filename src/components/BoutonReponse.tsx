@@ -1,8 +1,8 @@
 "use client";
 
+import type { LettreReponse } from "@/lib/types";
 import styles from "./BoutonReponse.module.css";
 
-export type LettreReponse = "A" | "B" | "C" | "D";
 export type EtatReponse = "normal" | "correct" | "faux" | "desactive";
 
 type Props = {
@@ -47,7 +47,7 @@ export function BoutonReponse({ lettre, libelle, etat = "normal", onChoisir }: P
           ✗
         </span>
       )}
-      {ANNONCE[etat] && <span className={styles.masque}> — {ANNONCE[etat]}</span>}
+      {ANNONCE[etat] && <span className="masque-visuel"> — {ANNONCE[etat]}</span>}
     </button>
   );
 }

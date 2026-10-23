@@ -1,0 +1,37 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-6);
+  max-width: 640px;
+}
+
+.titre {
+  font-size: var(--taille-xxl);
+}
+
+.onglets {
+  display: flex;
+  gap: var(--espace-6);
+  font-size: var(--taille-m);
+}
+
+.onglet,
+.actif {
+  padding: var(--espace-1) var(--espace-2);
+  text-decoration: none;
+}
+
+.onglet {
+  color: var(--couleur-encre-2);
+}
+
+.actif {
+  background: var(--couleur-surligneur);
+  border-bottom: 2px solid var(--couleur-encre);
+}
+
+.liste {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}

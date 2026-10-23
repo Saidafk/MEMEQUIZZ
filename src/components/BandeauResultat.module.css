@@ -1,0 +1,26 @@
+.bandeau {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-1);
+  padding: var(--espace-3) var(--espace-4);
+  font-size: var(--taille-s);
+  border: var(--trait);
+  border-radius: var(--rayon-croquis);
+  box-shadow: var(--ombre-croquis);
+}
+
+.titre {
+  font-family: var(--police-titre);
+  font-size: var(--taille-l);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.reussi {
+  color: var(--couleur-succes);
+  background: var(--couleur-succes-fond);
+}
+
+.rate {
+  background: var(--couleur-erreur-fond);
+}

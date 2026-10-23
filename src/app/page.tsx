@@ -1,68 +1,48 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Bonhomme } from "@/components/Bonhomme";
+import { BoutonLien } from "@/components/BoutonLien";
+import { Feuille } from "@/components/Feuille";
+import { Logo } from "@/components/Logo";
 import styles from "./page.module.css";
 
-export default function Home() {
+export default function Accueil() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the <code className={styles.code}>page.tsx</code> file.
+    <Feuille largeur="large">
+      <div className={styles.accueil}>
+        <Logo />
+        <div className={styles.texte}>
+          <h1 className={styles.titre}>
+            <span className={styles.surligne}>Reconnais</span>
+            <br />
+            le mème !
           </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className={styles.regles}>
+            10 mèmes, 4 choix, 15 secondes.
+            <br />
+            Plus tu réponds vite, plus tu marques.
           </p>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className={styles.dessin}>
+          <Bonhomme />
         </div>
-      </main>
-    </div>
+        {/* Pas de <form> : le pseudo n'est pas encore transmis (ni base ni session avant la v0.3). */}
+        <div className={styles.formulaire}>
+          <label htmlFor="pseudo" className={styles.etiquette}>
+            Ton pseudo
+          </label>
+          <input
+            id="pseudo"
+            className={styles.champ}
+            placeholder="ex. Gribouille42"
+            autoComplete="nickname"
+            maxLength={20}
+          />
+          <BoutonLien href="/jeu">C&apos;est parti →</BoutonLien>
+          <Link href="/classement" className={styles.lien}>
+            Voir le classement
+          </Link>
+        </div>
+      </div>
+    </Feuille>
   );
 }

@@ -1,0 +1,27 @@
+.fiche {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-2);
+  padding: var(--espace-4);
+  font-size: var(--taille-s);
+  background: var(--couleur-papier);
+  border: var(--trait-fin);
+  border-radius: 12px 16px 10px 14px;
+}
+
+.nom {
+  font-size: var(--taille-l);
+}
+
+.surligne {
+  background: linear-gradient(transparent 55%, var(--couleur-surligneur) 55%);
+}
+
+.origine,
+.source {
+  color: var(--couleur-encre-2);
+}
+
+.source {
+  font-size: var(--taille-xs);
+}

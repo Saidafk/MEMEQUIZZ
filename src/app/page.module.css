@@ -1,150 +1,103 @@
-.page {
-  --background: #fafafa;
-  --foreground: #fff;
-
-  --text-primary: #000;
-  --text-secondary: #666;
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
-  --button-secondary-border: #ebebeb;
-
+.accueil {
   display: flex;
   flex: 1;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--police-texte);
-  background-color: var(--couleur-papier);
+  gap: var(--espace-6);
 }
 
-.main {
-  display: flex;
-  flex: 1;
-  width: 100%;
-  max-width: 800px;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  background-color: var(--couleur-encre);
-  padding: 120px 60px;
-}
-
-.intro {
+.texte {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  gap: 24px;
+  gap: var(--espace-4);
+  margin-top: var(--espace-6);
 }
 
-.intro h1 {
-  max-width: 320px;
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 48px;
-  letter-spacing: -2.4px;
-  text-wrap: balance;
-  color: var(--text-primary);
+.titre {
+  font-size: var(--taille-xxl);
 }
 
-.intro p {
-  max-width: 440px;
-  font-size: 18px;
-  line-height: 32px;
-  text-wrap: balance;
-  color: var(--text-secondary);
+.surligne {
+  background: linear-gradient(transparent 55%, var(--couleur-surligneur) 55%);
 }
 
-.intro a {
-  font-weight: 500;
-  color: var(--text-primary);
+.regles {
+  color: var(--couleur-encre-2);
 }
 
-.ctas {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  max-width: 440px;
-  gap: 16px;
-  font-size: 14px;
-}
-
-.ctas a {
+.dessin {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 128px;
-  border: 1px solid transparent;
-  transition: 0.2s;
-  cursor: pointer;
-  width: fit-content;
-  font-weight: 500;
 }
 
-a.primary {
-  background: var(--text-primary);
-  color: var(--couleur-papier);
-  gap: 8px;
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+  margin-top: auto;
 }
 
-a.secondary {
-  border-color: var(--button-secondary-border);
+.etiquette {
+  font-size: var(--taille-m);
 }
 
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
-}
-
-@media (max-width: 600px) {
-  .main {
-    padding: 48px 24px;
-  }
-
-  .intro {
-    gap: 16px;
-  }
-
-  .intro h1 {
-    font-size: 32px;
-    line-height: 40px;
-    letter-spacing: -1.92px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
-
-  .page {
-    --background: #000;
-    --foreground: #000;
-
-    --text-primary: #ededed;
-    --text-secondary: #999;
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-    --button-secondary-border: #1a1a1a;
-  }
-}
-
-.code {
+.champ {
+  min-height: 52px;
+  padding: 0 var(--espace-4);
   font-family: var(--police-texte);
-  font-size: 0.9em;
-  background: color-mix(in srgb, currentColor 8%, transparent);
-  padding: 0.1em 0.4em;
-  border-radius: 6px;
+  font-size: var(--taille-m);
+  color: var(--couleur-encre);
+  background: var(--couleur-papier);
+  border: 2.5px solid var(--couleur-encre);
+  border-radius: var(--rayon-croquis);
+}
+
+.champ::placeholder {
+  color: var(--couleur-encre-douce);
+}
+
+.lien {
+  align-self: center;
+  padding: var(--espace-2);
+  text-decoration: underline;
+}
+
+@media (min-width: 1024px) {
+  .accueil {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "logo logo"
+      "texte dessin"
+      "formulaire dessin";
+    column-gap: var(--espace-12);
+    align-items: start;
+  }
+
+  .accueil > :first-child {
+    grid-area: logo;
+  }
+
+  .texte {
+    grid-area: texte;
+    margin-top: var(--espace-12);
+  }
+
+  .titre {
+    font-size: 4.5rem;
+  }
+
+  .dessin {
+    grid-area: dessin;
+    align-items: center;
+  }
+
+  .dessin svg {
+    width: 520px;
+  }
+
+  .formulaire {
+    grid-area: formulaire;
+    max-width: 460px;
+    margin-top: var(--espace-6);
+  }
 }
