@@ -6,6 +6,9 @@ Next.js 16 avec Cache Components : une page est préparée au build (coquille st
 | -------------- | ----------------------------------------- | -------- |
 | `/meme/[slug]` | SSG : une page par mème, générée au build | SCRUM-51 |
 | `/classement`  | SSR : lue en base à chaque requête        | SCRUM-52 |
+| `/stats/csr`   | CSR : chiffres chargés par le navigateur  | SCRUM-53 |
+| `/stats/ssr`   | SSR : chiffres lus à chaque requête       | SCRUM-53 |
+| `/stats/ssg`   | SSG : chiffres du build, régénérés à 1 h  | SCRUM-53 |
 
 ## `/meme/[slug]` (SSG)
 
@@ -22,3 +25,15 @@ Le classement change à chaque partie terminée et dépend du cookie de session 
 3. Insertion en base d'un joueur « TesteurSSR » avec une partie terminée à 999 points.
 4. Nouveau `curl`, sans rebuild ni redémarrage : « TesteurSSR » est dans le HTML. Les données sont donc fraîches à chaque requête.
 5. Joueur de test supprimé.
+
+## Statistiques en trois rendus (`/stats`)
+
+Une même présentation (`BlocStats`) et les mêmes chiffres (`lireStats` : parties terminées, joueurs, meilleur score, score moyen, mèmes actifs) servis de trois façons, pour comparer le rendu et mesurer (Web Vitals, Lighthouse) :
+
+| Route        | Ce que livre le serveur                 | Où les chiffres sont lus                                                                |
+| ------------ | --------------------------------------- | --------------------------------------------------------------------------------------- |
+| `/stats/csr` | Une page vide (« Chargement… »)         | Le navigateur appelle `GET /api/stats`                                                  |
+| `/stats/ssr` | Le HTML complet, construit à la requête | La base, à chaque requête (`connection()`)                                              |
+| `/stats/ssg` | Le HTML complet, préparé au build       | La base au build, puis au plus une fois par heure (`"use cache"`, `cacheLife("hours")`) |
+
+Chaque page affiche l'instant où les chiffres ont été lus : recharger `/stats/ssr` le change à chaque fois, `/stats/ssg` non. Sans `DATABASE_URL` au build (image Docker), la version SSG part de zéros jusqu'à sa première régénération. Vérifié avec `next start` : `/stats/ssr` et `/stats/ssg` contiennent « Parties terminées » dans le HTML, pas `/stats/csr`.
