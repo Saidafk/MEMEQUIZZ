@@ -6,7 +6,7 @@ import styles from "./FicheMeme.module.css";
 export type CreditsImage = { auteur: string; licence: string; sourceUrl: string };
 
 type Props = {
-  fiche: FicheMemeDonnees;
+  fiche: Pick<FicheMemeDonnees, "nom"> & Partial<FicheMemeDonnees>;
   credits?: CreditsImage;
   articleUrl?: string | null;
   // « h1 » sur la page propre au mème ; « h3 » quand la fiche est dans un écran de jeu.

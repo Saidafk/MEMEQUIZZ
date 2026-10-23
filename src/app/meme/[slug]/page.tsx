@@ -61,7 +61,7 @@ async function Contenu({ params }: PageProps<"/meme/[slug]">) {
     <>
       <Image
         src={m.image_chemin}
-        alt={`Image du mème « ${m.nom} »`}
+        alt={`Mème « ${m.nom} »`}
         width={400}
         height={320}
         unoptimized
@@ -70,7 +70,7 @@ async function Contenu({ params }: PageProps<"/meme/[slug]">) {
       />
       <FicheMeme
         niveauTitre="h1"
-        fiche={{ nom: m.nom, origine: m.origine ?? "", description: "", source: "" }}
+        fiche={{ nom: m.nom, origine: m.origine ?? "" }}
         articleUrl={m.article_url}
         credits={{ auteur: m.auteur, licence: m.licence, sourceUrl: m.source_url }}
       />
