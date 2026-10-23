@@ -23,4 +23,4 @@ Changer `VERSION` dans `sw.js` pour invalider les caches ; l'activation supprime
 
 Une image de `/memes/` remplacée sous le même nom reste périmée tant que `VERSION` n'est pas incrémentée : changer `VERSION` à chaque modification du catalogue.
 
-Une page jamais visitée en ligne n'est pas disponible hors ligne (page de secours : SCRUM-50 ; questions d'entraînement : SCRUM-48).
+Une page jamais visitée en ligne n'est pas disponible hors ligne : le service worker sert alors la page de secours `/hors-ligne`, précachée à l'installation (SCRUM-50). Questions d'entraînement hors ligne : SCRUM-48.
