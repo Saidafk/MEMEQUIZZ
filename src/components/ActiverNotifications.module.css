@@ -1,14 +1,12 @@
+/* `contents` : le bouton se place dans la rangée de liens de l'accueil ; le message passe dessous. */
 .bloc {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--espace-2);
+  display: contents;
 }
 
 .bouton {
   padding: var(--espace-2);
   font-family: var(--police-texte);
-  font-size: var(--taille-m);
+  font-size: var(--taille-s);
   color: var(--couleur-encre);
   text-decoration: underline;
   background: none;
@@ -27,6 +25,8 @@
 }
 
 .message {
+  order: 1;
+  flex-basis: 100%;
   font-weight: 700;
   text-align: center;
 }

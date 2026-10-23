@@ -55,9 +55,18 @@
   color: var(--couleur-encre-douce);
 }
 
+/* Liens secondaires regroupés sur une ligne (retour à la ligne si l'écran est étroit). */
+.liens {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espace-1) var(--espace-4);
+}
+
 .lien {
-  align-self: center;
   padding: var(--espace-2);
+  font-size: var(--taille-s);
   text-decoration: underline;
 }
 

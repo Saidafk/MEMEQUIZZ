@@ -58,7 +58,7 @@ export function ActiverNotifications() {
         onClick={() => void activer()}
         disabled={etat === "en_cours" || etat === "actif"}
       >
-        Me rappeler le quiz du jour
+        Rappel du quiz
       </button>
       <p role="status" className={styles.message}>
         {etat === "actif" && "✓ Rappels activés sur cet appareil."}

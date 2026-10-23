@@ -96,16 +96,21 @@ export function FormulairePartie() {
       >
         {envoi ? "Démarrage…" : "C'est parti →"}
       </button>
-      <Link href="/classement" className={styles.lien}>
-        Voir le classement
-      </Link>
-      <Link href="/entrainement" className={styles.lien}>
-        S&apos;entraîner (sans score, même hors ligne)
-      </Link>
-      <Link href="/credits" className={styles.lien}>
-        Crédits des images
-      </Link>
-      <ActiverNotifications />
+      <nav aria-label="Autres pages" className={styles.liens}>
+        <Link href="/classement" className={styles.lien}>
+          Classement
+        </Link>
+        <Link href="/entrainement" className={styles.lien}>
+          S&apos;entraîner
+        </Link>
+        <Link href="/credits" className={styles.lien}>
+          Crédits
+        </Link>
+        <ActiverNotifications />
+        <Link href="/admin" className={styles.lien}>
+          Espace admin
+        </Link>
+      </nav>
     </form>
   );
 }
