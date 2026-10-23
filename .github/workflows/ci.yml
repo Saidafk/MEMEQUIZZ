@@ -15,6 +15,20 @@ jobs:
     name: Lint, types et tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: memequizz
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: memequizz_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U memequizz -d memequizz_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -36,6 +50,19 @@ jobs:
 
       - name: Tests
         run: bun run test
+
+      - name: Tests d'intégration (migration et seed sur PostgreSQL)
+        env:
+          TEST_DATABASE_URL: postgres://memequizz:ci@localhost:5432/memequizz_test
+        run: |
+          # Sans pipefail, l'échec de bun serait masqué par le code de sortie de tee.
+          set -o pipefail
+          bun run db:test 2>&1 | tee integration.log
+          # Un test sauté passerait sans rien vérifier : on exige qu'aucun ne le soit.
+          if grep -qE '^ *[0-9]+ skip' integration.log; then
+            echo "Des tests d'intégration ont été sautés."
+            exit 1
+          fi
 
   docker:
     name: Image Docker
