@@ -266,6 +266,33 @@ describe.skipIf(!BASE_TEST_ACTIVE)("enregistrer une réponse (SCRUM-40)", () => 
     expect(e.score).toBe(0);
   });
 
+  test("partie close pendant l'enregistrement : la réponse est annulée avec son score", async () => {
+    const p = await creerPartie();
+    await envoyer(p, 1);
+    // La réponse lit « partie en cours », puis son UPDATE du score attend le verrou de la partie.
+    // Pendant ce temps la partie est close : rien ne doit rester (ni réponse, ni point).
+    let relacher: () => void = () => {};
+    const attente = new Promise<void>((resolve) => {
+      relacher = resolve;
+    });
+    const cloture = client.begin(async (tx) => {
+      await tx`select 1 from partie where id_partie = ${p.id_partie} for update`;
+      await attente;
+      await tx`update partie set statut = 'terminee', termine_le = now() where id_partie = ${p.id_partie}`;
+    });
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const appel = repondre(p, 1, p.memes[0] as number);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    relacher();
+    await cloture;
+
+    expect(await appel).toEqual({ statut: "conflit", raison: "partie_terminee" });
+    const e = await etat(p, 1);
+    expect(e.repondu_le).toBeNull();
+    expect(e.points).toBe(0);
+    expect(e.score).toBe(0);
+  });
+
   test("partie terminée : conflit", async () => {
     const p = await creerPartie("terminee");
     expect(await repondre(p, 1, p.memes[0] as number)).toEqual({

@@ -1,4 +1,4 @@
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { TransactionRollbackError, and, eq, isNull, sql } from "drizzle-orm";
 
 import { partie, partieQuestion } from "@/db/schema";
 import {
@@ -55,6 +55,7 @@ export async function enregistrerReponse(
 
   // Délai mesuré par la base entre l'envoi de la question et maintenant. Au-delà de la durée plus la
   // marge de latence, la réponse arrive trop tard : zéro point, mais la correction est donnée.
+  // Le délai est lu avec la ligne, quelques millisecondes avant l'UPDATE : écart négligeable.
   const delaiMs = Math.round(ligne.ecoule_ms ?? 0);
   const enRetard = delaiMs > (DUREE_QUESTION_S + GRACE_REPONSE_S) * 1000;
   const juste = id_meme !== null && id_meme === ligne.id_meme;
@@ -62,27 +63,36 @@ export async function enregistrerReponse(
 
   // `repondu_le IS NULL` rend l'enregistrement atomique : si deux réponses arrivent ensemble, une
   // seule est comptée, et le score n'est ajouté qu'une fois (même transaction).
-  const scoreTotal = await db.transaction(async (tx) => {
-    const enregistree = await tx
-      .update(partieQuestion)
-      .set({ reponse_id_meme: id_meme, repondu_le: sql`now()`, points })
-      .where(
-        and(
-          eq(partieQuestion.id_partie, id_partie),
-          eq(partieQuestion.rang, rang),
-          isNull(partieQuestion.repondu_le),
-        ),
-      )
-      .returning({ rang: partieQuestion.rang });
-    if (enregistree.length === 0) return null;
+  const scoreTotal = await db
+    .transaction(async (tx) => {
+      const enregistree = await tx
+        .update(partieQuestion)
+        .set({ reponse_id_meme: id_meme, repondu_le: sql`now()`, points })
+        .where(
+          and(
+            eq(partieQuestion.id_partie, id_partie),
+            eq(partieQuestion.rang, rang),
+            isNull(partieQuestion.repondu_le),
+          ),
+        )
+        .returning({ rang: partieQuestion.rang });
+      if (enregistree.length === 0) return null;
 
-    const [maj] = await tx
-      .update(partie)
-      .set({ score_total: sql`${partie.score_total} + ${points}` })
-      .where(eq(partie.id_partie, id_partie))
-      .returning({ score_total: partie.score_total });
-    return maj?.score_total ?? null;
-  });
+      // Pas de point ajouté à une partie close entre la lecture et ici (fin de partie, SCRUM-42) :
+      // dans ce cas on annule aussi la réponse, pour qu'elle ne soit pas enregistrée sans son score.
+      const [maj] = await tx
+        .update(partie)
+        .set({ score_total: sql`${partie.score_total} + ${points}` })
+        .where(and(eq(partie.id_partie, id_partie), eq(partie.statut, "en_cours")))
+        .returning({ score_total: partie.score_total });
+      if (!maj) return tx.rollback();
+      return maj.score_total;
+    })
+    .catch((erreur: unknown) => {
+      if (erreur instanceof TransactionRollbackError) return "partie_close" as const;
+      throw erreur;
+    });
+  if (scoreTotal === "partie_close") return { statut: "conflit", raison: "partie_terminee" };
   if (scoreTotal === null) return { statut: "conflit", raison: "question_deja_repondue" };
 
   return {
