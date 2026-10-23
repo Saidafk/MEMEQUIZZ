@@ -76,8 +76,10 @@ export const partieQuestion = pgTable(
     id_meme: integer("id_meme")
       .notNull()
       .references(() => meme.id_meme, { onDelete: "restrict" }),
-    choix_ids: jsonb("choix_ids").$type<number[]>().notNull(),
-    envoye_le: timestamp("envoye_le", { withTimezone: true }).notNull().defaultNow(),
+    // Remplis ensemble au premier accès à la question (4 choix tirés par le serveur, heure d'envoi
+    // qui sert au calcul des points) : tant qu'elle n'a pas été servie, les deux sont NULL.
+    choix_ids: jsonb("choix_ids").$type<number[]>(),
+    envoye_le: timestamp("envoye_le", { withTimezone: true }),
     reponse_id_meme: integer("reponse_id_meme").references(() => meme.id_meme, {
       onDelete: "set null",
     }),
@@ -89,6 +91,14 @@ export const partieQuestion = pgTable(
     index("partie_question_id_meme_idx").on(table.id_meme),
     index("partie_question_reponse_id_meme_idx").on(table.reponse_id_meme),
     check("partie_question_rang_check", sql`${table.rang} >= 1`),
+    check(
+      "partie_question_choix_check",
+      sql`${table.choix_ids} is null or jsonb_array_length(${table.choix_ids}) = 4`,
+    ),
+    check(
+      "partie_question_envoi_check",
+      sql`(${table.choix_ids} is null) = (${table.envoye_le} is null)`,
+    ),
     check("partie_question_points_check", sql`${table.points} >= 0`),
   ],
 );
