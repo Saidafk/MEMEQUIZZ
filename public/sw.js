@@ -1,5 +1,6 @@
 // Service worker MEMEQUIZZ. Stratégie de cache : docs/strategie-cache.md.
-const VERSION = "v1";
+// v2 : le changement de version supprime les anciens caches, qui contenaient des pages /admin.
+const VERSION = "v2";
 const CACHE_STATIQUE = `memequizz-statique-${VERSION}`;
 const CACHE_PAGES = `memequizz-pages-${VERSION}`;
 const CACHES = [CACHE_STATIQUE, CACHE_PAGES];
@@ -74,6 +75,9 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (url.pathname.startsWith("/api/")) return; // données de jeu : toujours le réseau
+  // L'administration n'est jamais mise en cache : une page affichée une fois connecté ne doit pas
+  // rester lisible hors ligne ou sur un appareil partagé (SCRUM-98).
+  if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) return;
 
   if (estStatique(url)) {
     event.respondWith(cacheDabord(event, requete));
