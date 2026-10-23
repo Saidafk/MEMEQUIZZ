@@ -1,0 +1,81 @@
+.bouton {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--espace-1);
+  min-height: 92px;
+  width: 100%;
+  padding: var(--espace-3);
+  text-align: left;
+  font-family: var(--police-texte);
+  font-size: var(--taille-s);
+  line-height: 1.2;
+  color: var(--couleur-encre);
+  background: var(--couleur-papier);
+  border: var(--trait);
+  border-radius: var(--rayon-croquis);
+  box-shadow: var(--ombre-croquis);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.bouton:hover:not([aria-disabled="true"], :disabled) {
+  background: var(--couleur-surligneur);
+}
+
+.bouton:active:not([aria-disabled="true"], :disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 2px 0 var(--couleur-encre);
+}
+
+.lettre {
+  font-family: var(--police-titre);
+  font-weight: 700;
+}
+
+.icone {
+  position: absolute;
+  top: var(--espace-2);
+  right: var(--espace-3);
+  font-size: var(--taille-l);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.correct {
+  color: var(--couleur-succes);
+  background: var(--couleur-succes-fond);
+  cursor: default;
+}
+
+.faux {
+  background: var(--couleur-erreur-fond);
+  cursor: default;
+}
+
+.faux .icone {
+  color: var(--couleur-erreur);
+}
+
+.faux .libelle {
+  text-decoration: line-through;
+  text-decoration-color: var(--couleur-erreur);
+  text-decoration-thickness: 3px;
+}
+
+.desactive {
+  color: var(--couleur-desactive);
+  border-color: var(--couleur-desactive-trait);
+  box-shadow: none;
+  cursor: default;
+}
+
+.masque {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
