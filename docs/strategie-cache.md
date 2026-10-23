@@ -7,6 +7,7 @@ Fichier : [public/sw.js](../public/sw.js), enregistré en production par `Enregi
 | `/_next/static/*`, `/icons/*`, `/memes/*` | Cache d'abord, réseau si absent                    | `memequizz-statique-<version>` |
 | Navigations (pages HTML)                  | Réseau d'abord, copie en cache si hors ligne       | `memequizz-pages-<version>`    |
 | `/api/entrainement`                       | Réseau d'abord, dernier lot en cache si hors ligne | `memequizz-pages-<version>`    |
+| `/admin` et `/admin/*`                    | Jamais interceptée                                 | aucun                          |
 | Autres `/api/*` et toute requête non GET  | Jamais interceptée                                 | aucun                          |
 | Autres origines                           | Jamais interceptée                                 | aucun                          |
 
