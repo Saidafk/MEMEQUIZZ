@@ -32,6 +32,18 @@ comparée au SVG correspondant de ce dossier. Données fictives (`src/lib/donnee
 - **Textes de démonstration** : noms de mèmes, fiche (`Origine : [à compléter]`, `Source : [à définir]`) et
   classement sont fictifs jusqu'à la v0.3 et SCRUM-34.
 - **Accueil** : le champ pseudo n'est pas encore transmis à la partie (aucune base ni session avant la v0.3).
+  Il n'y a donc volontairement pas de `<form>` : le clic sur « C'est parti » et la touche Entrée se comportent pareil.
+- **Résultat** : `/resultat/[partieId]` affiche toujours le résultat de démonstration (`RESULTAT_DEMO`) ; le score
+  réellement obtenu pendant la partie n'est pas transmis avant la v0.3 (pas de base).
+- **Classement** : l'onglet « Depuis toujours » est un lien vers la même page, conservé pour fidélité à la maquette.
+- **Chrono** : décompte par `setInterval`, qui dérive quand l'onglet est en arrière-plan ; temps serveur en v0.3.
+
+## Corrections après relecture (code-reviewer)
+
+- Podium : ordre de lecture 1er, 2e, 3e dans le DOM (disposition visuelle 2-1-3 faite en CSS), rang annoncé en texte masqué.
+- `/jeu` : `<h1>` masqué ajouté (h1 → h2 → h3), focus rendu à l'intitulé à la question suivante.
+- Zone `role="status"` toujours montée pour annoncer le résultat de façon fiable ; « 1 seconde / 2 secondes » accordé.
+- Calcul du score extrait dans `src/lib/score.ts` et couvert par `tests/unit/score.test.ts`.
 
 ## À vérifier à la main
 

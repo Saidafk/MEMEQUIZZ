@@ -1,8 +1,8 @@
-import type { LettreReponse } from "@/components/BoutonReponse";
+export type LettreReponse = "A" | "B" | "C" | "D";
 
 export type Choix = { lettre: LettreReponse; libelle: string };
 
-export type FicheMeme = {
+export type FicheMemeDonnees = {
   nom: string;
   origine: string;
   description: string;
@@ -13,7 +13,7 @@ export type Question = {
   id: number;
   choix: Choix[];
   bonneReponse: LettreReponse;
-  fiche: FicheMeme;
+  fiche: FicheMemeDonnees;
 };
 
 export type Joueur = { pseudo: string; score: number };

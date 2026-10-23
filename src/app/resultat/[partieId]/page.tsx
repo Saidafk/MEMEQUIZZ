@@ -53,7 +53,7 @@ export default function PageResultat() {
                 value={i + 1}
               >
                 <span aria-hidden="true">{juste ? "✓" : "✗"}</span>
-                <span className={styles.masque}>
+                <span className="masque-visuel">
                   Question {i + 1} : {juste ? "bonne" : "mauvaise"} réponse
                 </span>
               </li>

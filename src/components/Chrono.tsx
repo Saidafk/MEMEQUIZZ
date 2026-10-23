@@ -1,6 +1,6 @@
+import { DUREE_QUESTION_S } from "@/lib/score";
 import styles from "./Chrono.module.css";
 
-export const DUREE_QUESTION_S = 15;
 const SEUIL_URGENT_S = 5;
 
 type Props = {

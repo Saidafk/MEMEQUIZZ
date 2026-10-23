@@ -34,6 +34,19 @@
   border-radius: var(--rayon-croquis);
 }
 
+/* Le DOM est dans l'ordre 1er, 2e, 3e ; on affiche 2e, 1er, 3e. */
+.rang2 {
+  order: 1;
+}
+
+.rang1 {
+  order: 2;
+}
+
+.rang3 {
+  order: 3;
+}
+
 .rang1 .bloc {
   height: 100px;
   background: var(--couleur-surligneur);

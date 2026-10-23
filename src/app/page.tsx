@@ -25,13 +25,13 @@ export default function Accueil() {
         <div className={styles.dessin}>
           <Bonhomme />
         </div>
-        <form className={styles.formulaire} action="/jeu">
+        {/* Pas de <form> : le pseudo n'est pas encore transmis (ni base ni session avant la v0.3). */}
+        <div className={styles.formulaire}>
           <label htmlFor="pseudo" className={styles.etiquette}>
             Ton pseudo
           </label>
           <input
             id="pseudo"
-            name="pseudo"
             className={styles.champ}
             placeholder="ex. Gribouille42"
             autoComplete="nickname"
@@ -41,7 +41,7 @@ export default function Accueil() {
           <Link href="/classement" className={styles.lien}>
             Voir le classement
           </Link>
-        </form>
+        </div>
       </div>
     </Feuille>
   );

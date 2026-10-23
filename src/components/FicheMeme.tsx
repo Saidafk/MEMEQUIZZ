@@ -1,7 +1,7 @@
-import type { FicheMeme as Fiche } from "@/lib/types";
+import type { FicheMemeDonnees } from "@/lib/types";
 import styles from "./FicheMeme.module.css";
 
-export function FicheMeme({ fiche }: { fiche: Fiche }) {
+export function FicheMeme({ fiche }: { fiche: FicheMemeDonnees }) {
   return (
     <article className={styles.fiche}>
       <h3 className={styles.nom}>
