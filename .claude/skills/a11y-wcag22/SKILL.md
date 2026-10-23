@@ -27,7 +27,7 @@ Objectif : une partie jouable au clavier seul et au lecteur d'écran, avec un sc
 
 - [ ] Contraste texte ≥ 4,5:1 (3:1 pour le gros texte et les composants d'interface).
 - [ ] Information jamais portée par la couleur seule (bonne/mauvaise réponse : icône ou texte en plus).
-- [ ] Images : `alt` utile, ou `alt=""` si décorative ; les mèmes ont un texte alternatif décrivant leur contenu.
+- [ ] Images : `alt` utile, ou `alt=""` si décorative ; les mèmes ont un texte alternatif générique avant la réponse (un alt qui nomme le mème donnerait la solution), puis descriptif après (voir le skill [meme-data](../meme-data/SKILL.md)).
 - [ ] Texte agrandi à 200 % et reflow à 320 px de large sans perte ni défilement horizontal.
 
 **Cibles et interactions (2.5.7, 2.5.8, 3.3.1, 3.3.2)**

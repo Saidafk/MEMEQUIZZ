@@ -22,9 +22,12 @@ Cible : environ 40 mèmes actifs (SCRUM-37). Mieux vaut 30 mèmes sûrs que 40 d
 Pour chaque image, sur sa page Wikimedia Commons :
 
 - relever la **licence** exacte (modèle `{{PD-…}}`, `CC0`, `CC BY x.y`, `CC BY-SA x.y`) et la mapper sur l'enum `licence` : `domaine_public`, `cc0`, `cc_by`, `cc_by_sa` ;
-- relever l'**auteur** tel qu'affiché (obligatoire pour CC BY et CC BY-SA, renseigné aussi pour le domaine public quand il est connu) ;
+- relever l'**auteur** tel qu'affiché (obligatoire pour CC BY et CC BY-SA) ; la colonne est `NOT NULL` : pour une image du domaine public dont l'auteur est inconnu, saisir « Auteur inconnu » ;
 - copier l'URL **de la page du fichier** (pas du fichier brut) dans `source_url` ;
-- refuser si la page porte un bandeau de suppression, de doute sur la licence ou d'œuvre dérivée non libre (le mème dérive souvent d'une photo ou d'un film protégé : seule la **base** libre compte, pas le mème célèbre).
+- refuser si la page porte un bandeau de suppression ou de doute sur la licence ;
+- refuser si la page indique un élément protégé (film, personnage, texte, œuvre d'un tiers), même si le fichier affiche une licence libre : seule compte la licence de l'image elle-même, pas la célébrité du mème.
+
+Pour une **page Wikipédia FR** (texte de `origine`), la source se cite via `source_url` ou dans la PR ; ses images se vérifient quand même sur leur page Commons.
 
 Ne jamais déduire une licence de « ça circule partout sur Internet » ni la compléter de mémoire. En cas de doute : rejet et note dans la PR.
 
@@ -32,26 +35,26 @@ Ne jamais déduire une licence de « ça circule partout sur Internet » ni la c
 
 Chaque fiche remplit les colonnes de `meme` :
 
-| Champ           | Règle                                                                                           |
-| --------------- | ----------------------------------------------------------------------------------------------- |
-| `slug`          | minuscules, sans accents, tirets, unique (`gars-qui-hesite`) ; ne change jamais une fois publié |
-| `nom`           | nom d'usage en français, tel qu'affiché comme bonne réponse (120 caractères max)                |
-| `annee_origine` | entier, ou vide si inconnu ; jamais une estimation non sourcée                                  |
-| `origine`       | 1 à 2 phrases (500 caractères max) : d'où vient le mème, **reformulées** depuis Wikipédia FR    |
-| `source_url`    | page Commons du fichier (voir §2)                                                               |
-| `image_chemin`  | `/memes/<slug>.webp`                                                                            |
-| `auteur`        | auteur de l'image                                                                               |
-| `licence`       | valeur de l'enum, jamais vide                                                                   |
-| `actif`         | `true` seulement quand tout ce qui précède est vérifié                                          |
+| Champ           | Règle                                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `slug`          | minuscules, sans accents, tirets, unique, 80 caractères max (`gars-qui-hesite`) ; ne change jamais une fois publié |
+| `nom`           | nom d'usage en français, tel qu'affiché comme bonne réponse (120 caractères max)                                   |
+| `annee_origine` | entier, ou vide si inconnu ; jamais une estimation non sourcée                                                     |
+| `origine`       | 1 à 2 phrases (500 caractères max) : d'où vient le mème, **reformulées** depuis Wikipédia FR                       |
+| `source_url`    | page Commons du fichier (voir §2), 500 caractères max                                                              |
+| `image_chemin`  | `/memes/<slug>.webp`, 200 caractères max                                                                           |
+| `auteur`        | auteur de l'image, 200 caractères max, jamais vide (« Auteur inconnu » si besoin)                                  |
+| `licence`       | valeur de l'enum, jamais vide                                                                                      |
+| `actif`         | `true` seulement quand tout ce qui précède est vérifié                                                             |
 
-Rédaction de `origine` : reformuler avec ses propres mots plutôt que copier (le texte Wikipédia est en CC BY-SA), rester factuel, sans date ni détail non confirmé par la source. Pas de spoiler : le texte ne doit pas être affiché avant la réponse (voir §5).
+Rédaction de `origine` : reformuler avec ses propres mots plutôt que copier (le texte Wikipédia est en CC BY-SA ; la reformulation ne remplace pas la citation de la source, déjà affichée via `source_url`), rester factuel, sans date ni détail non confirmé par la source. Pas de spoiler : le texte ne doit pas être affiché avant la réponse (voir §5).
 
 ## 4. Fichiers image
 
 - Format **WebP**, côté le plus long **800 px max**, **100 Ko max** (PWA et chargement rapide) ; dossier `public/memes/`, nom = `<slug>.webp`.
 - L'image est une **copie locale** de l'original libre ; ne jamais hotlinker.
-- Ne pas retoucher l'image au point d'en faire une œuvre dérivée non libre ; un recadrage ou une réduction suffit.
-- Le seed est rejouable (upsert sur `slug`) : modifier une fiche = modifier ses données puis `bun run db:seed`.
+- Un recadrage, une réduction ou la conversion en WebP sont des **adaptations** : pour une image CC BY-SA, elle reste sous CC BY-SA et la modification doit être indiquée (mention « image recadrée / convertie » dans la page Crédits). Pas d'autre retouche.
+- Le seed est rejouable (upsert sur `slug`), mais il ne met à jour aujourd'hui que `nom`, `source_url`, `image_chemin`, `auteur` et `licence`. `annee_origine`, `origine` et `actif` ne sont pas encore portés par le seed : l'étendre dans SCRUM-37/38 avant d'y mettre les vraies fiches.
 
 ## 5. Accessibilité et affichage
 
