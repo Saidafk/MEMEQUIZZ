@@ -1,0 +1,1 @@
+ALTER TYPE "public"."licence_image" ADD VALUE 'non_verifiee';

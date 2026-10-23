@@ -1,4 +1,4 @@
-import type { LICENCES_IMAGE } from "../schema";
+import type { LICENCES_LIBRES } from "../schema";
 
 // Liste figée des mèmes du jeu (SCRUM-37). Chaque image a été vérifiée sur sa page Wikimedia
 // Commons le 2026-10-23 ; chaque texte (SCRUM-38) est une reformulation de l'article Wikipédia
@@ -13,7 +13,7 @@ export type FicheMeme = {
   fichier_commons: string; // titre du fichier, sans le préfixe « File: »
   source_url: string; // page du fichier sur Commons
   auteur: string;
-  licence: (typeof LICENCES_IMAGE)[number];
+  licence: (typeof LICENCES_LIBRES)[number];
 };
 
 type Texte = { annee?: number; origine: string; article: string };

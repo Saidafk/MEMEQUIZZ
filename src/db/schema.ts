@@ -15,7 +15,11 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const STATUTS_PARTIE = ["en_cours", "terminee", "abandonnee"] as const;
-export const LICENCES_IMAGE = ["domaine_public", "cc0", "cc_by", "cc_by_sa"] as const;
+// Licences libres : seules acceptées pour la liste curée (seed) et le backoffice.
+export const LICENCES_LIBRES = ["domaine_public", "cc0", "cc_by", "cc_by_sa"] as const;
+// « non_verifiee » : images importées en masse (memegen.link, SCRUM-97) dont les droits n'ont pas
+// été vérifiés. Ne jamais l'utiliser pour déclarer une image libre.
+export const LICENCES_IMAGE = [...LICENCES_LIBRES, "non_verifiee"] as const;
 
 export const statutPartie = pgEnum("statut_partie", STATUTS_PARTIE);
 export const licenceImage = pgEnum("licence_image", LICENCES_IMAGE);

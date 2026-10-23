@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { and, asc, count, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 
-import { LICENCES_IMAGE, meme } from "@/db/schema";
+import { LICENCES_IMAGE, LICENCES_LIBRES, meme } from "@/db/schema";
 import { convertirEnWebp } from "@/lib/image-meme";
 import type { BaseDonnees } from "@/lib/questions";
 
@@ -44,7 +44,7 @@ export const ficheMemeSchema = z.strictObject({
   auteur: z
     .preprocess(vide, z.string().trim().max(200).optional())
     .transform((v) => v ?? "Auteur inconnu"),
-  licence: z.enum(LICENCES_IMAGE, {
+  licence: z.enum(LICENCES_LIBRES, {
     error: "Choisis une licence libre : domaine public, CC0, CC BY ou CC BY-SA.",
   }),
   // Facultative : sans source, chaîne vide (l'affichage indique « source non disponible »).
@@ -77,12 +77,22 @@ export function creerSlug(nom: string): string {
 
 export type ResultatMeme = { ok: true; id_meme: number } | { ok: false; erreurs: string[] };
 
+// Fiche lue pour une modification : la licence peut rester « non vérifiée » (mème importé).
+export type FicheSaisie = Omit<FicheMeme, "licence"> & { licence: (typeof LICENCES_IMAGE)[number] };
+
+// `garderNonVerifiee` : seulement pour modifier un mème déjà « non vérifiée » (SCRUM-97), afin de
+// pouvoir changer son nom sans devoir déclarer une licence libre. On ne peut jamais choisir
+// « non_verifiee » pour un mème libre, ni à la création.
 export function lireFiche(
   formData: FormData,
-): { ok: true; fiche: FicheMeme } | { ok: false; erreurs: string[] } {
+  garderNonVerifiee = false,
+): { ok: true; fiche: FicheSaisie } | { ok: false; erreurs: string[] } {
   const brut: Record<string, FormDataEntryValue | null> = {};
   for (const champ of Object.keys(ficheMemeSchema.shape)) brut[champ] = formData.get(champ);
-  const resultat = ficheMemeSchema.safeParse(brut);
+  const schema = garderNonVerifiee
+    ? ficheMemeSchema.extend({ licence: z.enum(LICENCES_IMAGE, { error: "Licence invalide." }) })
+    : ficheMemeSchema;
+  const resultat = schema.safeParse(brut);
   if (resultat.success) return { ok: true, fiche: resultat.data };
   return { ok: false, erreurs: resultat.error.issues.map((i) => i.message) };
 }
@@ -145,10 +155,10 @@ export async function modifierMeme(
   id: number,
   formData: FormData,
 ): Promise<ResultatMeme> {
-  const lue = lireFiche(formData);
-  if (!lue.ok) return lue;
   const [actuel] = await db.select().from(meme).where(eq(meme.id_meme, id));
   if (!actuel) return { ok: false, erreurs: ["Mème introuvable."] };
+  const lue = lireFiche(formData, actuel.licence === "non_verifiee");
+  if (!lue.ok) return lue;
 
   const image = await lireImage(formData.get("image"));
   if (!image.ok) return { ok: false, erreurs: [image.erreur] };

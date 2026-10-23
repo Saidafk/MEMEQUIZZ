@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import boutons from "@/components/BoutonLien.module.css";
-import { LICENCES_IMAGE } from "@/db/schema";
+import { LICENCES_LIBRES } from "@/db/schema";
 import { libelleLicence } from "@/lib/licences";
 import type { EtatFormulaire } from "./actions";
 import styles from "./admin.module.css";
@@ -94,7 +94,10 @@ export function FormulaireMeme({ action, valeurs, imageObligatoire }: Props) {
         <option value="" disabled>
           Choisir…
         </option>
-        {LICENCES_IMAGE.map((l) => (
+        {valeurs?.licence === "non_verifiee" && (
+          <option value="non_verifiee">{libelleLicence("non_verifiee")} (inchangée)</option>
+        )}
+        {LICENCES_LIBRES.map((l) => (
           <option key={l} value={l}>
             {libelleLicence(l)}
           </option>
