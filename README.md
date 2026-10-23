@@ -35,6 +35,21 @@ docker compose up
 
 Sans Docker : `bun install` puis `bun run dev`. L'app est sur http://localhost:3000.
 
+## Base de données locale
+
+PostgreSQL tourne dans Docker (service `db`), l'app hors Docker lit `DATABASE_URL` dans `.env`.
+
+```
+bun run db:up      # démarre PostgreSQL et attend qu'il soit prêt
+bun run db:reset   # recrée la base vide : migrations + jeu de données initial
+bun run db:seed    # rejoue seulement le seed (sans doublon)
+```
+
+- Après un changement de `src/db/schema.ts` : `bun run db:generate`, puis relire et committer le SQL dans `drizzle/`.
+- `db:reset` supprime les données et refuse toute base qui n'est pas locale.
+- Test de migration et de seed : créer la base `memequizz_test` une fois
+  (`docker compose exec db createdb -U memequizz memequizz_test`), décommenter `TEST_DATABASE_URL` dans `.env`, puis `bun run db:test`.
+
 ## Documentation
 
 - [Fiche de présentation](docs/fiche-presentation-memequizz.md)
