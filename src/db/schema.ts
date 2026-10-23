@@ -9,6 +9,7 @@ import {
   pgTable,
   primaryKey,
   serial,
+  text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -106,7 +107,18 @@ export const partieQuestion = pgTable(
   ],
 );
 
+// Abonnements aux notifications push (SCRUM-49). L'endpoint identifie l'appareil ; les clés
+// servent à chiffrer la notification pour lui. Aucun lien avec un joueur : pas de compte.
+export const abonnementPush = pgTable("abonnement_push", {
+  id_abonnement: serial("id_abonnement").primaryKey(),
+  endpoint: text("endpoint").notNull().unique(),
+  cle_p256dh: varchar("cle_p256dh", { length: 200 }).notNull(),
+  cle_auth: varchar("cle_auth", { length: 100 }).notNull(),
+  cree_le: timestamp("cree_le", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type Joueur = typeof joueur.$inferSelect;
 export type Meme = typeof meme.$inferSelect;
 export type Partie = typeof partie.$inferSelect;
 export type PartieQuestion = typeof partieQuestion.$inferSelect;
+export type AbonnementPush = typeof abonnementPush.$inferSelect;

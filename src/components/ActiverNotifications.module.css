@@ -1,0 +1,32 @@
+.bloc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espace-2);
+}
+
+.bouton {
+  padding: var(--espace-2);
+  font-family: var(--police-texte);
+  font-size: var(--taille-m);
+  color: var(--couleur-encre);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.bouton:disabled {
+  color: var(--couleur-desactive);
+  cursor: default;
+}
+
+.bouton:focus-visible {
+  outline: 3px solid var(--couleur-focus);
+  outline-offset: 3px;
+}
+
+.message {
+  font-weight: 700;
+  text-align: center;
+}

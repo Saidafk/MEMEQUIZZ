@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useId, useRef, useState, useSyncExternalStore } from "react";
+import { ActiverNotifications } from "@/components/ActiverNotifications";
 import boutons from "@/components/BoutonLien.module.css";
 import { pseudoSchema } from "@/lib/validation";
 import styles from "./page.module.css";
@@ -101,6 +102,7 @@ export function FormulairePartie() {
       <Link href="/entrainement" className={styles.lien}>
         S&apos;entraîner (sans score, même hors ligne)
       </Link>
+      <ActiverNotifications />
     </form>
   );
 }
