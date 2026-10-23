@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   description: "Les meilleurs scores du quiz de mèmes.",
 };
 
-// Le classement change à chaque partie terminée : il est lu à chaque requête, sous <Suspense>
-// (Cache Components). Les pseudos sont des nœuds texte React : échappés, jamais interprétés comme du HTML.
+// Rendu serveur à chaque requête (SSR, SCRUM-52, voir docs/strategies-de-rendu.md) : le classement
+// change à chaque partie terminée, il est lu sous <Suspense> (Cache Components). Les pseudos sont des nœuds texte React : échappés, jamais interprétés comme du HTML.
 async function Classement({ searchParams }: PageProps<"/classement">) {
   const periode: Periode = (await searchParams).periode === "toujours" ? "toujours" : "aujourdhui";
   const jeton = (await cookies()).get(NOM_COOKIE_SESSION)?.value;
