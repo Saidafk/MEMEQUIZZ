@@ -1,0 +1,50 @@
+/* La feuille occupe toute la largeur : la marge rouge reste à gauche de la page. */
+.feuille {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  padding: var(--espace-8) var(--espace-6) var(--espace-8) calc(var(--espace-12) + var(--espace-4));
+}
+
+.feuille::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--espace-8);
+  width: 2px;
+  background: var(--couleur-marge);
+}
+
+/* Le contenu est centré dans la colonne ; la largeur dépend du type d'écran. */
+.contenu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-4);
+  min-height: 100%;
+  margin: 0 auto;
+}
+
+.etroite .contenu,
+.large .contenu {
+  max-width: 560px;
+}
+
+@media (min-width: 1024px) {
+  .feuille {
+    padding-left: 160px;
+    padding-right: 120px;
+  }
+
+  .feuille::before {
+    left: 120px;
+  }
+
+  .etroite .contenu {
+    max-width: 760px;
+  }
+
+  .large .contenu {
+    max-width: 1160px;
+  }
+}

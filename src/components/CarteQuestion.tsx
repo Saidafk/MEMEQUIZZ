@@ -2,7 +2,8 @@ import { useId, type ReactNode } from "react";
 import styles from "./CarteQuestion.module.css";
 
 type Props = {
-  intitule?: string;
+  // `null` : seule l'image est affichée, l'intitulé est rendu à part par la page (mise en page bureau).
+  intitule?: string | null;
   // Image du mème ; absente tant que la question des images n'est pas tranchée (SCRUM-34).
   image?: ReactNode;
 };
@@ -10,7 +11,11 @@ type Props = {
 export function CarteQuestion({ intitule = "C'est quel mème ?", image }: Props) {
   const idIntitule = useId();
   return (
-    <section className={styles.carte} aria-labelledby={idIntitule}>
+    <section
+      className={styles.carte}
+      aria-labelledby={intitule === null ? undefined : idIntitule}
+      aria-label={intitule === null ? "Image du mème" : undefined}
+    >
       <div className={styles.cadre}>
         {image ?? (
           <div className={styles.vide}>
@@ -33,9 +38,11 @@ export function CarteQuestion({ intitule = "C'est quel mème ?", image }: Props)
           </div>
         )}
       </div>
-      <h2 id={idIntitule} className={styles.intitule}>
-        {intitule}
-      </h2>
+      {intitule !== null && (
+        <h2 id={idIntitule} className={styles.intitule}>
+          {intitule}
+        </h2>
+      )}
     </section>
   );
 }

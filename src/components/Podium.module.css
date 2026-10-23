@@ -1,0 +1,48 @@
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--espace-3);
+  list-style: none;
+}
+
+.marche {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espace-1);
+  text-align: center;
+  font-size: var(--taille-xs);
+  overflow-wrap: anywhere;
+}
+
+.points {
+  color: var(--couleur-encre-2);
+}
+
+.bloc {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  padding-top: var(--espace-2);
+  font-family: var(--police-titre);
+  font-size: var(--taille-l);
+  font-weight: 700;
+  background: var(--couleur-papier);
+  border: var(--trait);
+  border-radius: var(--rayon-croquis);
+}
+
+.rang1 .bloc {
+  height: 100px;
+  background: var(--couleur-surligneur);
+}
+
+.rang2 .bloc {
+  height: 70px;
+}
+
+.rang3 .bloc {
+  height: 56px;
+}
