@@ -1,0 +1,1 @@
+ALTER TABLE "meme" ADD COLUMN "article_url" varchar(500);

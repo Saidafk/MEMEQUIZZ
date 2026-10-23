@@ -47,6 +47,8 @@ Chaque fiche remplit les colonnes de `meme` :
 | `licence`       | valeur de l'enum, jamais vide                                                                                      |
 | `actif`         | `true` seulement quand tout ce qui précède est vérifié                                                             |
 
+`article_url` : l'article Wikipédia dont `origine` est tirée (FR de préférence ; à défaut EN, à signaler dans la PR ; vide si aucun article n'existe, avec `origine` et `annee_origine` vides eux aussi). Il doit être en `https` et sur `wikipedia.org` : la correction n'affiche le lien que dans ce cas. Ce n'est pas `source_url`, qui reste la page Commons de l'image. Vérifier que l'article parle bien du mème et pas seulement d'un sujet voisin, sinon le dire dans le tableau de `docs/selection-memes.md`.
+
 Rédaction de `origine` : reformuler avec ses propres mots plutôt que copier (le texte Wikipédia est en CC BY-SA ; la reformulation ne remplace pas la citation de la source, déjà affichée via `source_url`), rester factuel, sans date ni détail non confirmé par la source. Pas de spoiler : le texte ne doit pas être affiché avant la réponse (voir §5).
 
 ## 4. Fichiers image

@@ -39,6 +39,9 @@ export const meme = pgTable(
     annee_origine: integer("annee_origine"),
     origine: varchar("origine", { length: 500 }),
     source_url: varchar("source_url", { length: 500 }).notNull(),
+    // Article Wikipédia qui documente le mème (texte de `origine`) ; distinct de `source_url`, la
+    // page Commons de l'image. Vide quand aucun article n'existe.
+    article_url: varchar("article_url", { length: 500 }),
     image_chemin: varchar("image_chemin", { length: 200 }).notNull(),
     auteur: varchar("auteur", { length: 200 }).notNull(),
     licence: licenceImage("licence").notNull(),

@@ -5,16 +5,39 @@ import styles from "./FicheMeme.module.css";
 // Crédits de l'image, à afficher à la correction (docs/droits-images.md).
 export type CreditsImage = { auteur: string; licence: string; sourceUrl: string };
 
-type Props = { fiche: FicheMemeDonnees; credits?: CreditsImage };
+type Props = { fiche: FicheMemeDonnees; credits?: CreditsImage; articleUrl?: string | null };
+
+// Lien vers l'article seulement s'il s'agit d'une adresse https de Wikipédia (jamais un
+// `javascript:` venu des données) ; la langue de l'article est indiquée quand ce n'est pas le français.
+function libelleArticle(url: string | null | undefined): string | null {
+  if (!url) return null;
+  try {
+    const { protocol, hostname } = new URL(url);
+    if (protocol !== "https:" || !hostname.endsWith(".wikipedia.org")) return null;
+    return hostname.startsWith("fr.") ? "Wikipédia" : "Wikipédia (en anglais)";
+  } catch {
+    return null;
+  }
+}
 
 // Les champs vides ne sont pas rendus : un paragraphe vide ferait un blanc muet pour un lecteur d'écran.
-export function FicheMeme({ fiche, credits }: Props) {
+export function FicheMeme({ fiche, credits, articleUrl }: Props) {
+  const libelle = libelleArticle(articleUrl);
   return (
     <article className={styles.fiche}>
       <h3 className={styles.nom}>
         <span className={styles.surligne}>{fiche.nom}</span>
       </h3>
       {fiche.origine && <p className={styles.origine}>{fiche.origine}</p>}
+      {libelle && articleUrl && (
+        <p className={styles.source}>
+          En savoir plus :{" "}
+          <a href={articleUrl} target="_blank" rel="noopener noreferrer">
+            {libelle}
+            <span className="masque-visuel"> (s&apos;ouvre dans un nouvel onglet)</span>
+          </a>
+        </p>
+      )}
       {fiche.description && <p>{fiche.description}</p>}
       {fiche.source && <p className={styles.source}>{fiche.source}</p>}
       {credits && (

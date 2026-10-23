@@ -38,6 +38,25 @@ Les images CC BY et CC BY-SA sont des **adaptations** (réduites et converties e
 | Panda headgear                         | auteur inconnu, restrictions possibles                                        |
 | Harlem Shake, DOOT banner              | capture avec personnes ; image trop obscure                                   |
 
+## Fiches : année, origine et source (SCRUM-38)
+
+Les textes (`origine`) sont des reformulations de l'article indiqué, rédigées le 2026-10-23. L'année n'est renseignée que si l'article la donne. `article_url` (lien « En savoir plus » à la correction) est distinct de `source_url`, qui est la page Commons de l'image.
+
+| Mème                 | Année | Article                           | Langue | Remarque                                                                  |
+| -------------------- | ----- | --------------------------------- | ------ | ------------------------------------------------------------------------- |
+| Awesome Face         | —     | aucun                             | —      | Aucun article Wikipédia (FR ni EN) : origine, année et lien restent vides |
+| Doge                 | 2013  | Doge (mème)                       | FR     | « popularisé en 2013 »                                                    |
+| Grumpy Cat           | 2012  | Grumpy Cat                        | FR     | chatte née en 2012                                                        |
+| Lolcat               | —     | Lolcat                            | FR     |                                                                           |
+| L'Ecce Homo de Borja | 2012  | Ecce homo (Elías García Martínez) | FR     | restauration de 2012 ; pas de date de peinture (sources contradictoires)  |
+| Illuminati confirmed | —     | Œil de la Providence              | FR     | l'article décrit le symbole, pas le mème                                  |
+| Touch grass          | —     | Glossary of 2020s slang           | **EN** | argot de la génération Z                                                  |
+| Rage comics          | —     | Rage comic                        | FR     |                                                                           |
+| Y U NO               | —     | Rage comic                        | **EN** | source indirecte : l'article cite Y U NO parmi les mèmes qui en dérivent  |
+| Honest work          | —     | David Brandt (farmer)             | **EN** | fermier (1946-2023) devenu mème                                           |
+
+Six fiches sur dix s'appuient sur un article français, trois sur un article anglais (choix de Saïd : signalé ici), une n'a aucune source (Awesome Face).
+
 ## Réserves possibles pour la suite
 
 Einstein « exploitable » (domaine public, AP 1931), Xzibit (CC BY-SA 3.0 de, texte à écarter), photos de Grumpy Cat de Gage Skidmore (CC BY-SA 2.0).
