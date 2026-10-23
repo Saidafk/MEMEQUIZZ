@@ -13,6 +13,10 @@ services:
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
       VAPID_SUBJECT: ${VAPID_SUBJECT:-}
       CRON_SECRET: ${CRON_SECRET:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    volumes:
+      # Images ajoutées depuis le backoffice : le volume est initialisé avec les images de l'image Docker.
+      - memes-data:/app/public/memes
     networks:
       - proxy
       - internal
@@ -45,3 +49,4 @@ networks:
 
 volumes:
   db-data:
+  memes-data:

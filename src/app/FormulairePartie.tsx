@@ -102,6 +102,9 @@ export function FormulairePartie() {
       <Link href="/entrainement" className={styles.lien}>
         S&apos;entraîner (sans score, même hors ligne)
       </Link>
+      <Link href="/credits" className={styles.lien}>
+        Crédits des images
+      </Link>
       <ActiverNotifications />
     </form>
   );

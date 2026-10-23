@@ -1,0 +1,78 @@
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+  max-width: 640px;
+}
+
+.champ {
+  min-height: 48px;
+  padding: var(--espace-2) var(--espace-4);
+  font-family: var(--police-texte);
+  font-size: var(--taille-s);
+  color: var(--couleur-encre);
+  background: var(--couleur-papier);
+  border: 2.5px solid var(--couleur-encre);
+  border-radius: var(--rayon-croquis);
+}
+
+.erreur {
+  font-weight: 700;
+  color: var(--couleur-erreur);
+}
+
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-3);
+}
+
+.liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+  padding: 0;
+  list-style: none;
+}
+
+.ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espace-3);
+  padding: var(--espace-3);
+  border: 2px solid var(--couleur-encre);
+  border-radius: var(--rayon-croquis);
+}
+
+.inactif {
+  color: var(--couleur-encre-douce);
+  border-style: dashed;
+}
+
+.nom {
+  flex: 1;
+  min-width: 10rem;
+  font-weight: 700;
+}
+
+.lien,
+.action {
+  padding: var(--espace-2);
+  font-family: var(--police-texte);
+  font-size: var(--taille-s);
+  color: var(--couleur-encre);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.lien:focus-visible,
+.action:focus-visible,
+.champ:focus-visible {
+  outline: 3px solid var(--couleur-focus);
+  outline-offset: 3px;
+}
