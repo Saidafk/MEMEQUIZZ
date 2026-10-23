@@ -162,7 +162,13 @@ export async function servirQuestion(db: BaseDonnees, demande: Demande): Promise
       total: QUESTIONS_PAR_PARTIE,
       image_url: `/api/parties/${id_partie}/questions/${rang}/image`,
       // Même ordre que celui stocké (déjà mélangé) ; rien n'indique laquelle est la bonne.
-      choix: ids.map((id) => ({ id_meme: id, nom: nomParId.get(id) ?? "" })),
+      choix: ids.map((id) => {
+        const nom = nomParId.get(id);
+        // Un mème supprimé alors que des choix le référencent est une incohérence : on échoue
+        // plutôt que d'afficher un bouton sans nom.
+        if (nom === undefined) throw new Error(`mème ${id} introuvable pour la question ${rang}`);
+        return { id_meme: id, nom };
+      }),
       duree_s: DUREE_QUESTION_S,
       restant_ms: Math.round(restantMs),
     },
