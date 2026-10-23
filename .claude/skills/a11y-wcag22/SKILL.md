@@ -5,7 +5,7 @@ description: Accessibilité MEMEQUIZZ — checklist WCAG 2.2 niveau AA et procé
 
 # Accessibilité WCAG 2.2 AA — MEMEQUIZZ
 
-Objectif : une partie jouable au clavier seul et au lecteur d'écran, avec un score Lighthouse accessibilité ≥ 100 (base : [audit de départ](../../../docs/audit-lighthouse-depart.md)). Un score automatique ne suffit jamais : il couvre une part des critères, le reste se vérifie à la main.
+Objectif : une partie jouable au clavier seul et au lecteur d'écran, avec un score Lighthouse accessibilité = 100 (base : [audit de départ](../../../docs/audit-lighthouse-depart.md)). Un score automatique ne suffit jamais : il couvre une part des critères, le reste se vérifie à la main.
 
 ## 1. Checklist à passer sur tout écran ou composant
 
@@ -19,24 +19,24 @@ Objectif : une partie jouable au clavier seul et au lecteur d'écran, avec un sc
 **Clavier (2.1.1, 2.4.3, 2.4.7, 2.4.11)**
 
 - [ ] Tout est atteignable et actionnable au clavier ; ordre de tabulation = ordre visuel.
-- [ ] Focus visible sur chaque élément interactif, contraste d'au moins 3:1, jamais masqué par un en-tête collant (2.4.11).
+- [ ] Focus visible sur chaque élément interactif, contraste d'au moins 3:1 (1.4.11), jamais masqué par un en-tête collant (2.4.11).
 - [ ] Pas de piège au clavier ; pas de `tabindex` positif.
 - [ ] Le focus ne se perd pas quand un élément disparaît ou change d'état (ex. après une réponse) : le déplacer volontairement.
 
-**Perceptible**
+**Perceptible (1.1.1, 1.4.1, 1.4.3, 1.4.4, 1.4.10)**
 
 - [ ] Contraste texte ≥ 4,5:1 (3:1 pour le gros texte et les composants d'interface).
 - [ ] Information jamais portée par la couleur seule (bonne/mauvaise réponse : icône ou texte en plus).
 - [ ] Images : `alt` utile, ou `alt=""` si décorative ; les mèmes ont un texte alternatif décrivant leur contenu.
 - [ ] Texte agrandi à 200 % et reflow à 320 px de large sans perte ni défilement horizontal.
 
-**Cibles et interactions (2.5.8, 3.3.x)**
+**Cibles et interactions (2.5.7, 2.5.8, 3.3.1, 3.3.2)**
 
-- [ ] Cibles tactiles ≥ 24×24 px (viser 44×44 px pour les boutons de réponse).
+- [ ] Cibles tactiles ≥ 24×24 px (viser 44×44 px pour les boutons de réponse : confort, AAA 2.5.5, pas une exigence AA).
 - [ ] Pas d'action qui exige un geste complexe ou un glisser-déposer sans alternative (2.5.7).
 - [ ] Champs avec `label` associé, erreurs décrites en texte et reliées au champ (`aria-describedby`).
 
-**Dynamique et annonces**
+**Dynamique et annonces (2.2.1, 4.1.3)**
 
 - [ ] Changement d'état important annoncé : `aria-live="polite"` pour le résultat d'une réponse et le score ; `assertive` seulement pour une urgence réelle.
 - [ ] Le chrono n'est pas annoncé à chaque seconde : annoncer les paliers (ex. 10 s, 5 s) et la fin.
@@ -50,7 +50,7 @@ Toujours sur le **build de production**, pas `next dev`.
 ```
 bun run build
 bun run start -- -p 3100
-npx lighthouse@12 http://localhost:3100/<route> --only-categories=accessibility --output=html --output=json --output-path=docs/audit-a11y/<nom> --chrome-flags="--headless=new"
+npx lighthouse@12 http://localhost:3100/<route> --only-categories=accessibility --output=html --output=json --output-path=docs/audit-a11y/<version>-<page> --chrome-flags="--headless=new"
 ```
 
 Pour chaque route : `/`, `/jeu`, `/resultat/demo`, `/classement`, `/composants` (et les nouvelles).
