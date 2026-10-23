@@ -43,6 +43,7 @@ PostgreSQL tourne dans Docker (service `db`), l'app hors Docker lit `DATABASE_UR
 bun run db:up      # démarre PostgreSQL et attend qu'il soit prêt
 bun run db:reset   # recrée la base vide : migrations + jeu de données initial
 bun run db:seed    # rejoue seulement le seed (sans doublon)
+bun run db:images  # télécharge les images des mèmes depuis Commons (WebP, public/memes/)
 ```
 
 - Après un changement de `src/db/schema.ts` : `bun run db:generate`, puis relire et committer le SQL dans `drizzle/`.
