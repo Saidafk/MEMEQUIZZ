@@ -80,9 +80,11 @@ Points d'attention déjà identifiés :
 | ---------------- | ------------------------ | ----------------------------------------------- |
 | pseudo           | texte, 3 à 20 caractères | nettoyé, échappé à l'affichage                  |
 | nom_meme         | texte                    | nom affiché comme bonne réponse                 |
-| template_id      | texte                    | identifiant memegen.link (ex. `drake`)          |
+| image_chemin     | texte                    | chemin de la copie locale de l'image            |
+| auteur           | texte                    | auteur de l'image (obligatoire, voir licences)  |
+| licence          | énumération              | domaine_public, cc0, cc_by, cc_by_sa            |
 | annee_origine    | entier                   | nullable                                        |
-| source_url       | texte                    | lien vers l'article Wikipédia FR                |
+| source_url       | texte                    | lien vers la page source (Commons / Wikipédia)  |
 | statut_partie    | énumération              | en_cours, terminee, abandonnee                  |
 | delai_reponse_ms | entier                   | calculé serveur                                 |
 | points           | entier                   | 0 si faux, sinon fonction décroissante du délai |
@@ -96,7 +98,7 @@ PARTIE (id_partie, statut, commence_le, termine_le, score_total)
 
 PARTIE
    1,N ──── QUESTIONNER ──── 0,N      (association porteuse de propriétés)
-MEME (id_meme, slug, nom, template_id, annee_origine, origine, source_url, actif)
+MEME (id_meme, slug, nom, image_chemin, auteur, licence, annee_origine, origine, source_url, actif)
 
 QUESTIONNER porte : rang, choix_propose (4 mèmes), envoye_le,
                     reponse_donnee, repondu_le, points
@@ -113,7 +115,7 @@ Les cardinalités se lisent « côté entité » : un joueur est lié à 0 à N 
 
 ```
 joueur(id_joueur PK, pseudo, token_session_hash, cree_le)
-meme(id_meme PK, slug UNIQUE, nom, template_id, annee_origine, origine, source_url, actif)
+meme(id_meme PK, slug UNIQUE, nom, image_chemin, auteur, licence, annee_origine, origine, source_url, actif)
 partie(id_partie PK, #id_joueur, #id_salle NULL, statut, commence_le, termine_le, score_total)
 partie_question(#id_partie, rang, #id_meme, choix_ids, envoye_le,
                 reponse_id_meme NULL, repondu_le NULL, points)
@@ -139,7 +141,9 @@ erDiagram
     MEME { int id_meme PK
            string slug
            string nom
-           string template_id
+           string image_chemin
+           string auteur
+           string licence
            int annee_origine
            string origine
            string source_url
