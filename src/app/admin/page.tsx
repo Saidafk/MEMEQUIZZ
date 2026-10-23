@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import boutons from "@/components/BoutonLien.module.css";
 import { Feuille } from "@/components/Feuille";
 import { getDb } from "@/db";
 import { estAdmin } from "@/lib/admin-session";
@@ -21,20 +22,26 @@ async function Contenu({ searchParams }: PageProps<"/admin">) {
   await connection();
   if (!(await estAdmin())) {
     return (
-      <>
+      <div className={styles.connexion}>
         <h1>Administration</h1>
         <FormulaireConnexion />
-      </>
+        <Link href="/" className={styles.lien}>
+          ← Retour à l&apos;accueil
+        </Link>
+      </div>
     );
   }
   const memes = await listerMemes(getDb());
   const erreur = (await searchParams).erreur;
   return (
     <>
+      <h1>Mèmes ({memes.filter((m) => m.actif).length} actifs)</h1>
       <div className={styles.entete}>
-        <h1>Mèmes ({memes.filter((m) => m.actif).length} actifs)</h1>
-        <Link href="/admin/nouveau" className={styles.lien}>
+        <Link href="/admin/nouveau" className={`${boutons.bouton} ${boutons.plein}`}>
           Ajouter un mème
+        </Link>
+        <Link href="/" className={styles.lien}>
+          ← Retour à l&apos;accueil
         </Link>
         <form action={deconnexion}>
           <button type="submit" className={styles.action}>

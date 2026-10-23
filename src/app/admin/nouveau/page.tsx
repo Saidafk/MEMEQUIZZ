@@ -25,7 +25,7 @@ async function Contenu() {
       </p>
       <FormulaireMeme action={ajouterMeme} imageObligatoire />
       <Link href="/admin" className={styles.lien}>
-        Retour à la liste
+        ← Retour à la liste
       </Link>
     </>
   );

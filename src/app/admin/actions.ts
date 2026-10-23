@@ -22,7 +22,7 @@ export async function connexion(_: EtatFormulaire, formData: FormData): Promise<
 
 export async function deconnexion(): Promise<void> {
   await fermerSessionAdmin();
-  redirect("/admin");
+  redirect("/");
 }
 
 export async function ajouterMeme(_: EtatFormulaire, formData: FormData): Promise<EtatFormulaire> {

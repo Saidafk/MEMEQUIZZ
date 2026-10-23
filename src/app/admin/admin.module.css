@@ -21,12 +21,31 @@
   color: var(--couleur-erreur);
 }
 
+/* Actions de la liste : « Ajouter » à gauche, liens de sortie regroupés à droite. */
 .entete {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--espace-3);
+  gap: var(--espace-3) var(--espace-4);
+}
+
+.entete > :first-child {
+  margin-right: auto;
+}
+
+/* Page de connexion : contenu centré, formulaire de largeur raisonnable. */
+.connexion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espace-4);
+  text-align: center;
+}
+
+.connexion .formulaire {
+  width: 100%;
+  max-width: 420px;
+  text-align: left;
 }
 
 .liste {

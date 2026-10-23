@@ -33,7 +33,7 @@ async function Contenu({ params }: PageProps<"/admin/[id]">) {
         imageObligatoire={false}
       />
       <Link href="/admin" className={styles.lien}>
-        Retour à la liste
+        ← Retour à la liste
       </Link>
     </>
   );
