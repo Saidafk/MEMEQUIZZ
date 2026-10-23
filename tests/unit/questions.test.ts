@@ -2,7 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
 
 import { melanger, reponseErreurQuestion, resoudreFichierImage } from "@/lib/questions";
-import { genererJeton, hasherJeton } from "@/lib/session";
+import { cookieSession, genererJeton, hasherJeton } from "@/lib/session";
+import { partieParamsSchema } from "@/lib/validation";
 
 describe("melanger", () => {
   test("renvoie une permutation sans toucher l'original", () => {
@@ -54,6 +55,34 @@ describe("session", () => {
     expect(hasherJeton(a)).toMatch(/^[0-9a-f]{64}$/);
     expect(hasherJeton(a)).not.toBe(hasherJeton(b));
     expect(hasherJeton(a)).not.toContain(a);
+  });
+});
+
+describe("cookie de session", () => {
+  test("HttpOnly, SameSite=Strict, durée limitée, Secure seulement en production", () => {
+    const dev = cookieSession("abc_123-XYZ", false);
+    expect(dev).toStartWith("memequizz_session=abc_123-XYZ;");
+    for (const attribut of ["Path=/", "HttpOnly", "SameSite=Strict", "Max-Age=7200"]) {
+      expect(dev).toContain(attribut);
+    }
+    expect(dev).not.toContain("Secure");
+    expect(cookieSession("abc", true)).toContain("; Secure");
+  });
+
+  test("un vrai jeton ne contient aucun caractère à échapper dans un cookie", () => {
+    for (let i = 0; i < 50; i += 1) {
+      expect(genererJeton()).toMatch(/^[A-Za-z0-9_-]+$/);
+    }
+  });
+});
+
+describe("partieParamsSchema", () => {
+  test("accepte un identifiant et refuse le reste", () => {
+    expect(partieParamsSchema.parse({ id_partie: "12" })).toEqual({ id_partie: 12 });
+    for (const valeur of ["abc", "0", "1e3", "-1", "2147483648", ""]) {
+      expect(partieParamsSchema.safeParse({ id_partie: valeur }).success).toBe(false);
+    }
+    expect(partieParamsSchema.safeParse({ id_partie: "1", extra: "x" }).success).toBe(false);
   });
 });
 

@@ -72,6 +72,9 @@ export const questionParamsSchema = z.strictObject({
   rang: rangUrlSchema,
 });
 
+// GET /api/parties/[id_partie] : paramètre d'URL.
+export const partieParamsSchema = z.strictObject({ id_partie: identifiantUrlSchema });
+
 // POST réponse : `id_meme` est le mème choisi par le joueur, ou `null` quand le temps est écoulé
 // (le client demande alors la correction sans avoir répondu). Que ce mème fasse bien partie des
 // 4 choix servis et la bonne réponse se vérifient côté serveur ; aucun score ni délai n'est
