@@ -1,4 +1,4 @@
-import { notInArray, sql } from "drizzle-orm";
+import { and, eq, notInArray, sql } from "drizzle-orm";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
@@ -6,7 +6,8 @@ import { MEMES } from "./data/memes";
 import { meme } from "./schema";
 
 // Rejouable : upsert sur le slug. Les mèmes absents de la liste sont désactivés
-// plutôt que supprimés (des parties peuvent y faire référence).
+// plutôt que supprimés (des parties peuvent y faire référence). Les mèmes créés depuis le
+// backoffice (`via_backoffice`) ne sont jamais touchés.
 export async function semer<S extends Record<string, unknown>>(
   db: PostgresJsDatabase<S>,
 ): Promise<number> {
@@ -45,9 +46,12 @@ export async function semer<S extends Record<string, unknown>>(
     .update(meme)
     .set({ actif: false })
     .where(
-      notInArray(
-        meme.slug,
-        lignes.map((l) => l.slug),
+      and(
+        eq(meme.via_backoffice, false),
+        notInArray(
+          meme.slug,
+          lignes.map((l) => l.slug),
+        ),
       ),
     );
 

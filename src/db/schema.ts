@@ -47,6 +47,9 @@ export const meme = pgTable(
     auteur: varchar("auteur", { length: 200 }).notNull(),
     licence: licenceImage("licence").notNull(),
     actif: boolean("actif").notNull().default(true),
+    // Vrai pour les mèmes saisis dans le backoffice : le seed ne les désactive pas, car ils
+    // ne figurent pas dans data/memes.ts (SCRUM-96).
+    via_backoffice: boolean("via_backoffice").notNull().default(false),
   },
   (table) => [index("meme_actif_idx").on(table.actif)],
 );

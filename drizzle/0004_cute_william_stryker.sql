@@ -1,0 +1,1 @@
+ALTER TABLE "meme" ADD COLUMN "via_backoffice" boolean DEFAULT false NOT NULL;
