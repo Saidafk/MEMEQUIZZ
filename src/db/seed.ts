@@ -1,37 +1,25 @@
-import { sql } from "drizzle-orm";
+import { notInArray, sql } from "drizzle-orm";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
+import { MEMES } from "./data/memes";
 import { meme } from "./schema";
 
-// Jeu de données initial : 10 mèmes provisoires avec une image générique créée
-// pour le projet (CC0). Les vrais mèmes arrivent avec SCRUM-37 et SCRUM-38.
-const MEMES_INITIAUX = [
-  ["chat-surpris", "Le chat surpris"],
-  ["gars-qui-hesite", "Le gars qui hésite"],
-  ["tout-va-bien", "Tout va bien"],
-  ["pouce-leve", "Le pouce levé"],
-  ["chien-perplexe", "Le chien perplexe"],
-  ["foule-en-delire", "La foule en délire"],
-  ["bebe-victorieux", "Le bébé victorieux"],
-  ["cerveau-qui-grossit", "Le cerveau qui grossit"],
-  ["dame-qui-calcule", "La dame qui calcule"],
-  ["panda-qui-roule", "Le panda qui roule"],
-] as const;
-
+// Rejouable : upsert sur le slug. Les mèmes absents de la liste sont désactivés
+// plutôt que supprimés (des parties peuvent y faire référence).
 export async function semer(db: PostgresJsDatabase): Promise<number> {
-  // Valeurs provisoires : source_url pointe vers le dépôt (aucune vraie source)
-  // et l'image est générique. À remplacer par SCRUM-37 et SCRUM-38.
-  const lignes = MEMES_INITIAUX.map(([slug, nom]) => ({
-    slug,
-    nom,
-    source_url: "https://github.com/Saidafk/MEMEQUIZZ",
-    image_chemin: "/memes/placeholder.svg",
-    auteur: "MEMEQUIZZ (image provisoire)",
-    licence: "cc0" as const,
+  const lignes = MEMES.map((m) => ({
+    slug: m.slug,
+    nom: m.nom,
+    annee_origine: m.annee_origine,
+    origine: m.origine,
+    source_url: m.source_url,
+    image_chemin: `/memes/${m.slug}.webp`,
+    auteur: m.auteur,
+    licence: m.licence,
+    actif: true,
   }));
 
-  // Rejouable : un second passage met à jour les lignes existantes (clé : slug).
   await db
     .insert(meme)
     .values(lignes)
@@ -39,12 +27,25 @@ export async function semer(db: PostgresJsDatabase): Promise<number> {
       target: meme.slug,
       set: {
         nom: sql`excluded.nom`,
+        annee_origine: sql`excluded.annee_origine`,
+        origine: sql`excluded.origine`,
         source_url: sql`excluded.source_url`,
         image_chemin: sql`excluded.image_chemin`,
         auteur: sql`excluded.auteur`,
         licence: sql`excluded.licence`,
+        actif: sql`excluded.actif`,
       },
     });
+
+  await db
+    .update(meme)
+    .set({ actif: false })
+    .where(
+      notInArray(
+        meme.slug,
+        lignes.map((l) => l.slug),
+      ),
+    );
 
   return lignes.length;
 }

@@ -54,7 +54,8 @@ Rédaction de `origine` : reformuler avec ses propres mots plutôt que copier (l
 - Format **WebP**, côté le plus long **800 px max**, **100 Ko max** (PWA et chargement rapide) ; dossier `public/memes/`, nom = `<slug>.webp`.
 - L'image est une **copie locale** de l'original libre ; ne jamais hotlinker.
 - Un recadrage, une réduction ou la conversion en WebP sont des **adaptations** : pour une image CC BY-SA, elle reste sous CC BY-SA et la modification doit être indiquée (mention « image recadrée / convertie » dans la page Crédits). Pas d'autre retouche.
-- Le seed est rejouable (upsert sur `slug`), mais il ne met à jour aujourd'hui que `nom`, `source_url`, `image_chemin`, `auteur` et `licence`. `annee_origine`, `origine` et `actif` ne sont pas encore portés par le seed : l'étendre dans SCRUM-37/38 avant d'y mettre les vraies fiches.
+- La liste figée est `src/db/data/memes.ts`. Ajouter un mème : renseigner sa fiche, `bun run db:images` (télécharge et convertit), puis `bun run db:seed`. Le seed est rejouable (upsert sur `slug`, tous les champs) et désactive (`actif = false`) les mèmes retirés de la liste au lieu de les supprimer.
+- Noter dans `docs/selection-memes.md` chaque mème retenu ou rejeté, avec le motif.
 
 ## 5. Accessibilité et affichage
 
