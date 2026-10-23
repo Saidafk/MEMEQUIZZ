@@ -48,7 +48,7 @@ async function cacheDabord(event, requete) {
   return reponse;
 }
 
-async function reseauDabord(event, requete) {
+async function reseauDabord(event, requete, avecSecours = true) {
   const cache = await caches.open(CACHE_PAGES);
   try {
     const reponse = await fetch(requete);
@@ -57,7 +57,7 @@ async function reseauDabord(event, requete) {
   } catch (erreur) {
     const enCache = await cache.match(requete);
     if (enCache) return enCache;
-    const secours = await cache.match(PAGE_SECOURS);
+    const secours = avecSecours ? await cache.match(PAGE_SECOURS) : undefined;
     if (secours) return secours;
     throw erreur;
   }
@@ -68,6 +68,11 @@ self.addEventListener("fetch", (event) => {
   if (requete.method !== "GET") return; // jamais de cache des envois (réponses, parties)
   const url = new URL(requete.url);
   if (url.origin !== self.location.origin) return;
+  // Seul le lot d'entraînement est gardé : il ne contient aucune donnée de partie (SCRUM-48).
+  if (url.pathname === "/api/entrainement") {
+    event.respondWith(reseauDabord(event, requete, false));
+    return;
+  }
   if (url.pathname.startsWith("/api/")) return; // données de jeu : toujours le réseau
 
   if (estStatique(url)) {
