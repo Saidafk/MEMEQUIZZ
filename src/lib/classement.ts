@@ -13,10 +13,11 @@ const LIMITE_PAR_DEFAUT = 50;
 export function attribuerRangs<T extends { score: number }>(
   lignes: readonly T[],
 ): (T & { rang: number })[] {
-  return lignes.map((ligne, i) => {
-    const premier = lignes.findIndex((autre) => autre.score === ligne.score);
-    return { ...ligne, rang: (premier === -1 ? i : premier) + 1 };
-  });
+  return lignes.map((ligne) => ({
+    ...ligne,
+    // Rang du premier joueur qui a le même score (la ligne se trouve elle-même au pire).
+    rang: lignes.findIndex((autre) => autre.score === ligne.score) + 1,
+  }));
 }
 
 // Les meilleures parties terminées, de la plus haute à la plus basse ; à score égal, la plus
