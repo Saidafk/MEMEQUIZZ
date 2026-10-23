@@ -1,0 +1,26 @@
+.contenu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espace-4);
+}
+
+.titre {
+  font-size: var(--taille-xl);
+}
+
+.lien {
+  padding: var(--espace-3) var(--espace-6);
+  border-radius: 12px;
+  background: var(--couleur-surligneur);
+  color: var(--couleur-encre);
+  font-family: var(--police-titre);
+  font-size: var(--taille-l);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lien:focus-visible {
+  outline: 3px solid var(--couleur-focus);
+  outline-offset: 3px;
+}

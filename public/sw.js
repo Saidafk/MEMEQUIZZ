@@ -10,7 +10,13 @@ const estStatique = (url) =>
   url.pathname.startsWith("/icons/") ||
   url.pathname.startsWith("/memes/");
 
-self.addEventListener("install", () => self.skipWaiting());
+// Page de secours précachée à l'installation (SCRUM-50).
+const PAGE_SECOURS = "/hors-ligne";
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(caches.open(CACHE_PAGES).then((cache) => cache.add(PAGE_SECOURS)));
+  self.skipWaiting();
+});
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
@@ -41,6 +47,8 @@ async function reseauDabord(event, requete) {
   } catch (erreur) {
     const enCache = await cache.match(requete);
     if (enCache) return enCache;
+    const secours = await cache.match(PAGE_SECOURS);
+    if (secours) return secours;
     throw erreur;
   }
 }
