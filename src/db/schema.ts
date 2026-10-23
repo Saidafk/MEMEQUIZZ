@@ -1,5 +1,7 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   index,
   integer,
   jsonb,
@@ -17,12 +19,16 @@ export const LICENCES_IMAGE = ["domaine_public", "cc0", "cc_by", "cc_by_sa"] as 
 export const statutPartie = pgEnum("statut_partie", STATUTS_PARTIE);
 export const licenceImage = pgEnum("licence_image", LICENCES_IMAGE);
 
-export const joueur = pgTable("joueur", {
-  id_joueur: serial("id_joueur").primaryKey(),
-  pseudo: varchar("pseudo", { length: 20 }).notNull(),
-  token_session_hash: varchar("token_session_hash", { length: 128 }).notNull(),
-  cree_le: timestamp("cree_le", { withTimezone: true }).notNull().defaultNow(),
-});
+export const joueur = pgTable(
+  "joueur",
+  {
+    id_joueur: serial("id_joueur").primaryKey(),
+    pseudo: varchar("pseudo", { length: 20 }).notNull(),
+    token_session_hash: varchar("token_session_hash", { length: 128 }).notNull().unique(),
+    cree_le: timestamp("cree_le", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [check("joueur_pseudo_longueur_check", sql`char_length(${table.pseudo}) >= 3`)],
+);
 
 export const meme = pgTable(
   "meme",
@@ -56,6 +62,7 @@ export const partie = pgTable(
   (table) => [
     index("partie_score_total_idx").on(table.score_total),
     index("partie_id_joueur_idx").on(table.id_joueur),
+    check("partie_score_total_check", sql`${table.score_total} >= 0`),
   ],
 );
 
@@ -77,7 +84,13 @@ export const partieQuestion = pgTable(
     repondu_le: timestamp("repondu_le", { withTimezone: true }),
     points: integer("points").notNull().default(0),
   },
-  (table) => [primaryKey({ columns: [table.id_partie, table.rang] })],
+  (table) => [
+    primaryKey({ columns: [table.id_partie, table.rang] }),
+    index("partie_question_id_meme_idx").on(table.id_meme),
+    index("partie_question_reponse_id_meme_idx").on(table.reponse_id_meme),
+    check("partie_question_rang_check", sql`${table.rang} >= 1`),
+    check("partie_question_points_check", sql`${table.points} >= 0`),
+  ],
 );
 
 export type Joueur = typeof joueur.$inferSelect;

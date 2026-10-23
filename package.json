@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "test": "bun test --pass-with-no-tests",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:test": "bun test tests/integration"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",

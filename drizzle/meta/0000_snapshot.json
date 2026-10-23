@@ -1,5 +1,5 @@
 {
-  "id": "538aeef8-9729-4729-a07b-95da4dd993c0",
+  "id": "02fb98c6-d82f-400e-a8a7-f2ddf33de8db",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -37,9 +37,20 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "joueur_token_session_hash_unique": {
+          "name": "joueur_token_session_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": ["token_session_hash"]
+        }
+      },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "joueur_pseudo_longueur_check": {
+          "name": "joueur_pseudo_longueur_check",
+          "value": "char_length(\"joueur\".\"pseudo\") >= 3"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.meme": {
@@ -230,7 +241,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "partie_score_total_check": {
+          "name": "partie_score_total_check",
+          "value": "\"partie\".\"score_total\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.partie_question": {
@@ -288,7 +304,38 @@
           "default": 0
         }
       },
-      "indexes": {},
+      "indexes": {
+        "partie_question_id_meme_idx": {
+          "name": "partie_question_id_meme_idx",
+          "columns": [
+            {
+              "expression": "id_meme",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "partie_question_reponse_id_meme_idx": {
+          "name": "partie_question_reponse_id_meme_idx",
+          "columns": [
+            {
+              "expression": "reponse_id_meme",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "partie_question_id_partie_partie_id_partie_fk": {
           "name": "partie_question_id_partie_partie_id_partie_fk",
@@ -326,7 +373,16 @@
       },
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "partie_question_rang_check": {
+          "name": "partie_question_rang_check",
+          "value": "\"partie_question\".\"rang\" >= 1"
+        },
+        "partie_question_points_check": {
+          "name": "partie_question_points_check",
+          "value": "\"partie_question\".\"points\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     }
   },

@@ -3,14 +3,20 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 
-// Rejoue les migrations sur une base vide. Il faut une base dédiée, dont le nom
-// finit par « _test » : le schéma public y est supprimé avant chaque exécution.
+// Rejoue les migrations sur une base vide. Le schéma public y est supprimé :
+// le test ne tourne que sur une base locale dont le nom finit par « _test ».
 const url = process.env.TEST_DATABASE_URL;
-const nomBase = url ? new URL(url).pathname.slice(1) : "";
-const actif = Boolean(url) && nomBase.endsWith("_test");
+const cible = url ? new URL(url) : null;
+const actif =
+  cible !== null &&
+  ["localhost", "127.0.0.1"].includes(cible.hostname) &&
+  cible.pathname.slice(1).endsWith("_test");
+
+const CODE_VALEUR_ENUM_INVALIDE = "22P02";
+const CODE_CONTRAINTE_CHECK = "23514";
 
 describe.skipIf(!actif)("migrations sur base vide", () => {
-  test("créent les 4 tables, les enums et les index attendus", async () => {
+  test("créent les tables, enums et index, et appliquent les contraintes", async () => {
     const sql = postgres(url as string, { max: 1, onnotice: () => {} });
     try {
       await sql`DROP SCHEMA IF EXISTS public CASCADE`;
@@ -37,18 +43,16 @@ describe.skipIf(!actif)("migrations sur base vide", () => {
         SELECT indexname FROM pg_indexes
         WHERE schemaname = 'public' AND indexname = 'partie_score_total_idx'`;
       expect(index).toHaveLength(1);
-    } finally {
-      await sql.end();
-    }
-  });
 
-  test("refuse un mème sans licence libre", async () => {
-    const sql = postgres(url as string, { max: 1 });
-    try {
-      const insertion = sql`
-        INSERT INTO meme (slug, nom, source_url, image_chemin, auteur, licence)
-        VALUES ('x', 'X', 'https://exemple.fr', '/x.webp', 'A', 'tous_droits_reserves')`;
-      await expect(insertion).rejects.toThrow();
+      // Les tables existent : une erreur ici vient bien de la contrainte testée.
+      await expect(
+        sql`INSERT INTO meme (slug, nom, source_url, image_chemin, auteur, licence)
+            VALUES ('x', 'X', 'https://exemple.fr', '/x.webp', 'A', 'tous_droits_reserves')`,
+      ).rejects.toMatchObject({ code: CODE_VALEUR_ENUM_INVALIDE });
+
+      await expect(
+        sql`INSERT INTO joueur (pseudo, token_session_hash) VALUES ('ab', 'hash')`,
+      ).rejects.toMatchObject({ code: CODE_CONTRAINTE_CHECK });
     } finally {
       await sql.end();
     }
