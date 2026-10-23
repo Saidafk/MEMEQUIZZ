@@ -98,6 +98,9 @@ export function FormulairePartie() {
       <Link href="/classement" className={styles.lien}>
         Voir le classement
       </Link>
+      <Link href="/entrainement" className={styles.lien}>
+        S&apos;entraîner (sans score, même hors ligne)
+      </Link>
     </form>
   );
 }

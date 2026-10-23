@@ -2,12 +2,13 @@
 
 Fichier : [public/sw.js](../public/sw.js), enregistré en production par `EnregistrementServiceWorker` (layout racine).
 
-| Requête                                   | Stratégie                                    | Cache                          |
-| ----------------------------------------- | -------------------------------------------- | ------------------------------ |
-| `/_next/static/*`, `/icons/*`, `/memes/*` | Cache d'abord, réseau si absent              | `memequizz-statique-<version>` |
-| Navigations (pages HTML)                  | Réseau d'abord, copie en cache si hors ligne | `memequizz-pages-<version>`    |
-| `/api/*` et toute requête non GET         | Jamais interceptée                           | aucun                          |
-| Autres origines                           | Jamais interceptée                           | aucun                          |
+| Requête                                   | Stratégie                                          | Cache                          |
+| ----------------------------------------- | -------------------------------------------------- | ------------------------------ |
+| `/_next/static/*`, `/icons/*`, `/memes/*` | Cache d'abord, réseau si absent                    | `memequizz-statique-<version>` |
+| Navigations (pages HTML)                  | Réseau d'abord, copie en cache si hors ligne       | `memequizz-pages-<version>`    |
+| `/api/entrainement`                       | Réseau d'abord, dernier lot en cache si hors ligne | `memequizz-pages-<version>`    |
+| Autres `/api/*` et toute requête non GET  | Jamais interceptée                                 | aucun                          |
+| Autres origines                           | Jamais interceptée                                 | aucun                          |
 
 ## Pourquoi
 
@@ -23,4 +24,4 @@ Changer `VERSION` dans `sw.js` pour invalider les caches ; l'activation supprime
 
 Une image de `/memes/` remplacée sous le même nom reste périmée tant que `VERSION` n'est pas incrémentée : changer `VERSION` à chaque modification du catalogue.
 
-Une page jamais visitée en ligne n'est pas disponible hors ligne : le service worker sert alors la page de secours `/hors-ligne`, précachée à l'installation (SCRUM-50). Questions d'entraînement hors ligne : SCRUM-48.
+Une page jamais visitée en ligne n'est pas disponible hors ligne : le service worker sert alors la page de secours `/hors-ligne`, précachée à l'installation (SCRUM-50). Entraînement hors ligne (SCRUM-48) : `/entrainement` charge un lot via `/api/entrainement` et précharge ses images ; hors ligne, le dernier lot reçu est rejoué. Il faut donc une première visite en ligne de `/entrainement`. Ce lot contient les bonnes réponses : acceptable car l'entraînement n'a ni score serveur ni classement.
