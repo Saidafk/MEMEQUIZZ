@@ -198,6 +198,33 @@ describe.skipIf(!BASE_TEST_ACTIVE)("partie complète (SCRUM-42)", () => {
     expect((await lire(p)).statut).toBe("en_cours");
   });
 
+  test("une question expirée sans réponse ne bloque pas la fin de partie", async () => {
+    const p = await demarrer();
+    // Question 1 envoyée puis laissée sans réponse : le joueur a laissé filer le temps.
+    const q1 = await servirQuestion(db, {
+      id_partie: p.id_partie,
+      rang: 1,
+      jetonHash: p.jetonHash,
+    });
+    expect(q1.statut).toBe("ok");
+    await db
+      .update(schema.partieQuestion)
+      .set({ envoye_le: sql`now() - interval '30 seconds'` })
+      .where(
+        and(eq(schema.partieQuestion.id_partie, p.id_partie), eq(schema.partieQuestion.rang, 1)),
+      );
+
+    let derniere = null;
+    for (let rang = 2; rang <= 10; rang += 1) derniere = await jouer(p, rang, "juste");
+    expect(derniere?.partie_terminee).toBe(true);
+
+    const r = await lire(p);
+    expect(r.statut).toBe("terminee");
+    expect(r.bonnes).toBe(9);
+    expect(r.reponses[0]).toBe(false); // la question laissée sans réponse compte zéro
+    expect(r.rang).not.toBeNull();
+  });
+
   test("classement : égalités au même rang, nombre de joueurs = parties terminées", async () => {
     await db.delete(schema.partie);
     const scores = [300, 500, 500, 100];
