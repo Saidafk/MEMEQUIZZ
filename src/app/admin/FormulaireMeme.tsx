@@ -94,6 +94,9 @@ export function FormulaireMeme({ action, valeurs, imageObligatoire }: Props) {
         <option value="" disabled>
           Choisir…
         </option>
+        {valeurs?.licence === "non_verifiee" && (
+          <option value="non_verifiee">{libelleLicence("non_verifiee")} (inchangée)</option>
+        )}
         {LICENCES_LIBRES.map((l) => (
           <option key={l} value={l}>
             {libelleLicence(l)}

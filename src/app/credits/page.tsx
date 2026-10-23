@@ -41,7 +41,10 @@ export default function PageCredits() {
   return (
     <Feuille largeur="large">
       <h1>Crédits des images</h1>
-      <p>Toutes les images sont sous licence libre, copiées sur le serveur.</p>
+      <p>
+        Les images sont copiées sur le serveur. La licence de chacune est indiquée ; « licence non
+        vérifiée » signifie que ses droits n&apos;ont pas été contrôlés.
+      </p>
       <Suspense fallback={<p role="status">Chargement…</p>}>
         <Liste />
       </Suspense>

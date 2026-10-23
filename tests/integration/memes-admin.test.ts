@@ -103,6 +103,41 @@ describe.skipIf(!BASE_TEST_ACTIVE)("backoffice des mèmes (SCRUM-96)", () => {
     expect(ligne).toMatchObject({ nom: "Nouveau nom", auteur: "Autre", slug: "meme-de-test" });
   });
 
+  test("un mème importé garde sa licence non vérifiée à la modification, un mème libre ne peut pas la prendre", async () => {
+    const libre = await creerMeme(db, await formulaire({ nom: "Libre" }));
+    if (!libre.ok) throw new Error("création");
+    expect(
+      (
+        await modifierMeme(
+          db,
+          libre.id_meme,
+          await formulaire({ nom: "Libre", licence: "non_verifiee" }, false),
+        )
+      ).ok,
+    ).toBe(false);
+
+    const [importe] = await db
+      .insert(schema.meme)
+      .values({
+        slug: "memegen-x",
+        nom: "Importé",
+        source_url: "",
+        image_chemin: "/memes/memegen-x.webp",
+        auteur: "Auteur inconnu",
+        licence: "non_verifiee",
+        via_backoffice: true,
+      })
+      .returning({ id: schema.meme.id_meme });
+    const r = await modifierMeme(
+      db,
+      importe!.id,
+      await formulaire({ nom: "Importé 2", licence: "non_verifiee" }, false),
+    );
+    expect(r.ok).toBe(true);
+    const [apres] = await db.select().from(schema.meme).where(eq(schema.meme.id_meme, importe!.id));
+    expect(apres).toMatchObject({ nom: "Importé 2", licence: "non_verifiee" });
+  });
+
   test("désactive un mème mais garde au moins 4 mèmes actifs", async () => {
     await semer(db);
     const [premier] = await db.select().from(schema.meme);
