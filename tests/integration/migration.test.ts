@@ -3,21 +3,14 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 
-// Rejoue les migrations sur une base vide. Le schéma public y est supprimé :
-// le test ne tourne que sur une base locale dont le nom finit par « _test ».
-const url = process.env.TEST_DATABASE_URL;
-const cible = url ? new URL(url) : null;
-const actif =
-  cible !== null &&
-  ["localhost", "127.0.0.1"].includes(cible.hostname) &&
-  cible.pathname.slice(1).endsWith("_test");
+import { BASE_TEST_ACTIVE, URL_BASE_TEST } from "./base-test";
 
 const CODE_VALEUR_ENUM_INVALIDE = "22P02";
 const CODE_CONTRAINTE_CHECK = "23514";
 
-describe.skipIf(!actif)("migrations sur base vide", () => {
+describe.skipIf(!BASE_TEST_ACTIVE)("migrations sur base vide", () => {
   test("créent les tables, enums et index, et appliquent les contraintes", async () => {
-    const sql = postgres(url as string, { max: 1, onnotice: () => {} });
+    const sql = postgres(URL_BASE_TEST, { max: 1, onnotice: () => {} });
     try {
       await sql`DROP SCHEMA IF EXISTS public CASCADE`;
       await sql`DROP SCHEMA IF EXISTS drizzle CASCADE`;
