@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Gaegu, Patrick_Hand } from "next/font/google";
 import "./globals.css";
+import { EnregistrementServiceWorker } from "./composants/EnregistrementServiceWorker";
 
 const gaegu = Gaegu({
   variable: "--font-gaegu",
@@ -23,7 +24,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="fr" className={`${gaegu.variable} ${patrickHand.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <EnregistrementServiceWorker />
+      </body>
     </html>
   );
 }
