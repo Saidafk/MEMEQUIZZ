@@ -15,6 +15,13 @@
       "when": 1792748124810,
       "tag": "0001_soft_puck",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792757297802,
+      "tag": "0002_lucky_sersi",
+      "breakpoints": true
     }
   ]
 }

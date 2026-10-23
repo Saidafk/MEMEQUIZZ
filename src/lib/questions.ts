@@ -92,6 +92,7 @@ export async function lireLigne(
         auteur: meme.auteur,
         licence: meme.licence,
         source_url: meme.source_url,
+        article_url: meme.article_url,
       },
     })
     .from(partieQuestion)

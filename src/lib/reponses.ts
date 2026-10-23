@@ -31,6 +31,7 @@ export type Correction = {
     auteur: string;
     licence: string;
     source_url: string;
+    article_url: string | null;
   };
 };
 

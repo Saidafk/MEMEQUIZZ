@@ -107,7 +107,16 @@ describe.skipIf(!BASE_TEST_ACTIVE)("enregistrer une réponse (SCRUM-40)", () => 
     expect(c.bonne_reponse.id_meme).toBe(p.memes[0] as number);
     // Les crédits de l'image s'affichent à la correction (droits-images.md).
     expect(Object.keys(c.bonne_reponse).sort()).toEqual(
-      ["annee_origine", "auteur", "id_meme", "licence", "nom", "origine", "source_url"].sort(),
+      [
+        "annee_origine",
+        "article_url",
+        "auteur",
+        "id_meme",
+        "licence",
+        "nom",
+        "origine",
+        "source_url",
+      ].sort(),
     );
     expect(c.bonne_reponse.source_url).toStartWith("https://commons.wikimedia.org/wiki/File:");
 

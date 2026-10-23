@@ -339,6 +339,7 @@ export function Partie({ idPartie }: { idPartie: number }) {
                 licence: bonne.licence,
                 sourceUrl: bonne.source_url,
               }}
+              articleUrl={bonne.article_url}
             />
             <button
               ref={boutonSuivant}
