@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import { creerJetonAdmin, jetonAdminValide, motDePasseValide } from "@/lib/admin";
-import { creerSlug, ficheMemeSchema } from "@/lib/memes-admin";
+import { creerSlug, ficheMemeSchema, lireFiche } from "@/lib/memes-admin";
 
 const MDP = "un-mot-de-passe-solide";
 
@@ -69,6 +69,14 @@ describe("ficheMemeSchema", () => {
       expect(r.data.origine).toBeNull();
       expect(r.data.article_url).toBeNull();
     }
+  });
+
+  test("traite les champs absents d'un FormData comme non renseignés", () => {
+    const f = new FormData();
+    f.set("nom", "Doge");
+    f.set("licence", "cc0");
+    const r = lireFiche(f);
+    expect(r.ok).toBe(true);
   });
 
   test("refuse une licence non libre ou absente", () => {

@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from "bun:test";
-import { mkdtemp, readdir, rm } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { drizzle } from "drizzle-orm/postgres-js";
@@ -29,11 +29,16 @@ describe.skipIf(!BASE_TEST_ACTIVE)("backoffice des mèmes (SCRUM-96)", () => {
 
   beforeEach(async () => {
     await db.delete(schema.meme);
+    // Dossier d'images vidé entre les tests ; les fichiers de la conversion sont lus par sharp,
+    // d'où les nouvelles tentatives (Windows garde un verrou un instant).
+    for (const fichier of await readdir(dossier)) {
+      await rm(join(dossier, fichier), { force: true, maxRetries: 5, retryDelay: 100 });
+    }
   });
 
   afterAll(async () => {
     delete process.env.MEMES_DIR;
-    await rm(dossier, { recursive: true, force: true });
+    await rm(dossier, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
     await client.end();
   });
 
@@ -64,7 +69,7 @@ describe.skipIf(!BASE_TEST_ACTIVE)("backoffice des mèmes (SCRUM-96)", () => {
     const [ligne] = await db.select().from(schema.meme);
     expect(ligne).toMatchObject({ slug: "meme-de-test", actif: true, via_backoffice: true });
     expect(ligne?.image_chemin).toBe("/memes/meme-de-test.webp");
-    const meta = await sharp(join(dossier, "meme-de-test.webp")).metadata();
+    const meta = await sharp(await readFile(join(dossier, "meme-de-test.webp"))).metadata();
     expect(meta.format).toBe("webp");
     expect(Math.max(meta.width ?? 0, meta.height ?? 0)).toBeLessThanOrEqual(800);
   });

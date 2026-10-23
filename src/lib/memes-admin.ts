@@ -14,7 +14,9 @@ import type { BaseDonnees } from "@/lib/questions";
 export const IMAGE_ENVOI_MAX_OCTETS = 8 * 1024 * 1024;
 export const MIN_MEMES_ACTIFS = 4;
 
-const vide = (v: unknown) => (typeof v === "string" && v.trim() === "" ? undefined : v);
+// Champ absent (null dans un FormData) ou vide : traité comme non renseigné.
+const vide = (v: unknown) =>
+  v === null || (typeof v === "string" && v.trim() === "") ? undefined : v;
 const texteFacultatif = (max: number) =>
   z.preprocess(vide, z.string().trim().max(max).optional()).transform((v) => v ?? null);
 
