@@ -5,7 +5,13 @@ import styles from "./FicheMeme.module.css";
 // Crédits de l'image, à afficher à la correction (docs/droits-images.md).
 export type CreditsImage = { auteur: string; licence: string; sourceUrl: string };
 
-type Props = { fiche: FicheMemeDonnees; credits?: CreditsImage; articleUrl?: string | null };
+type Props = {
+  fiche: Pick<FicheMemeDonnees, "nom"> & Partial<FicheMemeDonnees>;
+  credits?: CreditsImage;
+  articleUrl?: string | null;
+  // « h1 » sur la page propre au mème ; « h3 » quand la fiche est dans un écran de jeu.
+  niveauTitre?: "h1" | "h3";
+};
 
 // Lien vers l'article seulement s'il s'agit d'une adresse https de Wikipédia (jamais un
 // `javascript:` venu des données) ; la langue de l'article est indiquée quand ce n'est pas le français.
@@ -21,13 +27,14 @@ function libelleArticle(url: string | null | undefined): string | null {
 }
 
 // Les champs vides ne sont pas rendus : un paragraphe vide ferait un blanc muet pour un lecteur d'écran.
-export function FicheMeme({ fiche, credits, articleUrl }: Props) {
+export function FicheMeme({ fiche, credits, articleUrl, niveauTitre = "h3" }: Props) {
   const libelle = libelleArticle(articleUrl);
+  const Titre = niveauTitre;
   return (
     <article className={styles.fiche}>
-      <h3 className={styles.nom}>
+      <Titre className={styles.nom}>
         <span className={styles.surligne}>{fiche.nom}</span>
-      </h3>
+      </Titre>
       {fiche.origine && <p className={styles.origine}>{fiche.origine}</p>}
       {libelle && articleUrl && (
         <p className={styles.source}>
