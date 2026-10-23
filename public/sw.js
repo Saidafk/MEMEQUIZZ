@@ -13,8 +13,18 @@ const estStatique = (url) =>
 // Page de secours précachée à l'installation (SCRUM-50).
 const PAGE_SECOURS = "/hors-ligne";
 
+// Précache la page de secours et les CSS/JS qu'elle référence, pour qu'elle
+// s'affiche avec son style dès un premier passage hors ligne.
+async function precacherPageSecours() {
+  const pages = await caches.open(CACHE_PAGES);
+  await pages.add(PAGE_SECOURS);
+  const html = await (await pages.match(PAGE_SECOURS)).text();
+  const ressources = new Set(html.match(/\/_next\/static\/[^"'\\\s)]+/g) ?? []);
+  const statique = await caches.open(CACHE_STATIQUE);
+  await Promise.all([...ressources].map((url) => statique.add(url).catch(() => {})));
+}
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_PAGES).then((cache) => cache.add(PAGE_SECOURS)));
+  event.waitUntil(precacherPageSecours());
   self.skipWaiting();
 });
 
