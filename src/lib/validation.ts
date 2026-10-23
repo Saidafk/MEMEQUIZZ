@@ -26,8 +26,13 @@ export const pseudoSchema = z
         },
         { error: `Le pseudo doit faire entre ${PSEUDO_MIN} et ${PSEUDO_MAX} caractères.` },
       )
-      .regex(/^[\p{L}\p{N}_. -]+$/u, {
-        error: "Le pseudo ne peut contenir que des lettres, des chiffres, « _ », « . » et « - ».",
+      .regex(/^[\p{L}\p{Nd}_. -]+$/u, {
+        error:
+          "Le pseudo ne peut contenir que des lettres, des chiffres, « _ », « . » et « - » (sans accents combinés ni symboles).",
+      })
+      // Évite les pseudos faits uniquement de ponctuation (« ... », « ___ »).
+      .regex(/[\p{L}\p{Nd}]/u, {
+        error: "Le pseudo doit contenir au moins une lettre ou un chiffre.",
       }),
   );
 

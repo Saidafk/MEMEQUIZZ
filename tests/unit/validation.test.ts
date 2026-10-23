@@ -8,7 +8,7 @@ import {
   questionParamsSchema,
   reponseSchema,
 } from "@/lib/validation";
-import { valider, validerCorpsJson } from "@/lib/validation-http";
+import { CORPS_MAX_OCTETS, valider, validerCorpsJson } from "@/lib/validation-http";
 
 describe("pseudoSchema", () => {
   test("accepte les pseudos du jeu et les nettoie", () => {
@@ -25,6 +25,10 @@ describe("pseudoSchema", () => {
       expect(pseudoSchema.safeParse(pseudo).success).toBe(false);
     }
     expect(pseudoSchema.safeParse("a".repeat(20)).success).toBe(true);
+    // Uniquement de la ponctuation, ou des chiffres qui ne sont pas décimaux (exposants).
+    for (const pseudo of ["...", "___", "- - -", "x²³"]) {
+      expect(pseudoSchema.safeParse(pseudo).success).toBe(false);
+    }
   });
 
   test("compte les caractères comme PostgreSQL, pas les unités UTF-16", () => {
@@ -150,10 +154,69 @@ describe("réponses HTTP (code 400)", () => {
     }
   });
 
-  test("corps trop gros : 413, sans analyser le JSON", async () => {
+  test("Content-Length trop grand : 413 sans lire le corps", async () => {
+    // Le corps réel est minuscule et valide : seul l'en-tête peut provoquer le refus.
+    const requeteMenteuse = new Request("http://localhost/api/parties", {
+      method: "POST",
+      headers: { "content-length": "5000" },
+      body: '{"pseudo":"Saïd"}',
+    });
+    expect(requeteMenteuse.headers.get("content-length")).toBe("5000");
+
+    const resultat = await validerCorpsJson(requeteMenteuse, nouvellePartieSchema);
+    expect(resultat.ok).toBe(false);
+    if (!resultat.ok) expect(resultat.reponse.status).toBe(413);
+  });
+
+  test("gros corps avec Content-Length absent : 413 aussi", async () => {
     const gros = JSON.stringify({ pseudo: "Saïd", bourrage: "x".repeat(5_000) });
     const resultat = await validerCorpsJson(requete(gros), nouvellePartieSchema);
     expect(resultat.ok).toBe(false);
     if (!resultat.ok) expect(resultat.reponse.status).toBe(413);
+  });
+
+  test("corps streamé sans Content-Length : 413 et lecture interrompue tôt", async () => {
+    const MORCEAUX = 200;
+    let lus = 0;
+    let annule = false;
+    const flux = new ReadableStream<Uint8Array>({
+      pull(controleur) {
+        if (lus >= MORCEAUX) return controleur.close();
+        lus += 1;
+        controleur.enqueue(new TextEncoder().encode("x".repeat(500)));
+      },
+      cancel() {
+        annule = true;
+      },
+    });
+    const requeteStreamee = new Request("http://localhost/api/parties", {
+      method: "POST",
+      body: flux,
+      duplex: "half",
+    } as RequestInit);
+    expect(requeteStreamee.headers.get("content-length")).toBeNull();
+
+    const resultat = await validerCorpsJson(requeteStreamee, nouvellePartieSchema);
+    expect(resultat.ok).toBe(false);
+    if (!resultat.ok) expect(resultat.reponse.status).toBe(413);
+    expect(annule).toBe(true);
+    // 2000 octets / 500 par morceau : on s'arrête vers le 5e morceau, loin des 200 possibles.
+    expect(lus).toBeLessThan(20);
+  });
+
+  test("corps à la limite exacte accepté, UTF-8 invalide refusé en 400", async () => {
+    const limite = '{"pseudo":"Saïd","x":"' + "a".repeat(1_900) + '"}';
+    expect(new TextEncoder().encode(limite).length).toBeLessThanOrEqual(CORPS_MAX_OCTETS);
+    const ok = await validerCorpsJson(requete(limite), nouvellePartieSchema);
+    expect(ok.ok).toBe(false); // clé « x » inconnue : refusée par strictObject, mais pas en 413
+    if (!ok.ok) expect(ok.reponse.status).toBe(400);
+
+    const invalide = new Request("http://localhost/api/parties", {
+      method: "POST",
+      body: new Uint8Array([0x7b, 0xff, 0xfe, 0x7d]),
+    });
+    const refuse = await validerCorpsJson(invalide, nouvellePartieSchema);
+    expect(refuse.ok).toBe(false);
+    if (!refuse.ok) expect(refuse.reponse.status).toBe(400);
   });
 });

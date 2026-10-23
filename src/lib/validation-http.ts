@@ -2,7 +2,7 @@ import type { z } from "zod";
 
 // Aides pour les route handlers : toute entrée invalide devient une réponse 400 uniforme,
 // sans jamais exposer d'erreur interne.
-const CORPS_MAX_OCTETS = 2_000;
+export const CORPS_MAX_OCTETS = 2_000;
 
 export type ResultatValidation<T> = { ok: true; donnees: T } | { ok: false; reponse: Response };
 
@@ -28,17 +28,56 @@ export function valider<S extends z.ZodType>(
   return { ok: false, reponse: erreurValidation(resultat.error) };
 }
 
+// Lit le corps par morceaux et coupe le flux dès que la limite est dépassée : `request.text()`
+// chargerait tout en mémoire avant qu'on puisse mesurer, et `Content-Length` peut être absent
+// (corps streamé) ou mensonger.
+async function lireCorpsLimite(request: Request): Promise<string | "trop_gros" | "illisible"> {
+  const annonce = Number(request.headers.get("content-length"));
+  if (Number.isFinite(annonce) && annonce > CORPS_MAX_OCTETS) {
+    await request.body?.cancel();
+    return "trop_gros";
+  }
+  if (!request.body) return "";
+
+  const lecteur = request.body.getReader();
+  const morceaux: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await lecteur.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > CORPS_MAX_OCTETS) {
+      await lecteur.cancel();
+      return "trop_gros";
+    }
+    morceaux.push(value);
+  }
+
+  const octets = new Uint8Array(total);
+  let decalage = 0;
+  for (const morceau of morceaux) {
+    octets.set(morceau, decalage);
+    decalage += morceau.byteLength;
+  }
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(octets);
+  } catch {
+    return "illisible";
+  }
+}
+
 export async function validerCorpsJson<S extends z.ZodType>(
   request: Request,
   schema: S,
 ): Promise<ResultatValidation<z.output<S>>> {
-  const texte = await request.text();
-  if (new TextEncoder().encode(texte).length > CORPS_MAX_OCTETS) {
+  const texte = await lireCorpsLimite(request);
+  if (texte === "trop_gros") {
     return { ok: false, reponse: Response.json({ erreur: "corps_trop_gros" }, { status: 413 }) };
   }
 
   let corps: unknown;
   try {
+    if (texte === "illisible") throw new Error("UTF-8 invalide");
     corps = JSON.parse(texte);
   } catch {
     return {
