@@ -9,14 +9,30 @@ import type { BaseDonnees } from "@/lib/questions";
 // Notifications push du quiz du jour (SCRUM-49). Les clés VAPID et le secret d'envoi viennent de
 // l'environnement (.env en production, jamais dans le dépôt).
 
+// Le serveur envoie ensuite une requête à cette adresse : on n'accepte que les services push des
+// navigateurs courants, pour qu'un client ne puisse pas viser un hôte interne (SSRF).
+const HOTES_PUSH = [
+  "fcm.googleapis.com", // Chrome, Edge, Opera, Brave
+  "updates.push.services.mozilla.com", // Firefox (et sous-domaines)
+  "notify.windows.com", // anciens Edge (sous-domaines)
+  "push.apple.com", // Safari (web.push.apple.com)
+];
+
+export function hotePushAutorise(adresse: string): boolean {
+  if (!URL.canParse(adresse)) return false;
+  const { protocol, hostname } = new URL(adresse);
+  return (
+    protocol === "https:" &&
+    HOTES_PUSH.some((hote) => hostname === hote || hostname.endsWith(`.${hote}`))
+  );
+}
+
 // Forme renvoyée par `PushSubscription.toJSON()` dans le navigateur.
 export const abonnementSchema = z.strictObject({
   endpoint: z
     .string()
     .max(1000)
-    .refine((valeur) => URL.canParse(valeur) && new URL(valeur).protocol === "https:", {
-      message: "L'adresse d'abonnement doit être en https.",
-    }),
+    .refine(hotePushAutorise, { message: "Service de notification non reconnu." }),
   keys: z.strictObject({
     p256dh: z.string().min(1).max(200),
     auth: z.string().min(1).max(100),

@@ -34,4 +34,6 @@ La réponse indique le bilan : `{ "envoyes": n, "supprimes": n, "echecs": n }`.
 
 - Le contenu est le même pour tous (« le quiz du jour est prêt ») : il n'y a pas encore de quiz du jour distinct des parties normales.
 - iOS ne délivre les notifications push qu'aux sites ajoutés à l'écran d'accueil.
-- Pas de limitation du nombre d'abonnements par client (voir limites connues, v0.7).
+- Seules les adresses des services push des navigateurs courants (FCM, Mozilla, Windows, Apple) sont acceptées : le serveur n'envoie jamais vers un hôte arbitraire (SSRF).
+- `DELETE /api/push/abonnements` est sans authentification : l'adresse d'abonnement, difficile à deviner, tient lieu de preuve. Choix assumé (pas de compte joueur).
+- Pas de limitation du nombre d'abonnements par client ni d'envois en parallèle : à traiter en v0.7 avec la limitation des parties (limites connues).
