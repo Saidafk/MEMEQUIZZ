@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { Bonhomme } from "@/components/Bonhomme";
-import { BoutonLien } from "@/components/BoutonLien";
 import { Feuille } from "@/components/Feuille";
 import { Logo } from "@/components/Logo";
+import { FormulairePartie } from "./FormulairePartie";
 import styles from "./page.module.css";
 
 export default function Accueil() {
@@ -25,23 +24,7 @@ export default function Accueil() {
         <div className={styles.dessin}>
           <Bonhomme />
         </div>
-        {/* Pas de <form> : le pseudo n'est pas encore transmis (ni base ni session avant la v0.3). */}
-        <div className={styles.formulaire}>
-          <label htmlFor="pseudo" className={styles.etiquette}>
-            Ton pseudo
-          </label>
-          <input
-            id="pseudo"
-            className={styles.champ}
-            placeholder="ex. Gribouille42"
-            autoComplete="nickname"
-            maxLength={20}
-          />
-          <BoutonLien href="/jeu">C&apos;est parti →</BoutonLien>
-          <Link href="/classement" className={styles.lien}>
-            Voir le classement
-          </Link>
-        </div>
+        <FormulairePartie />
       </div>
     </Feuille>
   );

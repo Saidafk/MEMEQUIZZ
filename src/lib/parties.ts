@@ -52,6 +52,8 @@ export type ResultatPartie = {
   total: number;
   // Une entrée par question ; fausse tant qu'il n'y a pas eu de bonne réponse.
   reponses: boolean[];
+  // Nombre de questions closes (répondues ou temps écoulé signalé) : où reprendre la partie.
+  repondues: number;
   // Position dans le classement des parties terminées (égalité = même rang) ; absent en cours de partie.
   rang: number | null;
   nombre_joueurs: number | null;
@@ -112,6 +114,8 @@ export async function lireResultat(
       bonnes: reponses.filter(Boolean).length,
       total: QUESTIONS_PAR_PARTIE,
       reponses,
+      // Permet de reprendre une partie après un rechargement : la prochaine question est repondues + 1.
+      repondues: questions.filter((q) => q.repondu_le !== null).length,
       rang,
       nombre_joueurs: nombreJoueurs,
     },

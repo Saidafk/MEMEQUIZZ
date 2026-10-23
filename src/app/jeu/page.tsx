@@ -1,18 +1,7 @@
-import type { Metadata } from "next";
-import { Feuille } from "@/components/Feuille";
-import { Partie } from "./Partie";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Partie — MEMEQUIZZ",
-  robots: { index: false },
-};
-
-export default function PageJeu() {
-  return (
-    <Feuille largeur="large">
-      {/* Titre de page pour les lecteurs d'écran : h1 → h2 (question) → h3 (fiche du mème). */}
-      <h1 className="masque-visuel">Partie en cours</h1>
-      <Partie />
-    </Feuille>
-  );
+// Une partie a désormais un identifiant (/jeu/[partieId]) : l'ancienne adresse renvoie à l'accueil,
+// où l'on saisit son pseudo pour en démarrer une.
+export default function PageJeuSansPartie() {
+  redirect("/");
 }
