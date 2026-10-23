@@ -23,20 +23,20 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-async function cacheDabord(requete) {
+async function cacheDabord(event, requete) {
   const cache = await caches.open(CACHE_STATIQUE);
   const enCache = await cache.match(requete);
   if (enCache) return enCache;
   const reponse = await fetch(requete);
-  if (reponse.ok) cache.put(requete, reponse.clone());
+  if (reponse.ok) event.waitUntil(cache.put(requete, reponse.clone()));
   return reponse;
 }
 
-async function reseauDabord(requete) {
+async function reseauDabord(event, requete) {
   const cache = await caches.open(CACHE_PAGES);
   try {
     const reponse = await fetch(requete);
-    if (reponse.ok) cache.put(requete, reponse.clone());
+    if (reponse.ok) event.waitUntil(cache.put(requete, reponse.clone()));
     return reponse;
   } catch (erreur) {
     const enCache = await cache.match(requete);
@@ -53,8 +53,8 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith("/api/")) return; // données de jeu : toujours le réseau
 
   if (estStatique(url)) {
-    event.respondWith(cacheDabord(requete));
+    event.respondWith(cacheDabord(event, requete));
   } else if (requete.mode === "navigate") {
-    event.respondWith(reseauDabord(requete));
+    event.respondWith(reseauDabord(event, requete));
   }
 });
