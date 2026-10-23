@@ -68,7 +68,7 @@ export function Partie() {
   // dans la zone de jeu (WCAG 2.1.4, raccourcis à une seule touche) : il ne gêne ni la
   // navigation d'un lecteur d'écran ni la saisie ailleurs dans la page.
   function surTouche(e: KeyboardEvent<HTMLDivElement>) {
-    if (phase !== "question" || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (phase !== "question" || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
     const lettre = TOUCHES[e.key.toLowerCase()];
     if (lettre) repondre(lettre);
   }
@@ -77,7 +77,7 @@ export function Partie() {
   // pour que les touches A à D fonctionnent tout de suite ; après une réponse, sur « suivante ».
   useEffect(() => {
     if (phase === "retour") boutonSuivant.current?.focus();
-    else titreQuestion.current?.focus();
+    else titreQuestion.current?.focus({ preventScroll: true });
   }, [phase, index]);
 
   if (!question) return null;
@@ -106,7 +106,7 @@ export function Partie() {
   const detail = choisie === null ? "temps écoulé" : `en ${libelleSecondes(secondesMises)}`;
 
   return (
-    <div className={styles.partie} onKeyDown={surTouche}>
+    <div className={styles.partie} tabIndex={-1} onKeyDown={surTouche}>
       <div className={styles.barre}>
         <BarreScore question={index + 1} totalQuestions={total} score={score} />
       </div>
@@ -147,7 +147,9 @@ export function Partie() {
 
       <div className={styles.suite}>
         {phase === "question" ? (
-          <p className={styles.astuce}>Astuce : touches A, B, C ou D du clavier pour répondre.</p>
+          <p className={styles.astuce}>
+            Astuce : touches A, B, C ou D pour répondre (quand le jeu a le focus).
+          </p>
         ) : (
           <>
             <FicheMeme fiche={question.fiche} />
