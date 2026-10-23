@@ -29,4 +29,5 @@ Le jeu en ligne passe par le serveur (question en SCRUM-39, vérification de la 
 
 - un lot de questions embarqué (images locales mises en cache par le service worker) ;
 - vérification des réponses et score calculés côté client, sans classement partagé ;
+- la bonne réponse sera forcément présente côté client dans ce mode : acceptable en solo, sans classement partagé ni score envoyé au serveur ;
 - à traiter dans un ticket dédié, après la v0.3. La copie locale des images en est la condition.
