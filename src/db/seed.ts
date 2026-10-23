@@ -20,6 +20,8 @@ const MEMES_INITIAUX = [
 ] as const;
 
 export async function semer(db: PostgresJsDatabase): Promise<number> {
+  // Valeurs provisoires : source_url pointe vers le dépôt (aucune vraie source)
+  // et l'image est générique. À remplacer par SCRUM-37 et SCRUM-38.
   const lignes = MEMES_INITIAUX.map(([slug, nom]) => ({
     slug,
     nom,
