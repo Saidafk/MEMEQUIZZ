@@ -70,6 +70,17 @@ export async function validerCorpsJson<S extends z.ZodType>(
   request: Request,
   schema: S,
 ): Promise<ResultatValidation<z.output<S>>> {
+  // `application/json` exigé : un formulaire envoyé depuis un autre site ne peut pas produire ce
+  // type sans demande d'autorisation préalable du navigateur (protection CSRF en plus du cookie SameSite).
+  const typeContenu = request.headers.get("content-type") ?? "";
+  if (!/^application\/json\s*(;|$)/i.test(typeContenu)) {
+    await request.body?.cancel();
+    return {
+      ok: false,
+      reponse: Response.json({ erreur: "type_contenu_non_supporte" }, { status: 415 }),
+    };
+  }
+
   const texte = await lireCorpsLimite(request);
   if (texte === "trop_gros") {
     return { ok: false, reponse: Response.json({ erreur: "corps_trop_gros" }, { status: 413 }) };

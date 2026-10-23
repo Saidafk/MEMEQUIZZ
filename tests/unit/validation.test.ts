@@ -112,12 +112,45 @@ describe("schémas d'API", () => {
     expect(reponseSchema.safeParse(triche).success).toBe(false);
     expect(reponseSchema.safeParse({ id_partie: 1, rang: 11, id_meme: 7 }).success).toBe(false);
     expect(reponseSchema.safeParse({ id_partie: 1, rang: 3 }).success).toBe(false);
+    // Temps écoulé : le client demande la correction sans mème choisi.
+    expect(reponseSchema.parse({ id_partie: 1, rang: 3, id_meme: null }).id_meme).toBeNull();
+    expect(reponseSchema.safeParse({ id_partie: 1, rang: 3, id_meme: 0 }).success).toBe(false);
+    expect(reponseSchema.safeParse({ id_partie: 1, rang: 3, id_meme: "7" }).success).toBe(false);
   });
 });
 
 describe("réponses HTTP (code 400)", () => {
+  const JSON_HEADERS = { "content-type": "application/json" };
   const requete = (corps: string) =>
-    new Request("http://localhost/api/parties", { method: "POST", body: corps });
+    new Request("http://localhost/api/parties", {
+      method: "POST",
+      headers: JSON_HEADERS,
+      body: corps,
+    });
+
+  test("type de contenu autre que JSON : 415 (pas de formulaire d'un autre site)", async () => {
+    for (const type of [
+      "text/plain",
+      "application/x-www-form-urlencoded",
+      "multipart/form-data",
+      "",
+    ]) {
+      const r = new Request("http://localhost/api/parties", {
+        method: "POST",
+        headers: type ? { "content-type": type } : {},
+        body: '{"pseudo":"Saïd"}',
+      });
+      const resultat = await validerCorpsJson(r, nouvellePartieSchema);
+      expect(resultat.ok).toBe(false);
+      if (!resultat.ok) expect(resultat.reponse.status).toBe(415);
+    }
+    const avecCharset = new Request("http://localhost/api/parties", {
+      method: "POST",
+      headers: { "content-type": "application/json; charset=utf-8" },
+      body: '{"pseudo":"Saïd"}',
+    });
+    expect((await validerCorpsJson(avecCharset, nouvellePartieSchema)).ok).toBe(true);
+  });
 
   test("entrée invalide : 400 avec le champ fautif, sans détail interne", async () => {
     const resultat = valider(nouvellePartieSchema, { pseudo: "a" });
@@ -158,7 +191,7 @@ describe("réponses HTTP (code 400)", () => {
     // Le corps réel est minuscule et valide : seul l'en-tête peut provoquer le refus.
     const requeteMenteuse = new Request("http://localhost/api/parties", {
       method: "POST",
-      headers: { "content-length": "5000" },
+      headers: { "content-length": "5000", ...JSON_HEADERS },
       body: '{"pseudo":"Saïd"}',
     });
     expect(requeteMenteuse.headers.get("content-length")).toBe("5000");
@@ -191,6 +224,7 @@ describe("réponses HTTP (code 400)", () => {
     });
     const requeteStreamee = new Request("http://localhost/api/parties", {
       method: "POST",
+      headers: JSON_HEADERS,
       body: flux,
       duplex: "half",
     } as RequestInit);
@@ -213,6 +247,7 @@ describe("réponses HTTP (code 400)", () => {
 
     const invalide = new Request("http://localhost/api/parties", {
       method: "POST",
+      headers: JSON_HEADERS,
       body: new Uint8Array([0x7b, 0xff, 0xfe, 0x7d]),
     });
     const refuse = await validerCorpsJson(invalide, nouvellePartieSchema);
