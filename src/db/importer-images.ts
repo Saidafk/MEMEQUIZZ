@@ -39,7 +39,10 @@ for (const meme of MEMES) {
     const url = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(
       meme.fichier_commons.replaceAll(" ", "_"),
     )}?width=${LARGEUR_MAX}`;
-    const reponse = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
+    const reponse = await fetch(url, {
+      headers: { "User-Agent": USER_AGENT },
+      signal: AbortSignal.timeout(30_000),
+    });
     if (!reponse.ok) throw new Error(`HTTP ${reponse.status}`);
     const webp = await convertir(Buffer.from(await reponse.arrayBuffer()));
     await writeFile(cible, webp);
