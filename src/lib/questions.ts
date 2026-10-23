@@ -11,11 +11,11 @@ import { QUESTIONS_PAR_PARTIE } from "@/lib/validation";
 
 // Servir une question (SCRUM-39). Règle d'or : la bonne réponse ne sort JAMAIS d'ici, ni dans la
 // charge utile, ni dans l'URL de l'image (le slug du mème est le nom de la réponse).
-type BaseDonnees = PostgresJsDatabase<typeof schema>;
+export type BaseDonnees = PostgresJsDatabase<typeof schema>;
 
 const NOMBRE_CHOIX = 4;
-// Marge pour juger qu'une question précédente est terminée même sans réponse reçue (latence réseau).
-const GRACE_REPONSE_S = 2;
+// Marge pour juger qu'une question est terminée même sans réponse reçue (latence réseau).
+export const GRACE_REPONSE_S = 2;
 
 export type QuestionServie = {
   id_partie: number;
@@ -32,14 +32,19 @@ export type ErreurQuestion =
   | { statut: "introuvable" }
   | {
       statut: "conflit";
-      raison: "partie_terminee" | "question_deja_repondue" | "question_precedente_ouverte";
+      raison:
+        | "partie_terminee"
+        | "question_deja_repondue"
+        | "question_precedente_ouverte"
+        | "question_non_envoyee";
     }
+  | { statut: "choix_invalide" }
   | { statut: "pas_assez_de_memes" };
 
 export type ResultatQuestion = { statut: "ok"; question: QuestionServie } | ErreurQuestion;
 export type ResultatImage = { statut: "ok"; chemin: string } | ErreurQuestion;
 
-type Demande = { id_partie: number; rang: number; jetonHash: string | null };
+export type Demande = { id_partie: number; rang: number; jetonHash: string | null };
 
 // Fisher-Yates avec un tirage cryptographique : la position de la bonne réponse doit rester
 // imprévisible, sinon elle se déduirait de l'ordre des choix.
@@ -62,7 +67,7 @@ export function resoudreFichierImage(imageChemin: string): string | null {
 
 // La ligne n'est lue que si la session est bien celle du propriétaire de la partie : une partie
 // d'un autre joueur est « introuvable » (pas de différence observable avec une partie inexistante).
-async function lireLigne(
+export async function lireLigne(
   db: BaseDonnees,
   { id_partie, rang, jetonHash }: Demande & { jetonHash: string },
 ) {
@@ -79,6 +84,15 @@ async function lireLigne(
           Number,
         ),
       image_chemin: meme.image_chemin,
+      // Fiche du bon mème : n'est révélée qu'à la correction (voir reponses.ts), jamais ici.
+      bonne: {
+        nom: meme.nom,
+        annee_origine: meme.annee_origine,
+        origine: meme.origine,
+        auteur: meme.auteur,
+        licence: meme.licence,
+        source_url: meme.source_url,
+      },
     })
     .from(partieQuestion)
     .innerJoin(partie, eq(partie.id_partie, partieQuestion.id_partie))
@@ -195,6 +209,8 @@ export function reponseErreurQuestion(erreur: ErreurQuestion): Response {
       return Response.json({ erreur: "introuvable" }, { status: 404 });
     case "conflit":
       return Response.json({ erreur: erreur.raison }, { status: 409 });
+    case "choix_invalide":
+      return Response.json({ erreur: "choix_invalide" }, { status: 400 });
     case "pas_assez_de_memes":
       return Response.json({ erreur: "pas_assez_de_memes" }, { status: 503 });
   }

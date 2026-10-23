@@ -72,13 +72,14 @@ export const questionParamsSchema = z.strictObject({
   rang: rangUrlSchema,
 });
 
-// POST réponse : `id_meme` est le mème choisi par le joueur. Que ce mème fasse bien partie des 4
-// choix servis pour cette question, et la bonne réponse, se vérifient côté serveur (SCRUM-40) ;
-// aucun score ni délai n'est jamais accepté du client.
+// POST réponse : `id_meme` est le mème choisi par le joueur, ou `null` quand le temps est écoulé
+// (le client demande alors la correction sans avoir répondu). Que ce mème fasse bien partie des
+// 4 choix servis et la bonne réponse se vérifient côté serveur ; aucun score ni délai n'est
+// jamais accepté du client (strictObject : tout champ en plus est refusé).
 export const reponseSchema = z.strictObject({
   id_partie: identifiantSchema,
   rang: rangSchema,
-  id_meme: identifiantSchema,
+  id_meme: identifiantSchema.nullable(),
 });
 
 export type NouvellePartie = z.output<typeof nouvellePartieSchema>;
