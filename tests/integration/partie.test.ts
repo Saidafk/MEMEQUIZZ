@@ -149,6 +149,7 @@ describe.skipIf(!BASE_TEST_ACTIVE)("partie complète (SCRUM-42)", () => {
     ]);
     expect(resultat.rang).toBe(1);
     expect(resultat.nombre_joueurs).toBe(1);
+    expect(resultat.repondues).toBe(10);
 
     const [partie] = await db
       .select()
@@ -182,6 +183,9 @@ describe.skipIf(!BASE_TEST_ACTIVE)("partie complète (SCRUM-42)", () => {
     expect(r.nombre_joueurs).toBeNull();
     expect(r.reponses).toEqual([true, ...Array.from({ length: 9 }, () => false)]);
     expect(r.bonnes).toBe(1);
+    // De quoi reprendre la partie après un rechargement : la prochaine question est la 2.
+    expect(r.repondues).toBe(1);
+    expect((await lire(await demarrer())).repondues).toBe(0);
   });
 
   test("on ne peut pas terminer la partie en sautant des questions", async () => {
