@@ -9,8 +9,9 @@ type Props = {
 };
 
 // Composant d'affichage : le décompte lui-même est géré par la page de jeu.
-export function Chrono({ restant, total = DUREE_QUESTION_S }: Props) {
-  const secondes = Math.max(0, Math.min(total, Math.ceil(restant)));
+export function Chrono({ restant, total: totalDemande = DUREE_QUESTION_S }: Props) {
+  const total = totalDemande > 0 ? totalDemande : DUREE_QUESTION_S;
+  const secondes = Number.isFinite(restant) ? Math.max(0, Math.min(total, Math.ceil(restant))) : 0;
   const urgent = secondes <= SEUIL_URGENT_S;
   return (
     <div className={`${styles.chrono} ${urgent ? styles.urgent : ""}`}>

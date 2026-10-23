@@ -20,11 +20,11 @@
   transition: transform 0.1s ease;
 }
 
-.bouton:hover:not(:disabled) {
+.bouton:hover:not([aria-disabled="true"], :disabled) {
   background: var(--couleur-surligneur);
 }
 
-.bouton:active:not(:disabled) {
+.bouton:active:not([aria-disabled="true"], :disabled) {
   transform: translate(2px, 2px);
   box-shadow: 1px 2px 0 var(--couleur-encre);
 }

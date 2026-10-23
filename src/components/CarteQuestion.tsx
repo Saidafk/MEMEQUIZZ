@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import styles from "./CarteQuestion.module.css";
 
 type Props = {
@@ -8,8 +8,9 @@ type Props = {
 };
 
 export function CarteQuestion({ intitule = "C'est quel mème ?", image }: Props) {
+  const idIntitule = useId();
   return (
-    <section className={styles.carte} aria-labelledby="intitule-question">
+    <section className={styles.carte} aria-labelledby={idIntitule}>
       <div className={styles.cadre}>
         {image ?? (
           <div className={styles.vide}>
@@ -32,7 +33,7 @@ export function CarteQuestion({ intitule = "C'est quel mème ?", image }: Props)
           </div>
         )}
       </div>
-      <h2 id="intitule-question" className={styles.intitule}>
+      <h2 id={idIntitule} className={styles.intitule}>
         {intitule}
       </h2>
     </section>
