@@ -1,0 +1,42 @@
+.chrono {
+  --couleur-chrono: var(--couleur-encre);
+  display: flex;
+  align-items: center;
+  gap: var(--espace-3);
+  width: 100%;
+}
+
+.urgent {
+  --couleur-chrono: var(--couleur-erreur);
+}
+
+.piste {
+  flex: 1;
+  height: 14px;
+  overflow: hidden;
+  background: var(--couleur-papier);
+  border: 2.5px solid var(--couleur-encre);
+  border-radius: 9px 6px 10px 7px;
+}
+
+/* Hachures « au stylo » plutôt qu'un aplat. */
+.remplissage {
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--couleur-chrono) 0,
+    var(--couleur-chrono) 3px,
+    transparent 3px,
+    transparent 7px
+  );
+  transition: width 1s linear;
+}
+
+.secondes {
+  min-width: 3ch;
+  text-align: right;
+  font-family: var(--police-titre);
+  font-size: var(--taille-l);
+  font-weight: 700;
+  color: var(--couleur-chrono);
+}

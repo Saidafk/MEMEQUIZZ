@@ -1,0 +1,17 @@
+.barre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-3);
+  font-size: var(--taille-m);
+}
+
+/* Le score est « surligné » au feutre jaune, légèrement de travers. */
+.score {
+  padding: 0 var(--espace-2);
+  font-family: var(--police-titre);
+  font-size: var(--taille-l);
+  font-weight: 700;
+  background: var(--couleur-surligneur);
+  transform: rotate(-2deg);
+}

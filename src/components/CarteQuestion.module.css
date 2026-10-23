@@ -1,0 +1,27 @@
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-4);
+}
+
+.cadre {
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  background: var(--couleur-papier);
+  border: 3px dashed var(--couleur-encre);
+  border-radius: 18px 12px 20px 14px;
+}
+
+.vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espace-2);
+  height: 100%;
+  font-size: var(--taille-m);
+}
+
+.intitule {
+  font-size: var(--taille-xl);
+}
