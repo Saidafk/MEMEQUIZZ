@@ -7,7 +7,9 @@ import { meme } from "./schema";
 
 // Rejouable : upsert sur le slug. Les mèmes absents de la liste sont désactivés
 // plutôt que supprimés (des parties peuvent y faire référence).
-export async function semer(db: PostgresJsDatabase): Promise<number> {
+export async function semer<S extends Record<string, unknown>>(
+  db: PostgresJsDatabase<S>,
+): Promise<number> {
   const lignes = MEMES.map((m) => ({
     slug: m.slug,
     nom: m.nom,
