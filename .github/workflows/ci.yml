@@ -55,6 +55,8 @@ jobs:
         env:
           TEST_DATABASE_URL: postgres://memequizz:ci@localhost:5432/memequizz_test
         run: |
+          # Sans pipefail, l'échec de bun serait masqué par le code de sortie de tee.
+          set -o pipefail
           bun run db:test 2>&1 | tee integration.log
           # Un test sauté passerait sans rien vérifier : on exige qu'aucun ne le soit.
           if grep -qE '^ *[0-9]+ skip' integration.log; then
