@@ -57,7 +57,7 @@ jobs:
         run: |
           bun run db:test 2>&1 | tee integration.log
           # Un test sauté passerait sans rien vérifier : on exige qu'aucun ne le soit.
-          if grep -qE '[0-9]+ skip' integration.log; then
+          if grep -qE '^ *[0-9]+ skip' integration.log; then
             echo "Des tests d'intégration ont été sautés."
             exit 1
           fi
