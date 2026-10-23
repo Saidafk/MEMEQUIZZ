@@ -9,6 +9,7 @@ import {
   lireLigne,
 } from "@/lib/questions";
 import { DUREE_QUESTION_S, calculerPoints } from "@/lib/score";
+import { QUESTIONS_PAR_PARTIE } from "@/lib/validation";
 
 // Enregistrer une réponse (SCRUM-40). Tout est décidé ici, côté serveur : ni le délai, ni le score,
 // ni la justesse ne viennent du client, qui n'envoie que le mème choisi.
@@ -20,6 +21,7 @@ export type Correction = {
   points: number;
   score_total: number;
   delai_ms: number;
+  partie_terminee: boolean;
   // La bonne réponse n'est révélée qu'ici, une fois la question close (répondue ou expirée).
   bonne_reponse: {
     id_meme: number;
@@ -86,6 +88,15 @@ export async function enregistrerReponse(
         .where(and(eq(partie.id_partie, id_partie), eq(partie.statut, "en_cours")))
         .returning({ score_total: partie.score_total });
       if (!maj) return tx.rollback();
+
+      // La réponse à la dernière question clôt la partie, dans la même transaction que son score :
+      // une partie terminée a toujours son score final, et n'accepte plus aucune réponse.
+      if (rang === QUESTIONS_PAR_PARTIE) {
+        await tx
+          .update(partie)
+          .set({ statut: "terminee", termine_le: sql`now()` })
+          .where(eq(partie.id_partie, id_partie));
+      }
       return maj.score_total;
     })
     .catch((erreur: unknown) => {
@@ -105,6 +116,7 @@ export async function enregistrerReponse(
       points,
       score_total: scoreTotal,
       delai_ms: delaiMs,
+      partie_terminee: rang === QUESTIONS_PAR_PARTIE,
       bonne_reponse: { id_meme: ligne.id_meme, ...ligne.bonne },
     },
   };

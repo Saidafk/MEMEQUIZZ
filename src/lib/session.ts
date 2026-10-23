@@ -12,3 +12,19 @@ export function genererJeton(): string {
 export function hasherJeton(jeton: string): string {
   return createHash("sha256").update(jeton).digest("hex");
 }
+
+export const DUREE_COOKIE_S = 2 * 60 * 60;
+
+// HttpOnly : illisible par le JavaScript de la page (un XSS ne vole pas la session).
+// SameSite=Strict : jamais envoyé depuis un autre site (protection CSRF avec le Content-Type JSON).
+// Secure : en production seulement, derrière HTTPS (le développement se fait en http://localhost).
+export function cookieSession(jeton: string, securise: boolean): string {
+  return [
+    `${NOM_COOKIE_SESSION}=${jeton}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Strict",
+    `Max-Age=${DUREE_COOKIE_S}`,
+    ...(securise ? ["Secure"] : []),
+  ].join("; ");
+}
