@@ -60,7 +60,7 @@ export const MEMES: readonly FicheMeme[] = [
     {
       annee: 2013,
       origine:
-        "Mème Internet popularisé en 2013 : une photo de chien shiba inu accompagnée de textes en Comic Sans multicolores, censés exprimer les pensées naïves de l'animal.",
+        "Doge est un mème né sur Internet et devenu populaire en 2013. Il met en scène un chien de race shiba inu dont les pensées, naïves, s'affichent en petites phrases colorées écrites en Comic Sans.",
       article: "https://fr.wikipedia.org/wiki/Doge_(m%C3%A8me)",
     },
   ),
@@ -72,7 +72,7 @@ export const MEMES: readonly FicheMeme[] = [
   }),
   fiche("lolcat", "Lolcat", "Lolcat in folder.jpg", "Clancy Ratliff", "cc_by_sa", {
     origine:
-      "Un lolcat associe une photo de chat à une légende drôle en anglais volontairement déformé (le « lolspeak »). Le nom mêle « LOL » et « cat ». Ces images se sont répandues sur des forums et des imageboards comme 4chan.",
+      "Le lolcat est un genre d'image où un chat « parle » dans un anglais volontairement fautif, le « lolspeak ». Son nom vient de « LOL » (rire) et de « cat » (chat). Il s'est diffusé d'abord sur des forums et des imageboards, 4chan en tête.",
     article: "https://fr.wikipedia.org/wiki/Lolcat",
   }),
   fiche(
@@ -97,7 +97,7 @@ export const MEMES: readonly FicheMeme[] = [
     "domaine_public",
     {
       origine:
-        "L'image montre l'œil de la Providence : un œil dans un triangle entouré de rayons de lumière. Ce symbole universel, repris par des religions et des sociétés ésotériques, se lit en général comme l'œil de Dieu qui veille sur l'humanité.",
+        "L'image représente l'œil de la Providence, un symbole très répandu : un œil placé dans un triangle d'où partent des rayons. Religions, courants philosophiques et sociétés mystiques l'ont adopté ; on y voit généralement l'œil de Dieu veillant sur les humains. L'article lié présente ce symbole, pas le mème.",
       article: "https://fr.wikipedia.org/wiki/%C5%92il_de_la_Providence",
     },
   ),
@@ -118,7 +118,7 @@ export const MEMES: readonly FicheMeme[] = [
       article: "https://fr.wikipedia.org/wiki/Rage_comic",
     },
   ),
-  // Source indirecte : l'article « Rage comic » cite Y U NO parmi les mèmes qui en dérivent.
+  // Source : l'article « Rage comic » (FR), qui mentionne le Y U NO guy.
   fiche(
     "y-u-no",
     "Y U NO",
@@ -127,8 +127,8 @@ export const MEMES: readonly FicheMeme[] = [
     "domaine_public",
     {
       origine:
-        "Mème de la famille des rage comics, ces courtes bandes dessinées aux visages dessinés grossièrement : un personnage furieux interpelle son interlocuteur avec la formule « Y U NO… ? ».",
-      article: "https://en.wikipedia.org/wiki/Rage_comic",
+        "Le visage du « Y U NO guy » est tiré du manga Gantz. Il n'a pas les rage comics pour origine, mais il a fini par leur être associé : ces courtes bandes dessinées aux visages dessinés grossièrement l'utilisent souvent.",
+      article: "https://fr.wikipedia.org/wiki/Rage_comic",
     },
   ),
   fiche(
