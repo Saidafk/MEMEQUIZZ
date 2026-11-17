@@ -187,7 +187,8 @@ merge sur main ─► CI (ci.yml) verte ─► deploy.yml ─► SSH ─► scri
 
 - **`scripts/deployer.sh`** fait le travail sur le VPS : `git fetch`, mise à jour en `--ff-only` (jamais de fusion ni d'écrasement), `docker compose -f compose.prod.yaml up -d --build`, puis attente de l'état `healthy` du conteneur (5 minutes au plus) et nettoyage des images orphelines. Il se lance aussi à la main : `cd ~/memequizz && bash scripts/deployer.sh` (un SHA en argument déploie ce commit précis). C'est le déploiement « en une commande » du ticket.
 - **`.github/workflows/deploy.yml`** se déclenche quand la CI réussit sur un push de `main`. Il déploie **le commit que la CI a validé**, envoie le script de ce commit par SSH (pas la copie du serveur, qui peut être périmée), puis vérifie que https://memequizz.duckdns.org répond. Un seul déploiement à la fois.
-- **Désactivé par défaut** : tant que la variable de dépôt `DEPLOY_AUTO` ne vaut pas `true`, fusionner le fichier ne déploie rien. Le lancement manuel (Actions > Déploiement > Run workflow) marche dès que les secrets sont posés.
+- **Désactivé par défaut** : tant que la variable de dépôt `DEPLOY_AUTO` ne vaut pas `true`, fusionner le fichier ne déploie rien. Le lancement manuel (Actions > Déploiement > Run workflow, **depuis la branche `main`** uniquement) marche dès que les secrets sont posés.
+- **Seulement vers l'avant** : le script refuse un commit plus ancien que la version en place (code retour 4), pour qu'une exécution en retard ne fasse pas reculer le site.
 
 ### Migrations : le garde-fou
 
@@ -211,13 +212,13 @@ cd ~/memequizz && git pull         # une fois, pour que scripts/deployer.sh exis
 
 Sur GitHub (Settings > Secrets and variables > Actions) :
 
-| Nom            | Type     | Valeur                                                                    |
-| -------------- | -------- | ------------------------------------------------------------------------- |
-| `VPS_HOST`     | secret   | `memequizz.duckdns.org` (ou l'IP du VPS)                                  |
-| `VPS_USER`     | secret   | l'utilisateur SSH (aujourd'hui `root`, voir les pistes ci-dessous)        |
-| `VPS_SSH_KEY`  | secret   | contenu complet de la clé privée, lignes `BEGIN` et `END` comprises       |
-| `VPS_HOST_KEY` | secret   | la ligne affichée par la dernière commande `echo` (empreinte du serveur)  |
-| `DEPLOY_AUTO`  | variable | `true` pour activer le déploiement automatique ; absente ou autre : coupé |
+| Nom            | Type     | Valeur                                                                               |
+| -------------- | -------- | ------------------------------------------------------------------------------------ |
+| `VPS_HOST`     | secret   | `memequizz.duckdns.org` (le nom, pas l'IP : l'empreinte est enregistrée sous ce nom) |
+| `VPS_USER`     | secret   | l'utilisateur SSH (aujourd'hui `root`, voir les pistes ci-dessous)                   |
+| `VPS_SSH_KEY`  | secret   | contenu complet de la clé privée, lignes `BEGIN` et `END` comprises                  |
+| `VPS_HOST_KEY` | secret   | la ligne affichée par la dernière commande `echo` (empreinte du serveur)             |
+| `DEPLOY_AUTO`  | variable | `true` pour activer le déploiement automatique ; absente ou autre : coupé            |
 
 Ordre conseillé : poser les quatre secrets, lancer **à la main** un premier déploiement (Run workflow) et le vérifier, puis seulement créer `DEPLOY_AUTO`.
 

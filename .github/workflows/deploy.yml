@@ -28,9 +28,10 @@ jobs:
     name: Déployer sur le VPS
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Manuel : seulement depuis main (le script d'une autre branche ne part jamais vers le serveur).
     # Automatique : seulement après une CI verte sur un push (pas une PR) et si DEPLOY_AUTO est activé.
     if: >-
-      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
       (vars.DEPLOY_AUTO == 'true' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push')
@@ -59,7 +60,7 @@ jobs:
           MIGRATIONS_OK: ${{ inputs.migrations_ok && '1' || '' }}
         run: |
           # Le script envoyé est celui du commit validé : pas de dépendance à une copie périmée sur le serveur.
-          ssh -i ~/.ssh/deploiement -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+          ssh -i ~/.ssh/deploiement -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o BatchMode=yes \
             "$VPS_USER@$VPS_HOST" "MIGRATIONS_OK='$MIGRATIONS_OK' bash -s -- '$SHA'" < scripts/deployer.sh
 
       - name: Vérifier le site public
