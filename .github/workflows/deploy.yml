@@ -46,10 +46,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.sha }}
         run: |
+          # --status success : une CI annulée (nouveau push sur la même branche) n'empêche pas de
+          # retenir une autre CI réussie du même commit, qui a testé exactement le même code.
           resultat="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$SHA" \
-            --event push --limit 1 --json conclusion --jq '.[0].conclusion // ""')"
+            --event push --status success --limit 1 --json conclusion --jq '.[0].conclusion // ""')"
           if [ "$resultat" != "success" ]; then
-            echo "::error::La CI du commit ${SHA:0:7} n'est pas verte (résultat : ${resultat:-aucune CI terminée}). Déploiement refusé."
+            echo "::error::Aucune CI réussie trouvée pour le commit ${SHA:0:7} (en cours, en échec ou absente). Déploiement refusé."
             exit 1
           fi
           echo "CI verte pour ${SHA:0:7} : déploiement autorisé."
