@@ -1,0 +1,10 @@
+[test]
+# Couverture (SCRUM-64), produite par `bun test --coverage`. Pas de `coverageThreshold` ici : Bun
+# l'applique fichier par fichier, et un seul fichier peu testé (schema.ts, qui ne contient que des
+# déclarations) ferait échouer la CI. Le seuil est global : scripts/verifier-couverture.ts.
+# Bun ne compte que les fichiers chargés par au moins un test : les pages et routes Next, qui ne
+# sont pas importées par les tests, n'entrent pas dans le calcul.
+coverageSkipTestFiles = true
+# « text » pour le journal de la CI, « lcov » pour le seuil et le rapport téléchargeable.
+coverageReporter = ["text", "lcov"]
+coverageDir = "coverage"

@@ -11,6 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "bun test --pass-with-no-tests",
+    "test:couverture": "bun test --coverage",
+    "couverture:seuil": "bun scripts/verifier-couverture.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:up": "docker compose up -d --wait db",
