@@ -55,18 +55,19 @@ Exemple réel : SCRUM-107 (faille Next.js), PR #48, mergée puis déployée par 
 
 ## 5. Sécurité
 
-| Mesure                                   | État                                                         | Pourquoi                                                                                                    |
-| ---------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| Pare-feu `ufw` : ports 22, 80, 443       | En place                                                     | rien d'autre n'est joignable depuis Internet                                                                |
-| HTTPS automatique (Caddy, Let's Encrypt) | En place                                                     | trafic chiffré, certificats renouvelés seuls                                                                |
-| Base de données sans port publié         | En place                                                     | joignable seulement par l'app, sur un réseau Docker privé                                                   |
-| Conteneur de l'app sans root             | En place (vérifié en CI)                                     | limite les dégâts si l'app est compromise                                                                   |
-| Clé GitHub du VPS en lecture seule       | En place                                                     | le serveur ne peut pas modifier le dépôt                                                                    |
-| Secrets hors du code                     | En place                                                     | `.env` sur le serveur, secrets GitHub pour le CD                                                            |
-| Clé SSH de déploiement dédiée            | En place (révoquée et remplacée après exposition, SCRUM-102) | une clé par usage, révocable seule                                                                          |
-| Dépendances surveillées (`bun audit`)    | En place                                                     | Next.js mis à jour en 16.4.6 pour une faille (SCRUM-107)                                                    |
-| Mises à jour de sécurité automatiques    | **Ajouté le 17/11**                                          | correctifs Debian installés sans y penser, sans redémarrage auto                                            |
-| fail2ban sur SSH                         | **Ajouté le 17/11**                                          | bannit 1 h une IP après 5 échecs en 10 min ; 5 675 tentatives ratées en 24 h, 8 IP bannies dès l'activation |
-| SSH par clé uniquement                   | Choisi de reporter                                           | il faut d'abord une clé sur chaque poste d'administration                                                   |
-| Utilisateur non root pour le CD          | Étape suivante                                               | gain limité (groupe docker ≈ root) et risque de casser le CD                                                |
-| Sauvegardes régulières (`pg_dump`)       | Étape suivante                                               | pouvoir restaurer la base après un incident                                                                 |
+| Mesure                                    | État                                                         | Pourquoi                                                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Pare-feu `ufw` : ports 22, 80, 443        | En place                                                     | rien d'autre n'est joignable depuis Internet                                                                |
+| HTTPS automatique (Caddy, Let's Encrypt)  | En place                                                     | trafic chiffré, certificats renouvelés seuls                                                                |
+| Base de données sans port publié          | En place                                                     | joignable seulement par l'app, sur un réseau Docker privé                                                   |
+| Conteneur de l'app sans root              | En place (vérifié en CI)                                     | limite les dégâts si l'app est compromise                                                                   |
+| Clé GitHub du VPS en lecture seule        | En place                                                     | le serveur ne peut pas modifier le dépôt                                                                    |
+| Secrets hors du code                      | En place                                                     | `.env` sur le serveur, secrets GitHub pour le CD                                                            |
+| Clé SSH de déploiement dédiée             | En place (révoquée et remplacée après exposition, SCRUM-102) | une clé par usage, révocable seule                                                                          |
+| Dépendances surveillées (`bun audit`)     | En place                                                     | Next.js mis à jour en 16.4.6 pour une faille (SCRUM-107)                                                    |
+| Mises à jour de sécurité automatiques     | **Ajouté le 17/11**                                          | correctifs Debian installés sans y penser, sans redémarrage auto                                            |
+| fail2ban sur SSH                          | **Ajouté le 17/11**                                          | bannit 1 h une IP après 5 échecs en 10 min ; 5 675 tentatives ratées en 24 h, 8 IP bannies dès l'activation |
+| Déconnexion SSH après 10 min d'inactivité | **Ajouté le 17/11**                                          | ferme un terminal oublié (`TMOUT=600`), sans toucher au CD                                                  |
+| SSH par clé uniquement                    | Choisi de reporter                                           | il faut d'abord une clé sur chaque poste d'administration                                                   |
+| Utilisateur non root pour le CD           | Étape suivante                                               | gain limité (groupe docker ≈ root) et risque de casser le CD                                                |
+| Sauvegardes régulières (`pg_dump`)        | Étape suivante                                               | pouvoir restaurer la base après un incident                                                                 |

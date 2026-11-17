@@ -74,3 +74,42 @@ Résultat après correction :
 
 Ce chiffre montre que les robots attaquent en permanence tout serveur exposé : il justifie fail2ban, et
 plus encore le passage aux clés SSH.
+
+## Étape 3 — Déconnexion des sessions SSH inactives (10 minutes)
+
+```bash
+cat > /etc/profile.d/deconnexion-inactivite.sh <<'CONF'
+# Ferme les sessions shell interactives après 10 minutes sans activité (SCRUM-105).
+TMOUT=600
+readonly TMOUT
+export TMOUT
+CONF
+chmod 644 /etc/profile.d/deconnexion-inactivite.sh
+```
+
+Vérifié dans une nouvelle session SSH : `echo "TMOUT=$TMOUT"` affiche `TMOUT=600`.
+
+Pourquoi `TMOUT` (bash) plutôt qu'un réglage de `sshd` :
+
+- aucun risque de s'enfermer dehors : la configuration SSH n'est pas modifiée ;
+- le déploiement continu n'est pas touché : le CD lance `bash -s` sans terminal interactif, et `TMOUT` ne
+  s'applique qu'aux shells interactifs ;
+- `readonly` empêche de désactiver la règle dans une session (`unset TMOUT` refusé) ;
+- `ClientAliveInterval` ne conviendrait pas : il coupe les connexions mortes (réseau perdu), pas les
+  sessions inactives dont le poste répond toujours.
+
+Limite : une session où un programme tourne au premier plan (par exemple `docker logs -f`) n'est pas fermée.
+
+## Bilan au 17/11
+
+| Mesure                                | État    |
+| ------------------------------------- | ------- |
+| Mises à jour de sécurité automatiques | Fait    |
+| fail2ban sur SSH                      | Fait    |
+| Déconnexion après 10 min d'inactivité | Fait    |
+| SSH par clé uniquement                | Reporté |
+| Utilisateur non root pour le CD       | Reporté |
+
+Les deux mesures reportées demandent de préparer des clés SSH sur chaque poste et de déplacer
+`~/memequizz` et `~/proxy` hors de `/root` (puis changer le secret `VPS_USER`) : à faire hors période
+de démonstration, avec une session de secours ouverte.
