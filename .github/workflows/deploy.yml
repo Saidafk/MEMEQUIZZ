@@ -1,8 +1,9 @@
-name: Déploiement
+name: CD
 
-# Déploie sur le VPS quand la CI réussit sur main (SCRUM-81). Le déploiement automatique est
-# désactivé tant que la variable de dépôt DEPLOY_AUTO ne vaut pas « true » : fusionner ce fichier ne
-# met rien en production. Le lancement manuel (Actions > Déploiement > Run workflow) reste possible.
+# Déploiement continu : déploie sur le VPS quand la CI réussit sur main (SCRUM-81). Le déploiement
+# automatique est désactivé tant que la variable de dépôt DEPLOY_AUTO ne vaut pas « true ». Le
+# lancement manuel (Actions > CD > Run workflow) reste possible, mais seulement sur un commit dont la
+# CI est verte (SCRUM-99) : les deux chemins vers la prod passent par les tests.
 on:
   workflow_run:
     workflows: ["CI"]
@@ -22,6 +23,7 @@ concurrency:
 
 permissions:
   contents: read
+  actions: read # lire le résultat de la CI avant un déploiement manuel
 
 jobs:
   deployer:
@@ -36,6 +38,24 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push')
     steps:
+      # En automatique, la condition ci-dessus garantit déjà une CI verte. En manuel, on la vérifie
+      # ici, avant toute connexion au VPS : un commit non testé ou encore en cours de test est refusé.
+      - name: Vérifier que la CI de ce commit est verte
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          # --status success : une CI annulée (nouveau push sur la même branche) n'empêche pas de
+          # retenir une autre CI réussie du même commit, qui a testé exactement le même code.
+          resultat="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$SHA" \
+            --event push --status success --limit 1 --json conclusion --jq '.[0].conclusion // ""')"
+          if [ "$resultat" != "success" ]; then
+            echo "::error::Aucune CI réussie trouvée pour le commit ${SHA:0:7} (en cours, en échec ou absente). Déploiement refusé."
+            exit 1
+          fi
+          echo "CI verte pour ${SHA:0:7} : déploiement autorisé."
+
       # On déploie exactement le commit que la CI a validé, pas ce qui serait arrivé depuis.
       - uses: actions/checkout@v4
         with:
