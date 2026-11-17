@@ -98,7 +98,8 @@ export function lireFiche(
 }
 
 // MEMES_DIR n'existe que pour les tests (dossier temporaire) ; en production : public/memes.
-const dossierImages = () => process.env.MEMES_DIR ?? join(process.cwd(), "public", "memes");
+// `||` et non `??` : un MEMES_DIR vide donnerait des chemins relatifs au dossier courant (SCRUM-100).
+const dossierImages = () => process.env.MEMES_DIR || join(process.cwd(), "public", "memes");
 const cheminFichier = (slug: string) => join(dossierImages(), `${slug}.webp`);
 
 async function lireImage(

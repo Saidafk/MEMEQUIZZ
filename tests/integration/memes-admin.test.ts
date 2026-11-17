@@ -41,15 +41,19 @@ describe.skipIf(!BASE_TEST_ACTIVE)("backoffice des mèmes (SCRUM-96)", () => {
 
   afterAll(async () => {
     delete process.env.MEMES_DIR;
-    if (dossier !== "") {
-      await rm(dossierTemporaireSur(dossier, "memes-"), {
-        recursive: true,
-        force: true,
-        maxRetries: 5,
-        retryDelay: 100,
-      });
+    try {
+      if (dossier !== "") {
+        await rm(dossierTemporaireSur(dossier, "memes-"), {
+          recursive: true,
+          force: true,
+          maxRetries: 5,
+          retryDelay: 100,
+        });
+      }
+    } finally {
+      // La connexion est fermée même si le garde-fou refuse la suppression.
+      await client.end();
     }
-    await client.end();
   });
 
   async function formulaire(surcharge: Record<string, string> = {}, avecImage = true) {
