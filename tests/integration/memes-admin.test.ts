@@ -11,7 +11,7 @@ import * as schema from "@/db/schema";
 import { semer } from "@/db/seed";
 import { changerActivation, creerMeme, modifierMeme } from "@/lib/memes-admin";
 
-import { BASE_TEST_ACTIVE, URL_BASE_TEST } from "./base-test";
+import { BASE_TEST_ACTIVE, URL_BASE_TEST, dossierTemporaireSur } from "./base-test";
 
 describe.skipIf(!BASE_TEST_ACTIVE)("backoffice des mèmes (SCRUM-96)", () => {
   const client = postgres(URL_BASE_TEST, { max: 5, onnotice: () => {} });
@@ -19,27 +19,41 @@ describe.skipIf(!BASE_TEST_ACTIVE)("backoffice des mèmes (SCRUM-96)", () => {
   let dossier = "";
 
   beforeAll(async () => {
+    // Le dossier temporaire est créé AVANT tout accès à la base : si la base est injoignable,
+    // `dossier` ne reste jamais vide (SCRUM-100).
+    dossier = await mkdtemp(join(tmpdir(), "memes-"));
+    process.env.MEMES_DIR = dossier;
     await client`DROP SCHEMA IF EXISTS public CASCADE`;
     await client`DROP SCHEMA IF EXISTS drizzle CASCADE`;
     await client`CREATE SCHEMA public`;
     await migrate(db, { migrationsFolder: "./drizzle" });
-    dossier = await mkdtemp(join(tmpdir(), "memes-"));
-    process.env.MEMES_DIR = dossier;
   });
 
   beforeEach(async () => {
     await db.delete(schema.meme);
     // Dossier d'images vidé entre les tests ; les fichiers de la conversion sont lus par sharp,
     // d'où les nouvelles tentatives (Windows garde un verrou un instant).
-    for (const fichier of await readdir(dossier)) {
-      await rm(join(dossier, fichier), { force: true, maxRetries: 5, retryDelay: 100 });
+    const sur = dossierTemporaireSur(dossier, "memes-");
+    for (const fichier of await readdir(sur)) {
+      await rm(join(sur, fichier), { force: true, maxRetries: 5, retryDelay: 100 });
     }
   });
 
   afterAll(async () => {
     delete process.env.MEMES_DIR;
-    await rm(dossier, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
-    await client.end();
+    try {
+      if (dossier !== "") {
+        await rm(dossierTemporaireSur(dossier, "memes-"), {
+          recursive: true,
+          force: true,
+          maxRetries: 5,
+          retryDelay: 100,
+        });
+      }
+    } finally {
+      // La connexion est fermée même si le garde-fou refuse la suppression.
+      await client.end();
+    }
   });
 
   async function formulaire(surcharge: Record<string, string> = {}, avecImage = true) {
