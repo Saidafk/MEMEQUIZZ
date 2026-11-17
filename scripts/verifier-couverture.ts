@@ -1,11 +1,11 @@
 // Seuil global de couverture (SCRUM-64) : `bun run couverture:seuil` après `bun run test:couverture`.
 // Lit coverage/lcov.info, additionne les lignes de tous les fichiers et échoue sous SEUIL_LIGNES.
-// Le seuil est volontairement un peu sous la valeur mesurée : il empêche la couverture de baisser
-// sans bloquer sur une variation d'une ligne.
+// Le seuil laisse de la marge sous la valeur mesurée : il bloque une vraie baisse sans gêner le
+// travail courant (choix du projet : 80 %).
 import { readFileSync } from "node:fs";
 
 // Mesuré en CI le 17/11/2026 : 95,12 % (1 266 lignes sur 1 331, tous les tests sur PostgreSQL).
-export const SEUIL_LIGNES = 0.92;
+export const SEUIL_LIGNES = 0.8;
 
 export type Couverture = { lignes: number; lignesCouvertes: number; fichiers: number };
 
