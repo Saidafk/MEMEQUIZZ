@@ -29,7 +29,14 @@ export function taux({ lignes, lignesCouvertes }: Couverture): number {
 
 if (import.meta.main) {
   const chemin = process.argv[2] ?? "coverage/lcov.info";
-  const couverture = lireLcov(readFileSync(chemin, "utf8"));
+  let contenu: string;
+  try {
+    contenu = readFileSync(chemin, "utf8");
+  } catch {
+    console.error(`Rapport introuvable : ${chemin}. Lancer d'abord « bun run test:couverture ».`);
+    process.exit(1);
+  }
+  const couverture = lireLcov(contenu);
   const pourcent = (x: number) => `${(x * 100).toFixed(2)} %`;
   const mesure = taux(couverture);
   console.log(
