@@ -26,7 +26,8 @@ unattended-upgrade --dry-run                # simulation sans erreur
 Résultat : actif. La simulation a pris le correctif OpenSSL en attente (`libssl3 3.0.22-1~deb12u2`).
 
 Pourquoi : Debian publie les correctifs de sécurité, mais rien ne les installait. Réglage par défaut
-conservé : uniquement le dépôt sécurité, **pas de redémarrage automatique** (le site ne coupe pas
+de Debian conservé : mises à jour venant des dépôts Debian (dont le dépôt sécurité), pas du dépôt Docker,
+et **pas de redémarrage automatique** (le site ne coupe pas
 sans qu'on le décide).
 
 ## Décision — connexion SSH par mot de passe conservée
@@ -69,8 +70,11 @@ Résultat après correction :
 
 - `Journal matches: _SYSTEMD_UNIT=ssh.service + _COMM=sshd` ;
 - **8 adresses IP bannies** immédiatement ;
-- **5 675 tentatives de connexion SSH échouées sur les dernières 24 heures**
+- **5 675 lignes d'échec SSH sur les dernières 24 heures**, soit plusieurs milliers de tentatives
   (`journalctl _SYSTEMD_UNIT=ssh.service --since "24 hours ago" | grep -cE "Failed password|Invalid user"`).
+  Ce compte surestime un peu le nombre de tentatives : pour un utilisateur inexistant, sshd écrit deux
+  lignes (`Invalid user` puis `Failed password for invalid user`). Pour le nombre exact de tentatives :
+  `grep -c "Failed password"`.
 
 Ce chiffre montre que les robots attaquent en permanence tout serveur exposé : il justifie fail2ban, et
 plus encore le passage aux clés SSH.
