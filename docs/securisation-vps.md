@@ -38,3 +38,39 @@ elle, on s'enferme dehors (seule la console de secours de l'hébergeur LWS perme
 Conséquence : SSH reste exposé aux attaques par force brute sur root. Ce qui compense en attendant :
 un mot de passe root long et unique, et `fail2ban` (étape suivante) qui bannit les IP après quelques
 échecs. Passer aux clés seules reste la prochaine étape recommandée.
+
+## Étape 2 — fail2ban sur SSH
+
+```bash
+apt install -y fail2ban python3-systemd
+cat > /etc/fail2ban/jail.local <<'CONF'
+[DEFAULT]
+bantime  = 1h
+findtime = 10m
+maxretry = 5
+
+[sshd]
+enabled = true
+backend = systemd
+journalmatch = _SYSTEMD_UNIT=ssh.service + _COMM=sshd
+CONF
+systemctl enable --now fail2ban
+fail2ban-client status sshd
+```
+
+Règle : **5 échecs en 10 minutes, l'IP est bannie 1 heure**.
+
+Piège rencontré : Debian 12 n'écrit plus `/var/log/auth.log`, d'où `backend = systemd` (lecture du
+journal système). Mais le filtre `sshd` de fail2ban cherche par défaut le service `sshd.service`, alors
+que sur Debian il s'appelle `ssh.service` : sans la ligne `journalmatch`, fail2ban tournait sans rien
+voir (0 échec détecté). Corrigé en visant `ssh.service`.
+
+Résultat après correction :
+
+- `Journal matches: _SYSTEMD_UNIT=ssh.service + _COMM=sshd` ;
+- **8 adresses IP bannies** immédiatement ;
+- **5 675 tentatives de connexion SSH échouées sur les dernières 24 heures**
+  (`journalctl _SYSTEMD_UNIT=ssh.service --since "24 hours ago" | grep -cE "Failed password|Invalid user"`).
+
+Ce chiffre montre que les robots attaquent en permanence tout serveur exposé : il justifie fail2ban, et
+plus encore le passage aux clés SSH.
