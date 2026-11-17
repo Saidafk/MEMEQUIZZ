@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Feuille } from "@/components/Feuille";
+import { metadonneesPage } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Statistiques — MEMEQUIZZ",
+export const metadata: Metadata = metadonneesPage({
+  titre: "Statistiques — MEMEQUIZZ",
   description: "La même page de statistiques en trois rendus : CSR, SSR et SSG.",
-};
+  chemin: "/stats",
+});
 
 export default function PageStats() {
   return (

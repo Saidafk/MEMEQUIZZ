@@ -6,10 +6,13 @@ import { Feuille } from "@/components/Feuille";
 import { getDb } from "@/db";
 import { imageAdaptee, libelleLicence } from "@/lib/licences";
 import { listerMemes } from "@/lib/memes-admin";
+import { metadonneesPage } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Crédits — MEMEQUIZZ",
-};
+export const metadata: Metadata = metadonneesPage({
+  titre: "Crédits — MEMEQUIZZ",
+  description: "Auteurs, licences et sources des images de mèmes utilisées dans le jeu.",
+  chemin: "/credits",
+});
 
 async function Liste() {
   await connection();

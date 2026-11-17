@@ -8,13 +8,15 @@ import { LigneClassement } from "@/components/LigneClassement";
 import { Podium } from "@/components/Podium";
 import { getDb } from "@/db";
 import { type Periode, lireClassement } from "@/lib/classement";
+import { metadonneesPage } from "@/lib/seo";
 import { NOM_COOKIE_SESSION, hasherJeton } from "@/lib/session";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
-  title: "Classement — MEMEQUIZZ",
+export const metadata: Metadata = metadonneesPage({
+  titre: "Classement — MEMEQUIZZ",
   description: "Les meilleurs scores du quiz de mèmes.",
-};
+  chemin: "/classement",
+});
 
 // Rendu serveur à chaque requête (SSR, SCRUM-52, voir docs/strategies-de-rendu.md) : le classement
 // change à chaque partie terminée, il est lu sous <Suspense> (Cache Components). Les pseudos sont des nœuds texte React : échappés, jamais interprétés comme du HTML.

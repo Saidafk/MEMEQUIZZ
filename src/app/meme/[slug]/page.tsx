@@ -9,6 +9,7 @@ import { FicheMeme } from "@/components/FicheMeme";
 import { getDb } from "@/db";
 import { MEMES } from "@/db/data/memes";
 import { lireMemeParSlug, listerSlugsMemesActifs, type PageMeme } from "@/lib/fiche-meme";
+import { metadonneesPage } from "@/lib/seo";
 
 // `next build` dans l'image Docker n'a pas de base. Cache Components exige au moins une page au
 // build : sans DATABASE_URL, on part de la liste curée du dépôt (les mèmes importés ou ajoutés
@@ -46,11 +47,13 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/meme/[slug]">): Promise<Metadata> {
   const m = await chargerMeme((await params).slug);
-  if (!m) return { title: "Mème introuvable — MEMEQUIZZ" };
-  return {
-    title: `${m.nom} — MEMEQUIZZ`,
+  if (!m) return { title: "Mème introuvable — MEMEQUIZZ", robots: { index: false } };
+  return metadonneesPage({
+    titre: `${m.nom} — MEMEQUIZZ`,
     description: m.origine ?? `La fiche du mème « ${m.nom} » : origine, sources et crédits.`,
-  };
+    chemin: `/meme/${m.slug}`,
+    image: m.image_chemin,
+  });
 }
 
 async function Contenu({ params }: PageProps<"/meme/[slug]">) {
