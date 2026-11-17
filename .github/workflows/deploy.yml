@@ -1,0 +1,73 @@
+name: Déploiement
+
+# Déploie sur le VPS quand la CI réussit sur main (SCRUM-81). Le déploiement automatique est
+# désactivé tant que la variable de dépôt DEPLOY_AUTO ne vaut pas « true » : fusionner ce fichier ne
+# met rien en production. Le lancement manuel (Actions > Déploiement > Run workflow) reste possible.
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      migrations_ok:
+        description: "Les nouvelles migrations ont déjà été appliquées avec psql"
+        type: boolean
+        default: false
+
+# Un seul déploiement à la fois ; un déploiement en cours n'est jamais interrompu à moitié.
+concurrency:
+  group: deploiement-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deployer:
+    name: Déployer sur le VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Manuel : seulement depuis main (le script d'une autre branche ne part jamais vers le serveur).
+    # Automatique : seulement après une CI verte sur un push (pas une PR) et si DEPLOY_AUTO est activé.
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (vars.DEPLOY_AUTO == 'true' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push')
+    steps:
+      # On déploie exactement le commit que la CI a validé, pas ce qui serait arrivé depuis.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Préparer la connexion SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST_KEY: ${{ secrets.VPS_HOST_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploiement
+          chmod 600 ~/.ssh/deploiement
+          # Empreinte du serveur fixée dans un secret : on ne fait pas confiance au premier venu.
+          printf '%s\n' "$VPS_HOST_KEY" > ~/.ssh/known_hosts
+
+      - name: Lancer scripts/deployer.sh sur le VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          MIGRATIONS_OK: ${{ inputs.migrations_ok && '1' || '' }}
+        run: |
+          # Le script envoyé est celui du commit validé : pas de dépendance à une copie périmée sur le serveur.
+          ssh -i ~/.ssh/deploiement -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o BatchMode=yes \
+            "$VPS_USER@$VPS_HOST" "MIGRATIONS_OK='$MIGRATIONS_OK' bash -s -- '$SHA'" < scripts/deployer.sh
+
+      - name: Vérifier le site public
+        run: |
+          for i in $(seq 1 12); do
+            curl -fsS -o /dev/null https://memequizz.duckdns.org/ && exit 0
+            sleep 5
+          done
+          echo "Le site public ne répond pas." >&2
+          exit 1
