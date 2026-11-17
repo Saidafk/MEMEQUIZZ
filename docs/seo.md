@@ -4,7 +4,9 @@ Tout est dans `src/lib/seo.ts`, branché sur `src/app/layout.tsx`, `robots.ts` e
 
 ## Adresse du site
 
-`URL_SITE` vaut `SITE_URL` (variable d'environnement, lue **au build**) ou, par défaut, `https://memequizz.duckdns.org`. Elle sert aux liens absolus : canonical, Open Graph, sitemap. Changer de domaine impose de reconstruire l'image.
+`URL_SITE` vaut `SITE_URL` ou, par défaut, `https://memequizz.duckdns.org`. Elle sert aux liens absolus : canonical, Open Graph, sitemap. Elle est figée **au build** dans les pages pré-rendues et `robots.txt`, mais lue **à l'exécution** par le sitemap et les fiches de mèmes générées à la demande. Pour changer de domaine, il faudrait donc la passer aux deux moments : `ARG` dans le `Dockerfile` et variable dans `compose.prod.yaml`. Ce n'est pas fait aujourd'hui, la valeur par défaut suffit.
+
+Le layout ne pose **ni canonical ni `og:url`** : ils seraient hérités par les pages `noindex`, qui se déclareraient alors copies de l'accueil. Seules les pages publiques les posent, accueil compris (`src/app/page.tsx`).
 
 ## Métadonnées par page
 
@@ -20,7 +22,7 @@ Tout est dans `src/lib/seo.ts`, branché sur `src/app/layout.tsx`, `robots.ts` e
 
 ## robots.txt
 
-Autorise tout sauf `/admin`, `/api/`, `/jeu/`, `/resultat/` et `/composants`, et annonce le sitemap. Le `noindex` des pages reste la vraie protection : `robots.txt` n'empêche pas l'indexation d'une adresse connue, et il est public.
+Autorise tout sauf `/admin`, `/api/`, `/jeu/`, `/resultat/` et `/composants`, et annonce le sitemap. Le `noindex` des pages reste la vraie protection : `robots.txt` n'empêche pas l'indexation d'une adresse connue, et il est public. Choix assumé : pour `/jeu/` et `/resultat/`, interdire l'exploration empêche aussi les robots de lire leur `noindex`. Une adresse de partie partagée publiquement pourrait apparaître sans contenu dans un moteur ; c'est jugé préférable à laisser explorer des pages propres à un joueur.
 
 ## sitemap.xml
 

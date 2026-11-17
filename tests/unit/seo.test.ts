@@ -22,7 +22,8 @@ describe("sitemap (SCRUM-55)", () => {
   test("n'a aucun doublon et aucune page non indexable", () => {
     const urls = construireSitemap(["doge"]).map((e) => e.url);
     expect(new Set(urls).size).toBe(urls.length);
-    for (const interdit of CHEMINS_INTERDITS) {
+    // Pages noindex : celles de robots.txt, plus celles qui y sont accessibles mais non indexées.
+    for (const interdit of [...CHEMINS_INTERDITS, "/entrainement", "/hors-ligne"]) {
       expect(urls.some((u) => u.startsWith(`${URL_SITE}${interdit}`))).toBe(false);
     }
   });

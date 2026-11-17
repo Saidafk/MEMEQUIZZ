@@ -1,14 +1,16 @@
 import type { Metadata, MetadataRoute } from "next";
 
-// Adresse publique du site : sert aux liens absolus (canonical, Open Graph, sitemap). Lue au build ;
-// la valeur par défaut est celle du VPS (docs/deploiement-vps.md).
+// Adresse publique du site : sert aux liens absolus (canonical, Open Graph, sitemap). Figée au build
+// pour les pages pré-rendues, lue à l'exécution pour le sitemap ; par défaut, celle du VPS.
 export const URL_SITE = (process.env.SITE_URL ?? "https://memequizz.duckdns.org").replace(
   /\/+$/,
   "",
 );
 
 export const NOM_SITE = "MEMEQUIZZ";
-const IMAGE_PARTAGE = "/icons/icon-512.png";
+export const DESCRIPTION_SITE =
+  "Quiz de mèmes : reconnais le mème parmi 4 propositions avant la fin du chrono de 15 secondes.";
+export const IMAGE_PARTAGE = "/icons/icon-512.png";
 
 // Pages publiques et stables, dans l'ordre du sitemap. Les parties (`/jeu`, `/resultat`), le
 // backoffice et l'API n'y figurent pas : elles ne sont pas faites pour être indexées.
