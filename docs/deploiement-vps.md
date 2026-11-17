@@ -170,12 +170,65 @@ Le fichier [compose.prod.yaml](../compose.prod.yaml) est versionné dans le dép
 
 | Action                                       | Commande (sur le VPS)                                                                |
 | -------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Mettre à jour l'app                          | `cd ~/memequizz && git pull && docker compose -f compose.prod.yaml up -d --build`    |
+| Mettre à jour l'app                          | `cd ~/memequizz && bash scripts/deployer.sh` (voir « Déploiement automatique »)      |
 | Logs de l'app                                | `cd ~/memequizz && docker compose -f compose.prod.yaml logs -f app`                  |
 | Logs de Caddy                                | `cd ~/proxy && docker compose logs -f`                                               |
 | Recharger Caddy après une modif du Caddyfile | `cd ~/proxy && docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile` |
 | Arrêter l'app                                | `cd ~/memequizz && docker compose -f compose.prod.yaml down`                         |
 | État des conteneurs                          | `docker ps`                                                                          |
+
+## Déploiement automatique (SCRUM-81)
+
+Après un merge sur `main`, GitHub Actions déploie sur le VPS sans intervention.
+
+```
+merge sur main ─► CI (ci.yml) verte ─► deploy.yml ─► SSH ─► scripts/deployer.sh ─► site à jour
+```
+
+- **`scripts/deployer.sh`** fait le travail sur le VPS : `git fetch`, mise à jour en `--ff-only` (jamais de fusion ni d'écrasement), `docker compose -f compose.prod.yaml up -d --build`, puis attente de l'état `healthy` du conteneur (5 minutes au plus) et nettoyage des images orphelines. Il se lance aussi à la main : `cd ~/memequizz && bash scripts/deployer.sh` (un SHA en argument déploie ce commit précis). C'est le déploiement « en une commande » du ticket.
+- **`.github/workflows/deploy.yml`** se déclenche quand la CI réussit sur un push de `main`. Il déploie **le commit que la CI a validé**, envoie le script de ce commit par SSH (pas la copie du serveur, qui peut être périmée), puis vérifie que https://memequizz.duckdns.org répond. Un seul déploiement à la fois.
+- **Désactivé par défaut** : tant que la variable de dépôt `DEPLOY_AUTO` ne vaut pas `true`, fusionner le fichier ne déploie rien. Le lancement manuel (Actions > Déploiement > Run workflow) marche dès que les secrets sont posés.
+
+### Migrations : le garde-fou
+
+Les migrations s'appliquent à la main avec `psql` (le journal Drizzle du serveur est vide : ne jamais lancer `db:migrate` sur le VPS). Si le déploiement apporte un nouveau fichier `drizzle/*.sql`, le script **s'arrête avant de toucher au code** (code retour 3, rien n'est modifié, le site continue de tourner). Marche à suivre :
+
+1. Appliquer le fichier : `docker compose -f compose.prod.yaml exec -T db psql -U <utilisateur> -d <base> < drizzle/000N_nom.sql`.
+2. Relancer avec `MIGRATIONS_OK=1 bash scripts/deployer.sh`, ou dans GitHub : Run workflow en cochant « migrations déjà appliquées ».
+
+### Mise en place (une seule fois)
+
+Sur le VPS, créer une clé réservée au déploiement et récupérer l'empreinte du serveur :
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/github_actions -N "" -C "github-actions-memequizz"
+cat ~/.ssh/github_actions.pub >> ~/.ssh/authorized_keys
+cat ~/.ssh/github_actions          # à copier dans le secret VPS_SSH_KEY, puis :
+rm ~/.ssh/github_actions           # la clé privée ne reste pas sur le serveur
+echo "memequizz.duckdns.org $(cut -d' ' -f1,2 /etc/ssh/ssh_host_ed25519_key.pub)"   # valeur de VPS_HOST_KEY
+cd ~/memequizz && git pull         # une fois, pour que scripts/deployer.sh existe aussi sur le serveur
+```
+
+Sur GitHub (Settings > Secrets and variables > Actions) :
+
+| Nom            | Type     | Valeur                                                                    |
+| -------------- | -------- | ------------------------------------------------------------------------- |
+| `VPS_HOST`     | secret   | `memequizz.duckdns.org` (ou l'IP du VPS)                                  |
+| `VPS_USER`     | secret   | l'utilisateur SSH (aujourd'hui `root`, voir les pistes ci-dessous)        |
+| `VPS_SSH_KEY`  | secret   | contenu complet de la clé privée, lignes `BEGIN` et `END` comprises       |
+| `VPS_HOST_KEY` | secret   | la ligne affichée par la dernière commande `echo` (empreinte du serveur)  |
+| `DEPLOY_AUTO`  | variable | `true` pour activer le déploiement automatique ; absente ou autre : coupé |
+
+Ordre conseillé : poser les quatre secrets, lancer **à la main** un premier déploiement (Run workflow) et le vérifier, puis seulement créer `DEPLOY_AUTO`.
+
+### Retour arrière
+
+En cas d'échec de santé, le script affiche les dernières lignes du journal et la commande pour revenir : `git switch --detach <ancien commit> && docker compose -f compose.prod.yaml up -d --build`. Il n'y a pas de retour arrière automatique : une migration déjà appliquée ne se défait pas toute seule.
+
+### Limites
+
+- La clé SSH de déploiement donne accès au serveur avec l'utilisateur choisi : avec `root`, c'est large. Un utilisateur dédié avec les seuls droits Docker est préférable (voir les pistes).
+- Pas de déploiement automatique des migrations, ni de notification en cas d'échec autre que l'e-mail de GitHub Actions.
 
 ## Ajouter un autre projet sur le VPS
 
@@ -192,4 +245,4 @@ Le fichier [compose.prod.yaml](../compose.prod.yaml) est versionné dans le dép
 
 - Créer un utilisateur non-root et se connecter par clé SSH plutôt que par mot de passe root (épopée Sécurité, E7).
 - Sauvegarder la base régulièrement avec `pg_dump`.
-- Déployer automatiquement depuis la CI après chaque merge sur `main`.
+- Appliquer automatiquement les migrations au déploiement (aujourd'hui : arrêt et application à la main).
