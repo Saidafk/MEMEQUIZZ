@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Hors ligne — MEMEQUIZZ",
+  robots: { index: false },
 };
 
 // Page de secours : le service worker la précache et la sert quand une page

@@ -4,12 +4,14 @@ import Link from "next/link";
 import { BlocStats } from "@/components/BlocStats";
 import { Feuille } from "@/components/Feuille";
 import { getDb } from "@/db";
+import { metadonneesPage } from "@/lib/seo";
 import { type Stats, lireStats } from "@/lib/stats";
 
-export const metadata: Metadata = {
-  title: "Statistiques en SSG — MEMEQUIZZ",
+export const metadata: Metadata = metadonneesPage({
+  titre: "Statistiques en SSG — MEMEQUIZZ",
   description: "Les statistiques du jeu, préparées au build et régénérées toutes les heures.",
-};
+  chemin: "/stats/ssg",
+});
 
 // SSG : calculées au build, puis régénérées au plus une fois par heure. Le build de l'image Docker
 // n'a pas de base : les chiffres sont alors à zéro jusqu'à la première régénération.

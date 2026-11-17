@@ -5,12 +5,14 @@ import { Suspense } from "react";
 import { BlocStats } from "@/components/BlocStats";
 import { Feuille } from "@/components/Feuille";
 import { getDb } from "@/db";
+import { metadonneesPage } from "@/lib/seo";
 import { lireStats } from "@/lib/stats";
 
-export const metadata: Metadata = {
-  title: "Statistiques en SSR — MEMEQUIZZ",
+export const metadata: Metadata = metadonneesPage({
+  titre: "Statistiques en SSR — MEMEQUIZZ",
   description: "Les statistiques du jeu, rendues par le serveur à chaque requête.",
-};
+  chemin: "/stats/ssr",
+});
 
 // SSR : les chiffres sont lus en base à chaque requête (`connection()` écarte tout pré-rendu).
 async function Stats() {

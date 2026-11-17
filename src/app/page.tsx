@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import { Bonhomme } from "@/components/Bonhomme";
 import { Feuille } from "@/components/Feuille";
 import { Logo } from "@/components/Logo";
+import { DESCRIPTION_SITE, metadonneesPage } from "@/lib/seo";
 import { FormulairePartie } from "./FormulairePartie";
 import styles from "./page.module.css";
+
+export const metadata: Metadata = metadonneesPage({
+  titre: "MEMEQUIZZ",
+  description: DESCRIPTION_SITE,
+  chemin: "/",
+});
 
 export default function Accueil() {
   return (
