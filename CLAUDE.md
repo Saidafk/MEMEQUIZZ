@@ -11,6 +11,12 @@ Pour toute tâche : suivre le skill [git-workflow](.claude/skills/git-workflow/S
 - Ticket Jira en « En cours » au démarrage, lien de la PR en commentaire, « Terminé » après le merge.
 - Saïd relit et merge toutes les PR. Ne jamais merger soi-même.
 
+## Tests
+
+- N'écrire que des **tests utiles** : chacun vérifie une règle métier (score, chrono, anti-triche…), un cas d'erreur ou un bug déjà rencontré. Jamais de test écrit pour faire monter le pourcentage.
+- La **couverture est un indicateur, pas un objectif** : repère à 60 %. Une baisse se regarde (code nouveau non testé ?), mais on ne la corrige pas avec des tests sans vérification réelle.
+- Le seuil bloquant de la CI reste à 80 % ([scripts/verifier-couverture.ts](scripts/verifier-couverture.ts)) : c'est un filet de sécurité, pas un chiffre à viser.
+
 ## Avant chaque PR
 
 1. Lancer l'agent [code-reviewer](.claude/agents/code-reviewer.md) sur la branche et corriger ce qu'il remonte de bloquant.
