@@ -166,7 +166,7 @@ docs/           documentation du projet
 - Backlog dans **Jira** (projet SCRUM), découpé en épopées et en versions (v0.1 à v1.0).
 - Une branche par ticket, `<type>/SCRUM-<n>-<slug>`, et des commits `<type>(<scope>): <description> (SCRUM-<n>)`.
 - Toute modification passe par une PR, relue puis mergée par Saïd.
-- Le code est écrit avec l'aide de Claude (Anthropic) : chaque PR documente l'usage de l'IA dans une section dédiée, et passe par un agent de relecture. Voir la [checklist de posture critique](docs/checklist-posture-critique.md).
+- Le code est écrit avec l'aide de Claude (Anthropic) : chaque PR documente l'usage de l'IA dans une section dédiée et suit la [checklist de posture critique](docs/checklist-posture-critique.md). Bilan détaillé : [usage des IA](docs/usage-ia.md).
 - Avancement des tâches : [feuille de route](docs/feuille-de-route.md).
 
 ## Documentation

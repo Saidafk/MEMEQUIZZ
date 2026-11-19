@@ -1,6 +1,6 @@
 # Feuille de route — MEMEQUIZZ
 
-État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **88 tâches faites sur 96, 8 restantes.**
+État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **91 tâches faites sur 96, 5 restantes.**
 
 Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la case quand le ticket passe en « Terminé » dans Jira.
 
@@ -55,7 +55,7 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-97 — Import des modèles memegen.link (licence non vérifiée)
 - [x] SCRUM-98 — Sécurité v0.4 : ne pas mettre /admin en cache, audit de sécurité et des dépendances
 
-## Version v0.5 (4/9)
+## Version v0.5 (9/9)
 
 - [x] SCRUM-51 — Page fiche mème en SSG
 - [x] SCRUM-52 — Page classement en SSR
@@ -108,14 +108,14 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-85 — Option : service Bun WebSocket séparé dans docker-compose
 - [x] SCRUM-86 — Tests end-to-end multijoueur
 
-## Version v1.0 (1/7)
+## Version v1.0 (5/7)
 
-- [ ] SCRUM-87 — Audit final Lighthouse et WCAG 2.2
+- [x] SCRUM-87 — Audit final Lighthouse et WCAG 2.2
 - [x] SCRUM-88 — README et documentation d'installation
 - [x] SCRUM-89 — Support de présentation orale
 - [ ] SCRUM-90 — Démo en ligne vérifiée et jeu de données propre
-- [ ] SCRUM-91 — Relecture finale du code et nettoyage
-- [ ] SCRUM-92 — Documenter les prompts et l'usage des IA
+- [x] SCRUM-91 — Relecture finale du code et nettoyage
+- [x] SCRUM-92 — Documenter les prompts et l'usage des IA
 - [ ] SCRUM-93 — Tag v1.0.0 et notes de version
 
 ## Hors version (oral, production, suivi) (8/11)

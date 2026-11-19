@@ -11,6 +11,7 @@ import { lireResultat } from "@/lib/parties";
 import { servirQuestion } from "@/lib/questions";
 import { enregistrerReponse } from "@/lib/reponses";
 import {
+  ATTENTE_MAX_SALLE_MIN,
   DELAI_QUESTION_SALLE_S,
   JOUEURS_MAX_SALLE,
   avancerSalle,
@@ -134,6 +135,16 @@ describe.skipIf(!BASE_TEST_ACTIVE)("salles multijoueur (SCRUM-83/84)", () => {
       jetonHash: session(),
     });
     expect(deTrop).toEqual({ statut: "conflit", raison: "salle_pleine" });
+  });
+
+  test("une salle en attente depuis trop longtemps n'accepte plus d'arrivée", async () => {
+    const s = await salleADeux();
+    await db
+      .update(schema.salle)
+      .set({ cree_le: sql`now() - make_interval(mins => ${ATTENTE_MAX_SALLE_MIN + 1})` })
+      .where(eq(schema.salle.code, s.code));
+    const tard = await rejoindreSalle(db, { code: s.code, pseudo: "Tard", jetonHash: session() });
+    expect(tard).toEqual({ statut: "introuvable" });
   });
 
   test("la salle donne le rythme : question suivante quand tous ont répondu", async () => {
