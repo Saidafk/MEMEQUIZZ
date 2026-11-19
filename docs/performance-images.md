@@ -7,7 +7,7 @@ Les images des mèmes (`public/memes/*.webp`, 221 fichiers, jusqu'à 100 Ko) ét
 | Page            | Avant                                   | Après                                                                                 |
 | --------------- | --------------------------------------- | ------------------------------------------------------------------------------------- |
 | `/meme/[slug]`  | fichier d'origine, préchargé            | optimisée par `next/image`, `sizes` = largeur du contenu de la feuille, préchargée    |
-| `/jeu`          | fichier d'origine, préchargé            | optimisée, `sizes` = colonne de gauche en grand écran, préchargée                     |
+| `/jeu`          | fichier d'origine, préchargé            | fichier d'origine (WebP), préchargé : route privée, hors optimiseur (SCRUM-112)       |
 | `/admin`        | 221 fichiers d'origine (64 px affichés) | vignettes optimisées (64/128 px), chargement différé (`lazy`, défaut de `next/image`) |
 | `/entrainement` | fichier d'origine                       | **inchangé**, voir ci-dessous                                                         |
 

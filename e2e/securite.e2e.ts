@@ -21,3 +21,13 @@ test("l'API exige le jeton CSRF et refuse un pseudo piégé", async ({ page, con
   });
   expect(piege.status()).toBe(400);
 });
+
+// Onglet ouvert avant un déploiement, ou cookie effacé : le joueur est invité à recharger la page
+// au lieu de lire « jeu indisponible » (SCRUM-112).
+test("sans jeton CSRF, le formulaire demande de recharger la page", async ({ page, context }) => {
+  await page.goto("/");
+  await context.clearCookies({ name: "memequizz_csrf" });
+  await page.getByLabel("Ton pseudo").fill("e2e-jeton");
+  await page.getByRole("button", { name: "C'est parti →" }).click();
+  await expect(page.getByText("Recharge la page pour continuer.")).toBeVisible();
+});
