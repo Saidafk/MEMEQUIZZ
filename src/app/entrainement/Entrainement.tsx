@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BandeauResultat } from "@/components/BandeauResultat";
 import { BarreScore } from "@/components/BarreScore";
-import { BoutonReponse, type EtatReponse } from "@/components/BoutonReponse";
+import { BoutonReponse } from "@/components/BoutonReponse";
 import { CarteQuestion } from "@/components/CarteQuestion";
 import { Chrono } from "@/components/Chrono";
 import { FicheMeme } from "@/components/FicheMeme";
-import { echeance, libelleDelai, secondesRestantes } from "@/lib/chrono";
+import { detailCorrection, etatReponse } from "@/lib/affichage-reponse";
+import { echeance, secondesRestantes } from "@/lib/chrono";
 import type { QuestionEntrainement } from "@/lib/entrainement";
 import { DUREE_QUESTION_S, calculerPoints } from "@/lib/score";
 import type { LettreReponse } from "@/lib/types";
@@ -160,12 +161,7 @@ export function Entrainement() {
   const retour = etat.phase === "retour" ? etat : null;
   const { bonne } = question;
 
-  const etatDe = (idMeme: number): EtatReponse => {
-    if (!retour) return "normal";
-    if (idMeme === bonne.id_meme) return "correct";
-    if (idMeme === retour.choisi) return "faux";
-    return "desactive";
-  };
+  const correction = retour ? { choisi: retour.choisi, idBonne: bonne.id_meme } : null;
 
   return (
     <div className={styles.partie}>
@@ -180,7 +176,7 @@ export function Entrainement() {
             <BandeauResultat
               reussi={retour.choisi === bonne.id_meme}
               points={retour.points}
-              detail={retour.choisi === null ? "temps écoulé" : libelleDelai(retour.delaiMs)}
+              detail={detailCorrection({ choisi: retour.choisi, delaiMs: retour.delaiMs })}
             />
           )}
         </div>
@@ -216,7 +212,7 @@ export function Entrainement() {
             key={c.id_meme}
             lettre={LETTRES[i] ?? "A"}
             libelle={c.nom}
-            etat={etatDe(c.id_meme)}
+            etat={etatReponse(c.id_meme, correction)}
             onChoisir={() => repondre(c.id_meme)}
           />
         ))}

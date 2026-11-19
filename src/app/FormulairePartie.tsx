@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useId, useRef, useState, useSyncExternalStore } from "react";
 import { ActiverNotifications } from "@/components/ActiverNotifications";
 import boutons from "@/components/BoutonLien.module.css";
+import { MESSAGE_RESEAU } from "@/lib/affichage-reponse";
 import { pseudoSchema } from "@/lib/validation";
 import styles from "./page.module.css";
-
-const MESSAGE_RESEAU = "Impossible de joindre le serveur. Vérifie ta connexion et réessaie.";
 
 // Démarre une partie : le pseudo est contrôlé avec le même schéma que le serveur (qui le rejoue
 // toujours), puis POST /api/parties pose le cookie de session et renvoie l'identifiant de la partie.
