@@ -55,7 +55,7 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-97 — Import des modèles memegen.link (licence non vérifiée)
 - [x] SCRUM-98 — Sécurité v0.4 : ne pas mettre /admin en cache, audit de sécurité et des dépendances
 
-## Version v0.5 (4/9)
+## Version v0.5 (9/9)
 
 - [x] SCRUM-51 — Page fiche mème en SSG
 - [x] SCRUM-52 — Page classement en SSR
