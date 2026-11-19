@@ -166,6 +166,36 @@ Le fichier [compose.prod.yaml](../compose.prod.yaml) est versionné dans le dép
 - Depuis le PC : `curl -I https://memequizz.duckdns.org` renvoie `HTTP/2 200`.
 - Sur le VPS : `docker compose -f compose.prod.yaml ps` montre `memequizz-app` en `healthy`.
 
+## Redémarrage du VPS (SCRUM-76)
+
+[compose.prod.yaml](../compose.prod.yaml) décrit toute la pile : l'app, PostgreSQL et deux volumes
+(`db-data` pour la base, `memes-data` pour les images du backoffice). Ce qui la fait survivre à un
+redémarrage :
+
+| Mécanisme                                  | Effet                                                             |
+| ------------------------------------------ | ----------------------------------------------------------------- |
+| service `docker` activé dans systemd       | Docker démarre avec le VPS                                        |
+| `restart: unless-stopped` (app, db, Caddy) | Docker relance les conteneurs qui tournaient avant l'arrêt        |
+| `depends_on: condition: service_healthy`   | l'app attend que PostgreSQL accepte les connexions                |
+| volumes nommés                             | données et images conservées (seul `down -v` les efface)          |
+| `stop_grace_period: 1m` sur `db`           | PostgreSQL a le temps de s'arrêter proprement (10 s par défaut)   |
+| journaux limités (3 × 10 Mo)               | les journaux Docker ne remplissent plus le disque au fil des mois |
+
+`unless-stopped` ne relance pas un conteneur arrêté volontairement (`docker compose stop`) : après une
+maintenance, finir par `docker compose -f compose.prod.yaml up -d`.
+
+Vérification (critère du ticket), à faire une fois, de préférence à une heure creuse :
+
+```bash
+systemctl is-enabled docker          # doit afficher « enabled » (sinon : systemctl enable docker)
+cd ~/memequizz && docker compose -f compose.prod.yaml up -d   # applique journaux et délai d'arrêt
+reboot                               # en root (sinon : sudo reboot)
+# 1 à 2 minutes plus tard, depuis le PC :
+curl -sI https://memequizz.duckdns.org/ | head -n 1             # HTTP/2 200
+# puis sur le VPS :
+docker ps --format '{{.Names}}	{{.Status}}'                     # caddy, memequizz-app (healthy), db
+```
+
 ## Opérations courantes
 
 | Action                                       | Commande (sur le VPS)                                                                |
@@ -176,6 +206,8 @@ Le fichier [compose.prod.yaml](../compose.prod.yaml) est versionné dans le dép
 | Recharger Caddy après une modif du Caddyfile | `cd ~/proxy && docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile` |
 | Arrêter l'app                                | `cd ~/memequizz && docker compose -f compose.prod.yaml down`                         |
 | État des conteneurs                          | `docker ps`                                                                          |
+| Sauvegarder la base maintenant               | `cd ~/memequizz && bash scripts/sauvegarder-base.sh` ([détails](sauvegarde-base.md)) |
+| Tester la dernière sauvegarde                | `cd ~/memequizz && bash scripts/tester-restauration.sh`                              |
 
 ## Déploiement automatique (SCRUM-81)
 
@@ -246,5 +278,5 @@ En cas d'échec de santé, le script affiche les dernières lignes du journal et
 ## Pistes pour la suite
 
 - Créer un utilisateur non-root et se connecter par clé SSH plutôt que par mot de passe root (épopée Sécurité, E7).
-- Sauvegarder la base régulièrement avec `pg_dump`.
+- Copier les sauvegardes hors du VPS automatiquement (aujourd'hui à la main, voir [sauvegarde-base.md](sauvegarde-base.md)).
 - Appliquer automatiquement les migrations au déploiement (aujourd'hui : arrêt et application à la main).

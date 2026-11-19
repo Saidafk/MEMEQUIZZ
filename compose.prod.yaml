@@ -1,12 +1,22 @@
 # Production sur le VPS : derrière le Caddy partagé (réseau externe "proxy").
 # Aucun port n'est publié : seul Caddy est exposé à Internet.
 # Lancement : docker compose -f compose.prod.yaml up -d --build
+# Redémarrage du VPS (SCRUM-76) : `restart: unless-stopped` relance les deux services au démarrage de
+# Docker (service systemd activé) ; l'app attend que la base soit saine. Sauvegarde : scripts/sauvegarder-base.sh.
+
+# Journaux limités à 3 × 10 Mo par conteneur : sans limite, le pilote json-file remplit le disque.
+x-journaux: &journaux
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
 
 services:
   app:
     build: .
     container_name: memequizz-app
     restart: unless-stopped
+    logging: *journaux
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
@@ -27,6 +37,10 @@ services:
   db:
     image: postgres:17-alpine
     restart: unless-stopped
+    logging: *journaux
+    # Docker coupe un conteneur après 10 s par défaut : on laisse à PostgreSQL le temps d'un arrêt
+    # propre (point de contrôle écrit) quand le VPS redémarre, plutôt qu'une reprise sur journal.
+    stop_grace_period: 1m
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
