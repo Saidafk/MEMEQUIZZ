@@ -52,10 +52,10 @@ Seuils « bon » de Google : LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1.
 
 ### Lecture
 
-- **SSG est le plus rapide sur tous les indicateurs.** Le HTML est déjà prêt : le serveur répond en ~50 ms (TTFB), et le navigateur n'a presque rien à exécuter (TBT 128 ms).
-- **SSR paie la lecture en base à chaque requête** : TTFB doublé (~100 ms), et l'hydratation pèse un peu plus (TBT 261 ms). Le contenu reste visible dès le HTML, donc aucun décalage (CLS 0).
+- **SSG est le meilleur ou à égalité sur tous les indicateurs.** Le HTML est déjà prêt : le serveur répond en ~50 ms (TTFB), et le navigateur n'a presque rien à exécuter (TBT 128 ms).
+- **SSR paie la construction de la page à chaque requête** : TTFB doublé par rapport à SSG (~100 ms contre ~50), et un TBT plus élevé (261 ms). Le contenu reste visible dès le HTML, donc aucun décalage (CLS 0). Sur trois passes en production, des écarts de quelques dizaines de millisecondes restent dans le bruit : le TTFB de CSR (108 ms), dont la page ne lit pas la base, en est l'illustration.
 - **CSR est le moins bon** : le serveur livre « Chargement… », puis le navigateur exécute le JavaScript, appelle `/api/stats` et construit le tableau. C'est le seul mode avec un décalage de mise en page (CLS 0,041, encore « bon ») et le TBT le plus élevé (451 ms). Le plus grand élément affiché n'est même plus le titre mais la note, rendue après coup.
-- **Le LCP (~8 s) est mauvais dans les trois modes, et ce n'est pas le rendu qui l'explique** : 90 % du LCP est du « retard de rendu ». La page télécharge **92 fichiers de police (701 Kio, plus de la moitié de son poids)**, dont 44 préchargés dans le `<head>` : la police Gaegu, d'origine coréenne, est découpée par Google en dizaines de tranches et `next/font` les précharge toutes. Sur une 4G lente, ces polices passent avant le reste. À corriger dans SCRUM-57 (limiter le préchargement de Gaegu), puis remesurer : l'écart entre les modes devrait alors ressortir davantage sur le LCP.
+- **Le LCP (~8 s) est mauvais dans les trois modes, et ce n'est pas le rendu qui l'explique** : 90 % du LCP est du « retard de rendu ». La page télécharge **92 fichiers de police (701 Kio, plus de la moitié de son poids)**, dont 44 préchargés dans le `<head>` (`<link rel="preload" as="font">` comptés dans le HTML servi). Piste probable : Gaegu, police d'origine coréenne, est découpée par Google en dizaines de tranches `unicode-range`, que `next/font` précharge. Sur une 4G lente, ces polices passent avant le reste. À confirmer et corriger dans SCRUM-57 (par exemple `preload: false` sur Gaegu), puis remesurer : l'écart entre les modes devrait alors ressortir davantage sur le LCP.
 
 ### Limite : INP
 
