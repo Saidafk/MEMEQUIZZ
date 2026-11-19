@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
-import { Gaegu, Patrick_Hand } from "next/font/google";
+import { Patrick_Hand } from "next/font/google";
+import localFont from "next/font/local";
 import { DESCRIPTION_SITE, IMAGE_PARTAGE, NOM_SITE, URL_SITE } from "@/lib/seo";
 import "./globals.css";
 import { EnregistrementServiceWorker } from "./composants/EnregistrementServiceWorker";
 
-const gaegu = Gaegu({
+// Gaegu est une police coréenne : Google la découpe en ~90 tranches par graisse, soit 180
+// @font-face (86 Ko de CSS bloquant) et jusqu'à 44 préchargements (LCP ~8 s, SCRUM-54). On sert à la
+// place un sous-ensemble latin (ASCII, Latin-1, ponctuation), découpé avec fonttools (SCRUM-57).
+// Licence OFL : polices/OFL-Gaegu.txt.
+const gaegu = localFont({
   variable: "--font-gaegu",
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  // Gaegu est une police coréenne que Google découpe en ~90 tranches par graisse : next/font en
-  // préchargeait 44, téléchargées avant le titre (LCP ~8 s, SCRUM-54). Sans préchargement, le
-  // navigateur ne récupère que les tranches contenant des caractères affichés (SCRUM-57).
-  preload: false,
+  src: [
+    { path: "./polices/gaegu-400-latin.woff2", weight: "400", style: "normal" },
+    { path: "./polices/gaegu-700-latin.woff2", weight: "700", style: "normal" },
+  ],
+  fallback: ["Comic Sans MS", "cursive"],
 });
 
 const patrickHand = Patrick_Hand({
