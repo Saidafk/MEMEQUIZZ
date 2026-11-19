@@ -26,7 +26,12 @@ test("une partie complète va de l'accueil au classement", async ({ page }) => {
 
     if (rang === 1) {
       // Anti-triche : avant la réponse, l'alt de l'image ne nomme pas le mème.
-      await expect(page.getByRole("img", { name: "Image d'un mème à identifier" })).toBeVisible();
+      const image = page.getByRole("img", { name: "Image d'un mème à identifier" });
+      await expect(image).toBeVisible();
+      // Réellement chargée : une image cassée reste « visible » avec son alt (SCRUM-112).
+      await expect
+        .poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth))
+        .toBeGreaterThan(0);
       await verifierAccessibilite(page, "question");
     }
 

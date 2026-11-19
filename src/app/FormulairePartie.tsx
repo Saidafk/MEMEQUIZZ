@@ -6,7 +6,7 @@ import { type FormEvent, useId, useRef, useState, useSyncExternalStore } from "r
 import { ActiverNotifications } from "@/components/ActiverNotifications";
 import boutons from "@/components/BoutonLien.module.css";
 import { MESSAGE_RESEAU } from "@/lib/affichage-reponse";
-import { entetesJsonCsrf } from "@/lib/csrf";
+import { MESSAGE_JETON_CSRF, entetesJsonCsrf } from "@/lib/csrf";
 import { pseudoSchema } from "@/lib/validation";
 import styles from "./page.module.css";
 
@@ -59,6 +59,8 @@ export function FormulairePartie() {
       if (reponse.status === 400) {
         const corps = (await reponse.json()) as { details?: { message: string }[] };
         echec(corps.details?.[0]?.message ?? "Pseudo invalide.");
+      } else if (reponse.status === 403) {
+        echec(MESSAGE_JETON_CSRF);
       } else {
         echec("Le jeu n'est pas disponible pour le moment. Réessaie dans un instant.");
       }

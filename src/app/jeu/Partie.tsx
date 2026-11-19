@@ -12,7 +12,7 @@ import { Chrono } from "@/components/Chrono";
 import { FicheMeme } from "@/components/FicheMeme";
 import { MESSAGE_RESEAU, detailCorrection, etatReponse } from "@/lib/affichage-reponse";
 import { echeance, secondesRestantes } from "@/lib/chrono";
-import { entetesJsonCsrf } from "@/lib/csrf";
+import { MESSAGE_JETON_CSRF, entetesJsonCsrf } from "@/lib/csrf";
 import type { ResultatPartie } from "@/lib/parties";
 import type { QuestionServie } from "@/lib/questions";
 import type { Correction } from "@/lib/reponses";
@@ -152,7 +152,11 @@ export function Partie({ idPartie }: { idPartie: number }) {
             ? versResultat()
             : chargerQuestion(etat.question.rang + 1);
         }
-        setErreurEnvoi("Ta réponse n'a pas pu être envoyée. Réessaie.");
+        setErreurEnvoi(
+          reponse.status === 403
+            ? MESSAGE_JETON_CSRF
+            : "Ta réponse n'a pas pu être envoyée. Réessaie.",
+        );
       } catch {
         setErreurEnvoi(MESSAGE_RESEAU);
       } finally {
@@ -289,6 +293,10 @@ export function Partie({ idPartie }: { idPartie: number }) {
               // Grand écran : colonne de gauche (5/11 de la feuille large, 505 px au plus).
               // Sinon : contenu de la feuille, au plus 560 px moins les marges intérieures (88 px).
               sizes="(min-width: 1024px) min(505px, calc((100vw - 328px) * 5 / 11)), min(560px, calc(100vw - 88px))"
+              // Pas d'optimiseur : l'image vient d'une route privée (cookie de session, anti-triche) que
+              // /_next/image ne peut ni appeler avec le cookie ni mettre en cache (SCRUM-112). La route sert
+              // déjà du WebP.
+              unoptimized
               priority
               className={styles.visuel}
             />

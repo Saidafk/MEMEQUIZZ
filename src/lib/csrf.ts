@@ -42,3 +42,8 @@ export function entetesJsonCsrf(): Record<string, string> {
     [ENTETE_CSRF]: lireJetonCsrf(document.cookie) ?? "",
   };
 }
+
+// Réponse 403 du proxy : jeton absent ou périmé. Cas typique : un onglet ouvert avant un déploiement
+// (ancien JavaScript, sans l'en-tête). Recharger la page pose le cookie et charge le nouveau code.
+export const MESSAGE_JETON_CSRF =
+  "Ta session a expiré (le site vient sans doute d'être mis à jour). Recharge la page pour continuer.";

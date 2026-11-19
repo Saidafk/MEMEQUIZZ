@@ -21,3 +21,18 @@ test("l'API exige le jeton CSRF et refuse un pseudo piégé", async ({ page, con
   });
   expect(piege.status()).toBe(400);
 });
+
+// Onglet ouvert avant un déploiement : l'ancien JavaScript n'envoie pas l'en-tête du jeton. Le joueur est
+// invité à recharger la page au lieu de lire « jeu indisponible » (SCRUM-112). Effacer le cookie ne suffit
+// pas à simuler ce cas : les préchargements de liens de Next repassent par le proxy, qui le repose.
+test("sans jeton CSRF, le formulaire demande de recharger la page", async ({ page }) => {
+  await page.route("**/api/parties", (route) => {
+    const entetes = { ...route.request().headers() };
+    delete entetes["x-csrf-token"];
+    return route.continue({ headers: entetes });
+  });
+  await page.goto("/");
+  await page.getByLabel("Ton pseudo").fill("e2e-jeton");
+  await page.getByRole("button", { name: "C'est parti →" }).click();
+  await expect(page.getByText("Recharge la page pour continuer.")).toBeVisible();
+});
