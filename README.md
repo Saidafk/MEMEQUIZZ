@@ -27,7 +27,10 @@ Projet du TP Fullstack (M1, MyDigitalSchool), réalisé par Saïd.
 
 - **Partie de 10 questions** avec chrono de 15 secondes ; jusqu'à 1 000 points par réponse selon la rapidité.
 - **Anti-triche** : chrono et score calculés par le serveur, image anonymisée par l'API.
+- **Résultat détaillé** : les 10 réponses avec le nom du mème et les points gagnés.
+- **Multijoueur** : salle avec un code à 6 caractères (jusqu'à 20 joueurs), mêmes mèmes pour tous, classement en direct (SSE).
 - **Classement**, **mode entraînement** et **fiche de chaque mème** (origine, auteur, licence).
+- **Mise en page bureau et mobile** (v1.1) : deux colonnes sur grand écran, bouton retour ou « Quitter » sur chaque page.
 - **Application installable (PWA)** : service worker, page hors ligne, notifications push du quiz du jour.
 - **Backoffice** protégé par mot de passe pour ajouter et gérer les mèmes.
 - **Accessibilité** (WCAG 2.2) : jouable au clavier (touches A à D), contrastes vérifiés, couleur jamais seule.
@@ -163,7 +166,7 @@ docs/           documentation du projet
 
 ## Organisation du travail
 
-- Backlog dans **Jira** (projet SCRUM), découpé en épopées et en versions (v0.1 à v1.0).
+- Backlog dans **Jira** (projet SCRUM), découpé en épopées et en versions (v0.1 à v1.1). Contenu de chaque version : [notes de version v1.0](docs/notes-de-version-v1.0.md).
 - Une branche par ticket, `<type>/SCRUM-<n>-<slug>`, et des commits `<type>(<scope>): <description> (SCRUM-<n>)`.
 - Toute modification passe par une PR, relue puis mergée par Saïd.
 - Le code est écrit avec l'aide de Claude (Anthropic) : chaque PR documente l'usage de l'IA dans une section dédiée et suit la [checklist de posture critique](docs/checklist-posture-critique.md). Bilan détaillé : [usage des IA](docs/usage-ia.md).
@@ -171,14 +174,16 @@ docs/           documentation du projet
 
 ## Documentation
 
-| Sujet                     | Document                                                                           |
-| ------------------------- | ---------------------------------------------------------------------------------- |
-| Présentation du projet    | [fiche de présentation](docs/fiche-presentation-memequizz.md)                      |
-| Stack et cartographies    | [stack et cartographies](docs/memequizz-stack-et-cartographies.md)                 |
-| Maquette et accessibilité | [maquette](docs/maquette/README.md)                                                |
-| Rendu des pages           | [CSR, SSR, SSG](docs/strategies-de-rendu.md)                                       |
-| PWA                       | [cache](docs/strategie-cache.md), [notifications](docs/notifications-push.md)      |
-| Contenu                   | [droits des images](docs/droits-images.md), [backoffice](docs/backoffice-memes.md) |
-| SEO                       | [SEO](docs/seo.md)                                                                 |
-| Multijoueur               | [salles et temps réel (SSE)](docs/temps-reel.md)                                   |
-| Production                | [déploiement](docs/deploiement-vps.md), [sécurité](docs/securisation-vps.md)       |
+| Sujet                     | Document                                                                                                |
+| ------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Présentation du projet    | [fiche de présentation](docs/fiche-presentation-memequizz.md)                                           |
+| Stack et cartographies    | [stack et cartographies](docs/memequizz-stack-et-cartographies.md)                                      |
+| Maquette et accessibilité | [maquette](docs/maquette/README.md), [audit a11y v1.0](docs/audit-a11y/2026-11-19-rapport-v1.0.md)      |
+| Performance               | [Lighthouse v1.0](docs/audit-lighthouse-v1.0.md)                                                        |
+| Rendu des pages           | [CSR, SSR, SSG](docs/strategies-de-rendu.md)                                                            |
+| PWA                       | [cache](docs/strategie-cache.md), [notifications](docs/notifications-push.md)                           |
+| Contenu                   | [droits des images](docs/droits-images.md), [backoffice](docs/backoffice-memes.md)                      |
+| SEO                       | [SEO](docs/seo.md)                                                                                      |
+| Multijoueur               | [salles et temps réel (SSE)](docs/temps-reel.md)                                                        |
+| Production                | [déploiement](docs/deploiement-vps.md), [sécurité](docs/securisation-vps.md), [démo](docs/demo-v1.0.md) |
+| Usage de l'IA             | [prompts, relecture, incidents](docs/usage-ia.md)                                                       |

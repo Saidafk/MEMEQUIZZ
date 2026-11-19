@@ -8,6 +8,13 @@ sources (SCRUM-34).
 
 Exploration des directions (Claude Design) : https://claude.ai/artifact/LPnfYm7D3PuMMpi3MsedfQ
 
+## Maquette v1.1 (SCRUM-113)
+
+Refonte de toutes les pages pour mieux occuper l'écran : page Figma **« Maquette v1.1 — bureau et
+mobile »** du même fichier (17 pages, chacune en bureau 1440 × 900 et en mobile 375 de large), avec
+les composants « Ligne classement », « Bouton secondaire » et « Bouton retour ». Intégrée dans la
+PR #69. Les SVG ci-dessous restent ceux de la maquette d'origine (v0.2).
+
 ## Contenu
 
 | Fichiers                    | Contenu                                                                       |
