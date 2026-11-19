@@ -37,3 +37,34 @@ Une même présentation (`BlocStats`) et les mêmes chiffres (`lireStats` : part
 | `/stats/ssg` | Le HTML complet, préparé au build       | La base au build, puis au plus une fois par heure (`"use cache"`, `cacheLife("hours")`) |
 
 Chaque page affiche l'instant où les chiffres ont été lus : recharger `/stats/ssr` le change à chaque fois, `/stats/ssg` non. Sans `DATABASE_URL` au build (image Docker), la version SSG part de zéros jusqu'à sa première régénération. Vérifié avec `next start` : `/stats/ssr` et `/stats/ssg` contiennent « Parties terminées » dans le HTML, pas `/stats/csr`.
+
+## Web Vitals des trois rendus (SCRUM-54)
+
+Mesure du 2026-11-19 sur la production (`https://memequizz.duckdns.org/stats/<mode>`), Lighthouse 12.8.2, catégorie performance, profil mobile (4G lente simulée : 150 ms de RTT, ~1,6 Mbit/s, CPU ralenti ×4). Trois passes par page, valeur médiane.
+
+| Mode | Score perf | LCP   | CLS   | TBT (≈ INP) | FCP   | TTFB   | Élément LCP  |
+| ---- | ---------- | ----- | ----- | ----------- | ----- | ------ | ------------ |
+| CSR  | 62         | 8,1 s | 0,041 | 451 ms      | 1,8 s | 108 ms | `<p>` (note) |
+| SSR  | 70         | 7,8 s | 0     | 261 ms      | 1,7 s | 97 ms  | `<h1>`       |
+| SSG  | 74         | 7,6 s | 0     | 128 ms      | 1,7 s | 49 ms  | `<h1>`       |
+
+Seuils « bon » de Google : LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1.
+
+### Lecture
+
+- **SSG est le meilleur ou à égalité sur tous les indicateurs.** Le HTML est déjà prêt : le serveur répond en ~50 ms (TTFB), et le navigateur n'a presque rien à exécuter (TBT 128 ms).
+- **SSR paie la construction de la page à chaque requête** : TTFB doublé par rapport à SSG (~100 ms contre ~50), et un TBT plus élevé (261 ms). Le contenu reste visible dès le HTML, donc aucun décalage (CLS 0). Sur trois passes en production, des écarts de quelques dizaines de millisecondes restent dans le bruit : le TTFB de CSR (108 ms), dont la page ne lit pas la base, en est l'illustration.
+- **CSR est le moins bon** : le serveur livre « Chargement… », puis le navigateur exécute le JavaScript, appelle `/api/stats` et construit le tableau. C'est le seul mode avec un décalage de mise en page (CLS 0,041, encore « bon ») et le TBT le plus élevé (451 ms). Le plus grand élément affiché n'est même plus le titre mais la note, rendue après coup.
+- **Le LCP (~8 s) est mauvais dans les trois modes, et ce n'est pas le rendu qui l'explique** : 90 % du LCP est du « retard de rendu ». La page télécharge **92 fichiers de police (701 Kio, plus de la moitié de son poids)**, dont 44 préchargés dans le `<head>` (`<link rel="preload" as="font">` comptés dans le HTML servi). Piste probable : Gaegu, police d'origine coréenne, est découpée par Google en dizaines de tranches `unicode-range`, que `next/font` précharge. Sur une 4G lente, ces polices passent avant le reste. À confirmer et corriger dans SCRUM-57 (par exemple `preload: false` sur Gaegu), puis remesurer : l'écart entre les modes devrait alors ressortir davantage sur le LCP.
+
+### Limite : INP
+
+L'INP mesure la réactivité à une interaction réelle (clic, frappe) : Lighthouse, qui ne fait que charger la page, ne peut pas le calculer. Le TBT (temps où le fil principal est bloqué pendant le chargement) sert ici d'indicateur de laboratoire : plus il est haut, plus un clic précoce risque d'attendre. Un vrai INP demanderait une mesure terrain (`useReportWebVitals` de Next.js envoyé vers un collecteur), piste notée pour une supervision future.
+
+### Reproduire
+
+```
+npx lighthouse@12 https://memequizz.duckdns.org/stats/ssg --only-categories=performance --output=json --output-path=ssg-1.json --chrome-flags="--headless=new"
+```
+
+Trois passes par mode (`csr`, `ssr`, `ssg`), puis médiane de `largest-contentful-paint`, `cumulative-layout-shift`, `total-blocking-time`, `first-contentful-paint` et `server-response-time` dans les rapports JSON.
