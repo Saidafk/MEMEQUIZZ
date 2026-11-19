@@ -1,6 +1,6 @@
 # Feuille de route — MEMEQUIZZ
 
-État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **91 tâches faites sur 96, 5 restantes.**
+État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **92 tâches faites sur 97, 5 restantes.**
 
 Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la case quand le ticket passe en « Terminé » dans Jira.
 
@@ -117,6 +117,10 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-91 — Relecture finale du code et nettoyage
 - [x] SCRUM-92 — Documenter les prompts et l'usage des IA
 - [ ] SCRUM-93 — Tag v1.0.0 et notes de version
+
+## Version v1.1 (1/1)
+
+- [x] SCRUM-113 — v1.1 : refonte de la mise en page (bureau et mobile) et boutons retour
 
 ## Hors version (oral, production, suivi) (8/11)
 
