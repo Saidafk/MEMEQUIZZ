@@ -180,4 +180,5 @@ docs/           documentation du projet
 | PWA                       | [cache](docs/strategie-cache.md), [notifications](docs/notifications-push.md)      |
 | Contenu                   | [droits des images](docs/droits-images.md), [backoffice](docs/backoffice-memes.md) |
 | SEO                       | [SEO](docs/seo.md)                                                                 |
+| Multijoueur               | [salles et temps réel (SSE)](docs/temps-reel.md)                                   |
 | Production                | [déploiement](docs/deploiement-vps.md), [sécurité](docs/securisation-vps.md)       |

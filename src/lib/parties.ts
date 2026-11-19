@@ -1,4 +1,4 @@
-import { and, eq, gt, sql } from "drizzle-orm";
+import { and, eq, gt, isNull, sql } from "drizzle-orm";
 
 import { joueur, meme, partie, partieQuestion } from "@/db/schema";
 import type { BaseDonnees, ErreurQuestion } from "@/lib/questions";
@@ -14,34 +14,59 @@ export async function creerPartie(
   { pseudo, jetonHash }: { pseudo: string; jetonHash: string },
 ): Promise<PartieCreee | Extract<ErreurQuestion, { statut: "pas_assez_de_memes" }>> {
   return db.transaction(async (tx) => {
-    // 10 mèmes différents tirés au hasard : aucun mème deux fois dans la même partie.
-    const tires = await tx
-      .select({ id_meme: meme.id_meme })
-      .from(meme)
-      .where(eq(meme.actif, true))
-      .orderBy(sql`random()`)
-      .limit(QUESTIONS_PAR_PARTIE);
-    if (tires.length < QUESTIONS_PAR_PARTIE) return { statut: "pas_assez_de_memes" } as const;
-
-    const [nouveauJoueur] = await tx
-      .insert(joueur)
-      .values({ pseudo, token_session_hash: jetonHash })
-      .returning({ id: joueur.id_joueur });
-    if (!nouveauJoueur) throw new Error("joueur non créé");
-
-    const [nouvellePartie] = await tx
-      .insert(partie)
-      .values({ id_joueur: nouveauJoueur.id })
-      .returning({ id: partie.id_partie });
-    if (!nouvellePartie) throw new Error("partie non créée");
-
-    await tx
-      .insert(partieQuestion)
-      .values(
-        tires.map((t, i) => ({ id_partie: nouvellePartie.id, rang: i + 1, id_meme: t.id_meme })),
-      );
-    return { statut: "ok", id_partie: nouvellePartie.id, total: QUESTIONS_PAR_PARTIE } as const;
+    const memes = await tirerMemes(tx);
+    if (!memes) return { statut: "pas_assez_de_memes" } as const;
+    const { id_partie } = await insererJoueurEtPartie(tx, {
+      pseudo,
+      jetonHash,
+      memes,
+      id_salle: null,
+    });
+    return { statut: "ok", id_partie, total: QUESTIONS_PAR_PARTIE } as const;
   });
+}
+
+export type Transaction = Parameters<Parameters<BaseDonnees["transaction"]>[0]>[0];
+
+// 10 mèmes différents tirés au hasard : aucun mème deux fois dans la même partie. `null` s'il n'y
+// a pas assez de mèmes actifs.
+export async function tirerMemes(tx: Transaction): Promise<number[] | null> {
+  const tires = await tx
+    .select({ id_meme: meme.id_meme })
+    .from(meme)
+    .where(eq(meme.actif, true))
+    .orderBy(sql`random()`)
+    .limit(QUESTIONS_PAR_PARTIE);
+  return tires.length < QUESTIONS_PAR_PARTIE ? null : tires.map((t) => t.id_meme);
+}
+
+// Crée le joueur anonyme et sa partie avec ses 10 questions (mèmes dans l'ordre donné). Partagé
+// par la partie solo et les salles (SCRUM-83), où tous les joueurs reçoivent les mêmes mèmes.
+export async function insererJoueurEtPartie(
+  tx: Transaction,
+  {
+    pseudo,
+    jetonHash,
+    memes,
+    id_salle,
+  }: { pseudo: string; jetonHash: string; memes: number[]; id_salle: number | null },
+): Promise<{ id_joueur: number; id_partie: number }> {
+  const [nouveauJoueur] = await tx
+    .insert(joueur)
+    .values({ pseudo, token_session_hash: jetonHash })
+    .returning({ id: joueur.id_joueur });
+  if (!nouveauJoueur) throw new Error("joueur non créé");
+
+  const [nouvellePartie] = await tx
+    .insert(partie)
+    .values({ id_joueur: nouveauJoueur.id, id_salle })
+    .returning({ id: partie.id_partie });
+  if (!nouvellePartie) throw new Error("partie non créée");
+
+  await tx
+    .insert(partieQuestion)
+    .values(memes.map((id_meme, i) => ({ id_partie: nouvellePartie.id, rang: i + 1, id_meme })));
+  return { id_joueur: nouveauJoueur.id, id_partie: nouvellePartie.id };
 }
 
 export type ResultatPartie = {
@@ -71,7 +96,12 @@ export async function lireResultat(
 
   // Seul le propriétaire (jeton de session) lit sa partie ; une autre partie est « introuvable ».
   const [ligne] = await db
-    .select({ statut: partie.statut, score: partie.score_total, pseudo: joueur.pseudo })
+    .select({
+      statut: partie.statut,
+      score: partie.score_total,
+      pseudo: joueur.pseudo,
+      id_salle: partie.id_salle,
+    })
     .from(partie)
     .innerJoin(joueur, eq(joueur.id_joueur, partie.id_joueur))
     .where(and(eq(partie.id_partie, id_partie), eq(joueur.token_session_hash, jetonHash)));
@@ -92,15 +122,22 @@ export async function lireResultat(
 
   let rang: number | null = null;
   let nombreJoueurs: number | null = null;
-  if (ligne.statut === "terminee") {
+  // Rang au classement général : parties solo seulement (voir classement.ts).
+  if (ligne.statut === "terminee" && ligne.id_salle === null) {
     const [mieux] = await db
       .select({ n: sql<number>`count(*)::int`.mapWith(Number) })
       .from(partie)
-      .where(and(eq(partie.statut, "terminee"), gt(partie.score_total, ligne.score)));
+      .where(
+        and(
+          eq(partie.statut, "terminee"),
+          isNull(partie.id_salle),
+          gt(partie.score_total, ligne.score),
+        ),
+      );
     const [total] = await db
       .select({ n: sql<number>`count(*)::int`.mapWith(Number) })
       .from(partie)
-      .where(eq(partie.statut, "terminee"));
+      .where(and(eq(partie.statut, "terminee"), isNull(partie.id_salle)));
     rang = (mieux?.n ?? 0) + 1;
     nombreJoueurs = total?.n ?? 1;
   }

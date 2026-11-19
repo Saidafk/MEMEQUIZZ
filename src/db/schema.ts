@@ -15,6 +15,8 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const STATUTS_PARTIE = ["en_cours", "terminee", "abandonnee"] as const;
+// Cycle d'une salle multijoueur (SCRUM-83) : on attend les joueurs, l'hôte lance, puis fin.
+export const STATUTS_SALLE = ["attente", "en_cours", "terminee"] as const;
 // Licences libres : seules acceptées pour la liste curée (seed) et le backoffice.
 export const LICENCES_LIBRES = ["domaine_public", "cc0", "cc_by", "cc_by_sa"] as const;
 // « non_verifiee » : images importées en masse (memegen.link, SCRUM-97) dont les droits n'ont pas
@@ -23,6 +25,7 @@ export const LICENCES_IMAGE = [...LICENCES_LIBRES, "non_verifiee"] as const;
 
 export const statutPartie = pgEnum("statut_partie", STATUTS_PARTIE);
 export const licenceImage = pgEnum("licence_image", LICENCES_IMAGE);
+export const statutSalle = pgEnum("statut_salle", STATUTS_SALLE);
 
 export const joueur = pgTable(
   "joueur",
@@ -58,6 +61,31 @@ export const meme = pgTable(
   (table) => [index("meme_actif_idx").on(table.actif)],
 );
 
+// Salle multijoueur (SCRUM-83) : un code à partager, un hôte qui lance, et les 10 mèmes communs
+// à tous les joueurs, tirés à la création. Chaque joueur garde sa propre partie (son chrono, son
+// score) ; la salle ne fait que donner le rythme : `rang_courant` est la dernière question ouverte.
+export const salle = pgTable(
+  "salle",
+  {
+    id_salle: serial("id_salle").primaryKey(),
+    code: varchar("code", { length: 6 }).notNull().unique(),
+    id_hote: integer("id_hote")
+      .notNull()
+      .references(() => joueur.id_joueur, { onDelete: "cascade" }),
+    statut: statutSalle("statut").notNull().default("attente"),
+    memes_ids: jsonb("memes_ids").$type<number[]>().notNull(),
+    rang_courant: integer("rang_courant").notNull().default(0),
+    question_ouverte_le: timestamp("question_ouverte_le", { withTimezone: true }),
+    cree_le: timestamp("cree_le", { withTimezone: true }).notNull().defaultNow(),
+    termine_le: timestamp("termine_le", { withTimezone: true }),
+  },
+  (table) => [
+    check("salle_code_check", sql`${table.code} ~ '^[A-Z0-9]{6}$'`),
+    check("salle_memes_check", sql`jsonb_array_length(${table.memes_ids}) = 10`),
+    check("salle_rang_check", sql`${table.rang_courant} between 0 and 10`),
+  ],
+);
+
 export const partie = pgTable(
   "partie",
   {
@@ -69,9 +97,12 @@ export const partie = pgTable(
     commence_le: timestamp("commence_le", { withTimezone: true }).notNull().defaultNow(),
     termine_le: timestamp("termine_le", { withTimezone: true }),
     score_total: integer("score_total").notNull().default(0),
+    // Partie jouée dans une salle (SCRUM-83) ; NULL pour une partie solo.
+    id_salle: integer("id_salle").references(() => salle.id_salle, { onDelete: "set null" }),
   },
   (table) => [
     index("partie_score_total_idx").on(table.score_total),
+    index("partie_id_salle_idx").on(table.id_salle),
     index("partie_id_joueur_idx").on(table.id_joueur),
     check("partie_score_total_check", sql`${table.score_total} >= 0`),
   ],
@@ -127,5 +158,6 @@ export const abonnementPush = pgTable("abonnement_push", {
 export type Joueur = typeof joueur.$inferSelect;
 export type Meme = typeof meme.$inferSelect;
 export type Partie = typeof partie.$inferSelect;
+export type Salle = typeof salle.$inferSelect;
 export type PartieQuestion = typeof partieQuestion.$inferSelect;
 export type AbonnementPush = typeof abonnementPush.$inferSelect;

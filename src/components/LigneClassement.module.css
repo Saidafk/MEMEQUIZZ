@@ -23,3 +23,8 @@
   background: var(--couleur-surligneur);
   border-bottom-color: transparent;
 }
+
+.note {
+  font-size: var(--taille-s);
+  color: var(--couleur-encre-2);
+}

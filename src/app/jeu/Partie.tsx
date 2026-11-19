@@ -31,6 +31,8 @@ const MESSAGE_SESSION =
 
 type Etat =
   | { phase: "chargement" }
+  // En salle : la question suivante n'est pas encore ouverte par la salle.
+  | { phase: "attente"; rang: number }
   | { phase: "erreur"; message: string }
   | { phase: "question"; question: QuestionServie; fin: number }
   | { phase: "retour"; question: QuestionServie; choisi: number | null; correction: Correction };
@@ -45,10 +47,20 @@ async function lireCorps(reponse: Response): Promise<Corps> {
   }
 }
 
+// Partie jouée dans une salle (SCRUM-83/84) : la salle ouvre les questions une à une (flux SSE) et
+// c'est elle qui affiche le résultat final.
+export type RythmeSalle = { rangOuvert: number; surFin: () => void };
+
 // Partie jouée contre l'API : les choix, le délai, la correction et le score viennent du serveur.
 // Le navigateur n'affiche que le décompte (calculé depuis une échéance) et n'envoie que le mème choisi.
-export function Partie({ idPartie }: { idPartie: number }) {
+export function Partie({ idPartie, salle }: { idPartie: number; salle?: RythmeSalle }) {
   const router = useRouter();
+  // Lue dans les rappels sans les recréer à chaque question ouverte.
+  const rangOuvert = useRef(salle?.rangOuvert ?? Infinity);
+  const surFinSalle = salle?.surFin;
+  useEffect(() => {
+    rangOuvert.current = salle?.rangOuvert ?? Infinity;
+  }, [salle?.rangOuvert]);
   const [etat, setEtat] = useState<Etat>({ phase: "chargement" });
   const [restant, setRestant] = useState(DUREE_QUESTION_S);
   const [score, setScore] = useState(0);
@@ -62,8 +74,8 @@ export function Partie({ idPartie }: { idPartie: number }) {
   const titreQuestion = useRef<HTMLHeadingElement>(null);
 
   const versResultat = useCallback(
-    () => router.replace(`/resultat/${idPartie}`),
-    [router, idPartie],
+    () => (surFinSalle ? surFinSalle() : router.replace(`/resultat/${idPartie}`)),
+    [router, idPartie, surFinSalle],
   );
 
   const chargerQuestion = useCallback(
@@ -74,6 +86,10 @@ export function Partie({ idPartie }: { idPartie: number }) {
         // Boucle : après un rechargement, des questions peuvent déjà être closes ; on passe
         // à la première qui ne l'est pas.
         for (let rang = rangDemande; rang <= QUESTIONS_PAR_PARTIE; rang += 1) {
+          if (rang > rangOuvert.current) {
+            setEtat({ phase: "attente", rang });
+            return;
+          }
           const reponse = await fetch(`/api/parties/${idPartie}/questions/${rang}`, {
             cache: "no-store",
           });
@@ -86,7 +102,17 @@ export function Partie({ idPartie }: { idPartie: number }) {
           }
           const { erreur } = await lireCorps(reponse);
           if (reponse.status === 409 && erreur === "partie_terminee") return versResultat();
-          if (reponse.status === 409 && erreur === "question_deja_repondue") continue;
+          // Question déjà close, ou manquée en salle : on passe à la suivante.
+          if (
+            reponse.status === 409 &&
+            (erreur === "question_deja_repondue" || erreur === "question_manquee")
+          ) {
+            continue;
+          }
+          if (reponse.status === 409 && erreur === "question_pas_encore_ouverte") {
+            setEtat({ phase: "attente", rang });
+            return;
+          }
           const perdue = reponse.status === 401 || reponse.status === 404;
           setEtat({
             phase: "erreur",
@@ -117,7 +143,12 @@ export function Partie({ idPartie }: { idPartie: number }) {
         const partie = (await reponse.json()) as ResultatPartie;
         if (partie.statut === "terminee") return versResultat();
         setScore(partie.score);
-        await chargerQuestion(partie.repondues + 1);
+        // En salle, après un rechargement, on rejoint la question ouverte : celles manquées entre-temps
+        // restent sans réponse.
+        const reprise = partie.repondues + 1;
+        await chargerQuestion(
+          Number.isFinite(rangOuvert.current) ? Math.max(reprise, rangOuvert.current) : reprise,
+        );
       } catch {
         setEtat({ phase: "erreur", message: MESSAGE_RESEAU });
       }
@@ -167,6 +198,18 @@ export function Partie({ idPartie }: { idPartie: number }) {
     [etat, idPartie, chargerQuestion, versResultat],
   );
 
+  // En salle : dès que la salle ouvre la question attendue, on la charge.
+  const rangAttendu = etat.phase === "attente" ? etat.rang : null;
+  const rangOuvertSalle = salle?.rangOuvert;
+  useEffect(() => {
+    if (rangAttendu === null || rangOuvertSalle === undefined || rangOuvertSalle < rangAttendu) {
+      return;
+    }
+    // Hors du rendu de l'effet : le ref rangOuvert est d'abord mis à jour par l'effet précédent.
+    const id = setTimeout(() => void chargerQuestion(rangAttendu), 0);
+    return () => clearTimeout(id);
+  }, [rangAttendu, rangOuvertSalle, chargerQuestion]);
+
   // Décompte : calculé depuis l'échéance (pas de dérive en arrière-plan). À zéro, on demande la
   // correction sans mème choisi : la question est close avec zéro point. L'envoi automatique n'a
   // lieu qu'une fois par question : en cas d'échec réseau, c'est le bouton « Réessayer » qui reprend,
@@ -206,6 +249,10 @@ export function Partie({ idPartie }: { idPartie: number }) {
     return <p role="status">Chargement de la question…</p>;
   }
 
+  if (etat.phase === "attente") {
+    return <p role="status">En attente des autres joueurs avant la question {etat.rang}…</p>;
+  }
+
   if (etat.phase === "erreur") {
     return (
       <div role="alert" className={styles.suite}>
@@ -230,15 +277,19 @@ export function Partie({ idPartie }: { idPartie: number }) {
         delaiMs: retour.correction.delai_ms,
       });
 
+  const derniere = question.rang >= question.total;
+  // En salle, la question suivante n'est disponible qu'une fois ouverte pour tous.
+  const enAttenteSalle = salle !== undefined && !derniere && question.rang >= salle.rangOuvert;
+
   function suivante() {
-    if (retour?.correction.partie_terminee) {
-      router.push(`/resultat/${idPartie}`);
+    if (enAttenteSalle) return;
+    if (retour?.correction.partie_terminee || derniere) {
+      if (surFinSalle) surFinSalle();
+      else router.push(`/resultat/${idPartie}`);
       return;
     }
     void chargerQuestion(question.rang + 1);
   }
-
-  const derniere = question.rang >= question.total;
 
   return (
     <div className={styles.partie} tabIndex={-1} onKeyDown={surTouche}>
@@ -351,8 +402,15 @@ export function Partie({ idPartie }: { idPartie: number }) {
               type="button"
               className={styles.suivante}
               onClick={suivante}
+              aria-disabled={enAttenteSalle || undefined}
             >
-              {derniere ? "Voir mon résultat →" : "Question suivante →"}
+              {derniere
+                ? surFinSalle
+                  ? "Voir le classement de la salle →"
+                  : "Voir mon résultat →"
+                : enAttenteSalle
+                  ? "En attente des autres joueurs…"
+                  : "Question suivante →"}
             </button>
           </>
         )}

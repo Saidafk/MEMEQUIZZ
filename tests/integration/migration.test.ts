@@ -27,11 +27,16 @@ describe.skipIf(!BASE_TEST_ACTIVE)("migrations sur base vide", () => {
         "meme",
         "partie",
         "partie_question",
+        "salle",
       ]);
 
       const enums = await sql<{ typname: string }[]>`
         SELECT typname FROM pg_type WHERE typtype = 'e' ORDER BY typname`;
-      expect(enums.map((e) => e.typname)).toEqual(["licence_image", "statut_partie"]);
+      expect(enums.map((e) => e.typname)).toEqual([
+        "licence_image",
+        "statut_partie",
+        "statut_salle",
+      ]);
 
       const index = await sql<{ indexname: string }[]>`
         SELECT indexname FROM pg_indexes

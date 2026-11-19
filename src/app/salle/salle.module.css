@@ -1,0 +1,69 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-6);
+}
+
+.titre {
+  font-size: var(--taille-xxl);
+}
+
+.colonnes {
+  display: grid;
+  gap: var(--espace-8);
+}
+
+.bloc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+}
+
+.lien {
+  align-self: flex-start;
+  padding: var(--espace-2) 0;
+  text-decoration: underline;
+}
+
+/* Le code se lit de loin (projeté, dicté) : grande police à chasse fixe, lettres espacées. */
+.code {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  padding: var(--espace-1) var(--espace-3);
+  background: var(--couleur-surligneur);
+  border: var(--trait);
+  border-radius: var(--rayon-croquis);
+  align-self: flex-start;
+}
+
+.liste {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espace-4);
+}
+
+.lancer {
+  min-width: 260px;
+  cursor: pointer;
+}
+
+.erreur {
+  font-weight: 700;
+  color: var(--couleur-erreur);
+}
+
+@media (min-width: 1024px) {
+  .colonnes {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--espace-12);
+  }
+}

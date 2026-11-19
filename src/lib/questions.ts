@@ -5,7 +5,7 @@ import { and, eq, inArray, isNull, ne, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import type * as schema from "@/db/schema";
-import { joueur, meme, partie, partieQuestion } from "@/db/schema";
+import { joueur, meme, partie, partieQuestion, salle } from "@/db/schema";
 import { DUREE_QUESTION_S } from "@/lib/score";
 import { QUESTIONS_PAR_PARTIE } from "@/lib/validation";
 
@@ -36,6 +36,8 @@ export type ErreurQuestion =
         | "partie_terminee"
         | "question_deja_repondue"
         | "question_precedente_ouverte"
+        | "question_pas_encore_ouverte"
+        | "question_manquee"
         | "question_non_envoyee";
     }
   | { statut: "choix_invalide" }
@@ -74,6 +76,8 @@ export async function lireLigne(
   const [ligne] = await db
     .select({
       statut_partie: partie.statut,
+      // Dernière question ouverte par la salle (SCRUM-83) ; NULL pour une partie solo.
+      rang_salle: salle.rang_courant,
       id_meme: partieQuestion.id_meme,
       choix_ids: partieQuestion.choix_ids,
       envoye_le: partieQuestion.envoye_le,
@@ -99,6 +103,7 @@ export async function lireLigne(
     .innerJoin(partie, eq(partie.id_partie, partieQuestion.id_partie))
     .innerJoin(joueur, eq(joueur.id_joueur, partie.id_joueur))
     .innerJoin(meme, eq(meme.id_meme, partieQuestion.id_meme))
+    .leftJoin(salle, eq(salle.id_salle, partie.id_salle))
     .where(
       and(
         eq(partieQuestion.id_partie, id_partie),
@@ -120,7 +125,17 @@ export async function servirQuestion(db: BaseDonnees, demande: Demande): Promise
 
   // Pas de question en avance : on ne reçoit la suivante qu'une fois la précédente répondue ou
   // expirée. Sinon un joueur pourrait demander les 10 d'un coup, ou lancer le chrono d'une autre.
-  if (rang > 1) {
+  // En salle (SCRUM-83), c'est la salle qui donne le rythme : la question doit avoir été ouverte
+  // pour tous. Une question manquée (joueur absent) reste sans réponse : on ne la rattrape pas.
+  if (ligne.rang_salle !== null) {
+    if (rang > ligne.rang_salle) {
+      return { statut: "conflit", raison: "question_pas_encore_ouverte" };
+    }
+    // Passée pour la salle et jamais envoyée à ce joueur : pas de rattrapage avec un chrono neuf.
+    if (rang < ligne.rang_salle && ligne.envoye_le === null) {
+      return { statut: "conflit", raison: "question_manquee" };
+    }
+  } else if (rang > 1) {
     const [precedente] = await db
       .select({
         fermee: sql<boolean>`(${partieQuestion.repondu_le} is not null or ${partieQuestion.envoye_le} <= now() - make_interval(secs => ${sql.raw(String(DUREE_QUESTION_S + GRACE_REPONSE_S))}))`,

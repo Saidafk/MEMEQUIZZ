@@ -85,6 +85,23 @@ export const reponseSchema = z.strictObject({
   id_meme: identifiantSchema.nullable(),
 });
 
+// Salles multijoueur (SCRUM-83). Le code est saisi à la main : espaces rognés, minuscules
+// acceptées ; 6 caractères de l'alphabet des codes (sans I, O, 0 ni 1).
+export const codeSalleSchema = z
+  .string({ error: "Le code de la salle est obligatoire." })
+  .transform((valeur) => valeur.trim().toUpperCase())
+  .pipe(
+    z.string().regex(/^[A-HJ-NP-Z2-9]{6}$/, {
+      error: "Le code de la salle fait 6 caractères (lettres et chiffres).",
+    }),
+  );
+
+// POST /api/salles (créer) et POST /api/salles/[code]/joueurs (rejoindre) : le pseudo seulement.
+export const pseudoSalleSchema = z.strictObject({ pseudo: pseudoSchema });
+
+// Routes /api/salles/[code]/… : paramètre d'URL.
+export const salleParamsSchema = z.strictObject({ code: codeSalleSchema });
+
 export type NouvellePartie = z.output<typeof nouvellePartieSchema>;
 export type QuestionParams = z.output<typeof questionParamsSchema>;
 export type ReponseJoueur = z.output<typeof reponseSchema>;
