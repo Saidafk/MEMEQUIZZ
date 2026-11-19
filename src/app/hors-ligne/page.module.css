@@ -6,7 +6,7 @@
 }
 
 .titre {
-  font-size: var(--taille-xl);
+  font-size: var(--taille-xxl);
 }
 
 .lien {
@@ -20,7 +20,16 @@
   text-decoration: none;
 }
 
-.lien:focus-visible {
+.secondaire {
+  padding: var(--espace-2) var(--espace-4);
+  color: var(--couleur-encre);
+  border: var(--trait-fin);
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+.lien:focus-visible,
+.secondaire:focus-visible {
   outline: 3px solid var(--couleur-focus);
   outline-offset: 3px;
 }

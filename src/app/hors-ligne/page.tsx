@@ -12,15 +12,19 @@ export const metadata: Metadata = {
 // n'est ni joignable ni déjà en cache (public/sw.js).
 export default function HorsLigne() {
   return (
-    <Feuille>
+    <Feuille retour={{ href: "/", libelle: "Accueil" }}>
       <div className={styles.contenu}>
         <h1 className={styles.titre}>Pas de réseau</h1>
         <p>
-          Cette page n&apos;est pas disponible sans connexion. Vérifie ta connexion à Internet, puis
-          réessaie.
+          Cette page n&apos;est pas disponible sans connexion. Le jeu classé a besoin
+          d&apos;Internet (le score est vérifié par le serveur). En attendant, tu peux
+          t&apos;entraîner avec les mèmes déjà chargés.
         </p>
-        <Link className={styles.lien} href="/" prefetch={false}>
-          Réessayer
+        <Link className={styles.lien} href="/entrainement" prefetch={false}>
+          S&apos;entraîner hors ligne →
+        </Link>
+        <Link className={styles.secondaire} href="/" prefetch={false}>
+          Réessayer ↻
         </Link>
       </div>
     </Feuille>

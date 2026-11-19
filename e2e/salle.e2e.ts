@@ -75,8 +75,14 @@ test("deux joueurs jouent une salle complète avec le classement en direct", asy
     await invite.getByRole("button", { name: /^B\./ }).click();
     await expect(invite.getByRole("heading", { name: "C'était…" })).toBeVisible();
 
-    const suite = rang < QUESTIONS ? "Question suivante →" : "Voir le classement de la salle →";
-    for (const page of [hote, invite]) await page.getByRole("button", { name: suite }).click();
+    // Après la dernière question, la salle se termine dès que tout le monde a répondu : l'écran de
+    // fin remplace la question tout seul (flux SSE). Cliquer « Voir le classement de la salle »
+    // serait une course perdue d'avance, le bouton disparaissant pendant le clic.
+    if (rang < QUESTIONS) {
+      for (const page of [hote, invite]) {
+        await page.getByRole("button", { name: "Question suivante →" }).click();
+      }
+    }
   }
 
   // Fin de salle : même classement final pour les deux joueurs.

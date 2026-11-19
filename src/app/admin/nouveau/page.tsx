@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { Feuille } from "@/components/Feuille";
 import { exigerAdmin } from "@/lib/admin-session";
 import { ajouterMeme } from "../actions";
-import styles from "../admin.module.css";
 import { FormulaireMeme } from "../FormulaireMeme";
 
 export const metadata: Metadata = {
@@ -24,16 +22,13 @@ async function Contenu() {
         <code>docs/droits-images.md</code>).
       </p>
       <FormulaireMeme action={ajouterMeme} imageObligatoire />
-      <Link href="/admin" className={styles.lien}>
-        ← Retour à la liste
-      </Link>
     </>
   );
 }
 
 export default function PageNouveauMeme() {
   return (
-    <Feuille largeur="large">
+    <Feuille largeur="large" retour={{ href: "/admin", libelle: "Liste des mèmes" }}>
       <Suspense fallback={<p role="status">Chargement…</p>}>
         <Contenu />
       </Suspense>

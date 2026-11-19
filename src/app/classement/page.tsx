@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BoutonLien } from "@/components/BoutonLien";
+import carte from "@/components/Carte.module.css";
 import { Feuille } from "@/components/Feuille";
 import { LigneClassement } from "@/components/LigneClassement";
 import { Podium } from "@/components/Podium";
@@ -11,6 +12,8 @@ import { type Periode, lireClassement } from "@/lib/classement";
 import { metadonneesPage } from "@/lib/seo";
 import { NOM_COOKIE_SESSION, hasherJeton } from "@/lib/session";
 import styles from "./page.module.css";
+
+const formatPoints = new Intl.NumberFormat("fr-FR");
 
 export const metadata: Metadata = metadonneesPage({
   titre: "Classement — MEMEQUIZZ",
@@ -28,35 +31,55 @@ async function Classement({ searchParams }: PageProps<"/classement">) {
     jetonHash: jeton ? hasherJeton(jeton) : null,
   });
   const reste = lignes.slice(3);
+  const moi = lignes.find((j) => j.moi);
 
   return (
-    <>
-      <nav aria-label="Période" className={styles.onglets}>
-        <Link
-          href="/classement"
-          aria-current={periode === "aujourdhui" ? "page" : undefined}
-          className={periode === "aujourdhui" ? styles.actif : styles.onglet}
-        >
-          Aujourd&apos;hui
-        </Link>
-        <Link
-          href="/classement?periode=toujours"
-          aria-current={periode === "toujours" ? "page" : undefined}
-          className={periode === "toujours" ? styles.actif : styles.onglet}
-        >
-          Depuis toujours
-        </Link>
-      </nav>
+    <div className={carte.colonnes}>
+      <div className={styles.gauche}>
+        <nav aria-label="Période" className={styles.onglets}>
+          <Link
+            href="/classement"
+            aria-current={periode === "aujourdhui" ? "page" : undefined}
+            className={periode === "aujourdhui" ? styles.actif : styles.onglet}
+          >
+            Aujourd&apos;hui
+          </Link>
+          <Link
+            href="/classement?periode=toujours"
+            aria-current={periode === "toujours" ? "page" : undefined}
+            className={periode === "toujours" ? styles.actif : styles.onglet}
+          >
+            Depuis toujours
+          </Link>
+        </nav>
 
-      {lignes.length === 0 ? (
-        <p role="status">
-          {periode === "aujourdhui"
-            ? "Aucune partie terminée aujourd'hui. Sois le premier !"
-            : "Aucune partie terminée pour l'instant. Sois le premier !"}
-        </p>
-      ) : (
-        <>
+        {lignes.length === 0 ? (
+          <p role="status">
+            {periode === "aujourdhui"
+              ? "Aucune partie terminée aujourd'hui. Sois le premier !"
+              : "Aucune partie terminée pour l'instant. Sois le premier !"}
+          </p>
+        ) : (
           <Podium joueurs={lignes.slice(0, 3)} />
+        )}
+        {moi && (
+          <p className={`${carte.surligne} ${styles.place}`}>
+            Ta meilleure place
+            <span className={styles.gros}>
+              {moi.rang}
+              <sup>e</sup> · {formatPoints.format(moi.score)} pts
+            </span>
+          </p>
+        )}
+        <div className={styles.actions}>
+          <BoutonLien href="/">Rejouer ↻</BoutonLien>
+          <BoutonLien href="/salle" variante="contour">
+            Défier des amis en salle →
+          </BoutonLien>
+        </div>
+      </div>
+      {reste.length > 0 && (
+        <section aria-label="Suite du classement" className={carte.carte}>
           <ol className={styles.liste}>
             {reste.map((j, i) => (
               <LigneClassement
@@ -68,21 +91,20 @@ async function Classement({ searchParams }: PageProps<"/classement">) {
               />
             ))}
           </ol>
-        </>
+        </section>
       )}
-    </>
+    </div>
   );
 }
 
 export default function PageClassement(props: PageProps<"/classement">) {
   return (
-    <Feuille>
+    <Feuille largeur="large" retour={{ href: "/", libelle: "Accueil" }}>
       <div className={styles.page}>
         <h1 className={styles.titre}>Classement</h1>
         <Suspense fallback={<p role="status">Chargement du classement…</p>}>
           <Classement {...props} />
         </Suspense>
-        <BoutonLien href="/">Rejouer ↻</BoutonLien>
       </div>
     </Feuille>
   );

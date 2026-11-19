@@ -30,6 +30,39 @@
   max-width: 560px;
 }
 
+/* En-tête : logo à gauche (lien vers l'accueil), retour ou navigation à droite. */
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-3);
+}
+
+.logo {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Pastille de 44 px de haut au moins : cible tactile confortable (WCAG 2.5.8). */
+.retour {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-2);
+  min-height: 44px;
+  padding: 0 var(--espace-4);
+  font-size: var(--taille-s);
+  text-decoration: none;
+  color: var(--couleur-encre);
+  background: var(--couleur-papier);
+  border: var(--trait-fin);
+  border-radius: 22px;
+}
+
+.retour:hover {
+  background: var(--couleur-surligneur);
+}
+
 @media (min-width: 1024px) {
   .feuille {
     padding-left: 160px;
@@ -45,6 +78,13 @@
   }
 
   .large .contenu {
-    max-width: 1160px;
+    max-width: 1200px;
+  }
+}
+
+/* Grand écran (1600 px et plus) : les pages larges profitent de la place disponible. */
+@media (min-width: 1600px) {
+  .large .contenu {
+    max-width: 1440px;
   }
 }

@@ -25,9 +25,6 @@ async function Contenu({ searchParams }: PageProps<"/admin">) {
       <div className={styles.connexion}>
         <h1>Administration</h1>
         <FormulaireConnexion />
-        <Link href="/" className={styles.lien}>
-          ← Retour à l&apos;accueil
-        </Link>
       </div>
     );
   }
@@ -39,9 +36,6 @@ async function Contenu({ searchParams }: PageProps<"/admin">) {
       <div className={styles.entete}>
         <Link href="/admin/nouveau" className={`${boutons.bouton} ${boutons.plein}`}>
           Ajouter un mème
-        </Link>
-        <Link href="/" className={styles.lien}>
-          ← Retour à l&apos;accueil
         </Link>
         <form action={deconnexion}>
           <button type="submit" className={styles.action}>
@@ -82,7 +76,7 @@ async function Contenu({ searchParams }: PageProps<"/admin">) {
 
 export default function PageAdmin(props: PageProps<"/admin">) {
   return (
-    <Feuille largeur="large">
+    <Feuille largeur="large" retour={{ href: "/", libelle: "Accueil" }}>
       <Suspense fallback={<p role="status">Chargement…</p>}>
         <Contenu {...props} />
       </Suspense>

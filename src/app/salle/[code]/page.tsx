@@ -18,7 +18,7 @@ async function Contenu({ params }: PageProps<"/salle/[code]">) {
 
 export default function PageJeuSalle(props: PageProps<"/salle/[code]">) {
   return (
-    <Feuille largeur="large">
+    <Feuille largeur="large" retour={{ href: "/", libelle: "Quitter la salle", quitter: true }}>
       <Suspense fallback={<p role="status">Chargement de la salle…</p>}>
         <Contenu {...props} />
       </Suspense>
