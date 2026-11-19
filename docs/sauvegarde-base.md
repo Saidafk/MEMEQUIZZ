@@ -27,6 +27,9 @@ Testés en local le 19/11/2026 sur la base de développement : archive de 32 Ko,
 (5 tables : `meme` 221 lignes, `partie_question` 150, `joueur` 15, `partie` 15, `abonnement_push` 0),
 rotation qui ne supprime que les `memequizz-*.dump` de plus de 14 jours.
 
+Testés en production le 19/11/2026 : archive de 40 Ko, restauration complète dans le conteneur jetable
+(`meme` 210 lignes, comme la base de prod ; `partie_question` 390, `joueur` 39, `partie` 39).
+
 ## Mise en place sur le VPS (une seule fois)
 
 ```bash
