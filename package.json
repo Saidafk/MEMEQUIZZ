@@ -22,7 +22,8 @@
     "db:images": "bun src/db/importer-images.ts",
     "db:seed": "bun src/db/seed.ts",
     "db:reset": "bun src/db/reset.ts",
-    "db:test": "bun test tests/integration"
+    "db:test": "bun test tests/integration",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",
@@ -35,6 +36,8 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
     "@types/bun": "^1.4.4",
     "@types/node": "^20",
     "@types/react": "^19",
