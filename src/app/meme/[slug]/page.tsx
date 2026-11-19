@@ -67,7 +67,9 @@ async function Contenu({ params }: PageProps<"/meme/[slug]">) {
         alt={`Mème « ${m.nom} »`}
         width={400}
         height={320}
-        unoptimized
+        // Largeur du contenu de la feuille étroite : 760 px en grand écran, sinon au plus 560 px
+        // moins les marges intérieures (88 px).
+        sizes="(min-width: 1024px) 760px, min(560px, calc(100vw - 88px))"
         style={{ width: "100%", height: "auto" }}
         priority
       />

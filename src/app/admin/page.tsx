@@ -55,7 +55,7 @@ async function Contenu({ searchParams }: PageProps<"/admin">) {
       <ul className={styles.liste}>
         {memes.map((m) => (
           <li key={m.id_meme} className={`${styles.ligne} ${m.actif ? "" : styles.inactif}`}>
-            <Image src={m.image_chemin} alt="" width={64} height={51} unoptimized />
+            <Image src={m.image_chemin} alt="" width={64} height={51} />
             <span className={styles.nom}>
               {m.nom}
               <br />
