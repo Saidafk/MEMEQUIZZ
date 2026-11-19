@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import { type KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { BandeauResultat } from "@/components/BandeauResultat";
 import { BarreScore } from "@/components/BarreScore";
-import { BoutonReponse, type EtatReponse } from "@/components/BoutonReponse";
+import { BoutonReponse } from "@/components/BoutonReponse";
 import { CarteQuestion } from "@/components/CarteQuestion";
 import { Chrono } from "@/components/Chrono";
 import { FicheMeme } from "@/components/FicheMeme";
-import { echeance, libelleDelai, secondesRestantes } from "@/lib/chrono";
+import { MESSAGE_RESEAU, detailCorrection, etatReponse } from "@/lib/affichage-reponse";
+import { echeance, secondesRestantes } from "@/lib/chrono";
 import type { ResultatPartie } from "@/lib/parties";
 import type { QuestionServie } from "@/lib/questions";
 import type { Correction } from "@/lib/reponses";
@@ -24,7 +25,6 @@ const TOUCHES: Record<string, number> = { a: 0, b: 1, c: 2, d: 3 };
 
 const PALIERS_ANNONCES_S = [10, 5];
 
-const MESSAGE_RESEAU = "Impossible de joindre le serveur. Vérifie ta connexion et réessaie.";
 const MESSAGE_SESSION =
   "Cette partie n'est plus disponible (session expirée ou partie introuvable). Démarres-en une nouvelle.";
 
@@ -216,20 +216,14 @@ export function Partie({ idPartie }: { idPartie: number }) {
   const retour = etat.phase === "retour" ? etat : null;
   const bonne = retour?.correction.bonne_reponse;
 
-  const etatDe = (idMeme: number): EtatReponse => {
-    if (!retour || !bonne) return "normal";
-    if (idMeme === bonne.id_meme) return "correct";
-    if (idMeme === retour.choisi) return "faux";
-    return "desactive";
-  };
-
+  const correction = retour && bonne ? { choisi: retour.choisi, idBonne: bonne.id_meme } : null;
   const detail = !retour
     ? ""
-    : retour.choisi === null
-      ? "temps écoulé"
-      : retour.correction.en_retard
-        ? "trop tard"
-        : libelleDelai(retour.correction.delai_ms);
+    : detailCorrection({
+        choisi: retour.choisi,
+        enRetard: retour.correction.en_retard,
+        delaiMs: retour.correction.delai_ms,
+      });
 
   function suivante() {
     if (retour?.correction.partie_terminee) {
@@ -311,7 +305,7 @@ export function Partie({ idPartie }: { idPartie: number }) {
             key={c.id_meme}
             lettre={LETTRES[i] ?? "A"}
             libelle={c.nom}
-            etat={etatDe(c.id_meme)}
+            etat={etatReponse(c.id_meme, correction)}
             onChoisir={() => void repondre(c.id_meme)}
           />
         ))}
