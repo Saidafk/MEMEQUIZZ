@@ -99,6 +99,9 @@ export function FormulairePartie() {
         {envoi ? "Démarrage…" : "C'est parti →"}
       </button>
       <nav aria-label="Autres pages" className={styles.liens}>
+        <Link href="/salle" className={styles.lien}>
+          Jouer entre amis
+        </Link>
         <Link href="/classement" className={styles.lien}>
           Classement
         </Link>
