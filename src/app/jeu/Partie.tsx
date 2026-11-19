@@ -291,7 +291,8 @@ export function Partie({ idPartie }: { idPartie: number }) {
               alt={bonne ? `Image du mème « ${bonne.nom} »` : "Image d'un mème à identifier"}
               width={800}
               height={640}
-              unoptimized
+              // Colonne de gauche (5/11 de la feuille) en grand écran, pleine largeur sinon.
+              sizes="(min-width: 1024px) 400px, 100vw"
               priority
               className={styles.visuel}
             />

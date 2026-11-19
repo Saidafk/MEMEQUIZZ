@@ -67,7 +67,7 @@ async function Contenu({ params }: PageProps<"/meme/[slug]">) {
         alt={`Mème « ${m.nom} »`}
         width={400}
         height={320}
-        unoptimized
+        sizes="(min-width: 1024px) 880px, 100vw"
         style={{ width: "100%", height: "auto" }}
         priority
       />

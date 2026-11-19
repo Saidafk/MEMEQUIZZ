@@ -196,6 +196,8 @@ export function Entrainement() {
               alt={retour ? `Image du mème « ${bonne.nom} »` : "Image d'un mème à identifier"}
               width={800}
               height={640}
+              // Non optimisée exprès : le mode hors ligne rejoue les images mises en cache par le
+              // service worker sous /memes/* ; une URL /_next/image ne serait pas disponible hors ligne.
               unoptimized
               priority
               className={styles.visuel}
