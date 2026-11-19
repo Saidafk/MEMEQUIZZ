@@ -19,6 +19,9 @@ export const JOUEURS_MAX_SALLE = 20;
 // Une question ouverte se ferme quand tout le monde a répondu, ou au plus tard après la durée du
 // chrono, la marge réseau et quelques secondes pour lire la correction.
 export const DELAI_QUESTION_SALLE_S = DUREE_QUESTION_S + GRACE_REPONSE_S + 3;
+// Une salle jamais lancée n'accepte plus d'arrivée après ce délai (audit de sécurité v0.9) : le
+// nombre de salles ouvertes ne croît plus sans fin, et un vieux code ne mène plus nulle part.
+export const ATTENTE_MAX_SALLE_MIN = 60;
 
 export type ErreurSalle =
   | { statut: "session_absente" }
@@ -102,11 +105,17 @@ export async function rejoindreSalle(
     // Verrou sur la salle : deux arrivées simultanées ne dépassent pas le nombre maximal de joueurs,
     // et personne n'entre pendant le lancement.
     const [cible] = await tx
-      .select({ id: salle.id_salle, statut: salle.statut, memes: salle.memes_ids })
+      .select({
+        id: salle.id_salle,
+        statut: salle.statut,
+        memes: salle.memes_ids,
+        expiree: sql<boolean>`${salle.cree_le} < now() - make_interval(mins => ${ATTENTE_MAX_SALLE_MIN})`,
+      })
       .from(salle)
       .where(eq(salle.code, code))
       .for("update");
     if (!cible) return { statut: "introuvable" } as const;
+    if (cible.statut === "attente" && cible.expiree) return { statut: "introuvable" } as const;
     if (cible.statut !== "attente")
       return { statut: "conflit", raison: "salle_commencee" } as const;
 

@@ -1,4 +1,4 @@
-import { access, unlink, writeFile } from "node:fs/promises";
+import { unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { and, asc, count, eq, ne } from "drizzle-orm";
@@ -200,11 +200,4 @@ export function listerMemes(db: BaseDonnees) {
 export async function lireMeme(db: BaseDonnees, id: number) {
   const [ligne] = await db.select().from(meme).where(eq(meme.id_meme, id));
   return ligne;
-}
-
-export async function imagePresente(slug: string): Promise<boolean> {
-  return access(cheminFichier(slug)).then(
-    () => true,
-    () => false,
-  );
 }
