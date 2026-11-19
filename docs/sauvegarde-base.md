@@ -42,7 +42,14 @@ Comparer les nombres de lignes affichés avec la prod :
 docker compose -f compose.prod.yaml exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT count(*) FROM meme;"'
 ```
 
-Puis planifier la sauvegarde avec `crontab -e` (ajouter la ligne) :
+Puis planifier la sauvegarde. Debian 13 minimal (le VPS) n'installe pas `cron` : l'ajouter d'abord.
+
+```bash
+apt install -y cron && systemctl enable --now cron
+crontab -e                                       # ajouter la ligne ci-dessous, enregistrer
+```
+
+Ligne à ajouter :
 
 ```
 15 3 * * * bash "$HOME/memequizz/scripts/sauvegarder-base.sh" >> "$HOME/sauvegardes/memequizz.log" 2>&1
