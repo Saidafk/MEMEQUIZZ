@@ -8,3 +8,9 @@ next-env.d.ts
 AGENTS.md
 
 docs/audit-a11y/
+
+# Fichiers locaux non suivis : profils de navigateur des captures (parfois verrouillés par Windows)
+# et réglages locaux de Claude Code.
+.captures/
+.video*/
+.claude/settings.local.json
