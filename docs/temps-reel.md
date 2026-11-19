@@ -20,8 +20,12 @@ Tous ─ GET question / POST /api/reponses ── inchangés (chrono, score, ant
   au plus tard après `DELAI_QUESTION_SALLE_S` (15 s de chrono + 2 s de marge réseau + 3 s de
   lecture) : un joueur parti ne bloque pas les autres. L'avancée est un `UPDATE … WHERE` atomique : deux
   flux qui la tentent en même temps n'ouvrent qu'une question.
-- **Fin** : après la 10e question, la salle passe `terminee` et clôt les parties encore ouvertes (elles
-  comptent au classement général avec leurs points).
+- **Fin** : après la 10e question, la salle passe `terminee` et clôt les parties encore ouvertes.
+- **Hors du classement général** : les parties jouées en salle ne sont classées que dans leur salle.
+  Les mèmes y sont communs : une deuxième session (fenêtre privée) pourrait répondre en connaissant
+  la correction reçue par la première (constat de l'audit v0.9).
+- **Pas de rattrapage** : une question passée pour la salle sans avoir été demandée par un joueur
+  est refusée (`409 question_manquee`) ; le navigateur passe à la suivante.
 - **Flux SSE** : la route relit l'état en base chaque seconde et n'envoie un événement que s'il a
   changé (plus un commentaire `: ping` toutes les 15 s). Le navigateur utilise `EventSource`, qui se
   reconnecte seul (`retry: 3000`), et ferme le flux à la fin de la salle.
@@ -39,7 +43,9 @@ Tous ─ GET question / POST /api/reponses ── inchangés (chrono, score, ant
 - Routes POST sous `/api/*` : jeton CSRF du proxy, `Content-Type: application/json`, corps validé par
   `strictObject`. Le flux est un GET sans effet de bord autre que l'avancée de la salle.
 - Connexions longues : la limitation de débit compte des requêtes, pas des connexions qui durent. Le
-  flux est donc plafonné à 3 par session et 300 au total (`creerCompteurFlux`), et à 30 minutes.
+  flux est donc plafonné à 3 par session, 30 par adresse IP (une salle pleine derrière une même box)
+  et 300 au total (`creerCompteurFlux`), et à 30 minutes. Rapport :
+  [audit v0.9](audit-securite/2026-11-19-rapport-v0.9.md).
 - CSP : `connect-src 'self'` autorise déjà `EventSource` vers le site (vérifié par l'E2E, qui échoue
   sur toute violation CSP).
 - Joueurs derrière la même IP (même box, même réseau d'école) : une salle de 10 joueurs fait environ

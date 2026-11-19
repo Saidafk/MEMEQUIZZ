@@ -37,6 +37,7 @@ export type ErreurQuestion =
         | "question_deja_repondue"
         | "question_precedente_ouverte"
         | "question_pas_encore_ouverte"
+        | "question_manquee"
         | "question_non_envoyee";
     }
   | { statut: "choix_invalide" }
@@ -127,8 +128,13 @@ export async function servirQuestion(db: BaseDonnees, demande: Demande): Promise
   // En salle (SCRUM-83), c'est la salle qui donne le rythme : la question doit avoir été ouverte
   // pour tous. Une question manquée (joueur absent) reste sans réponse : on ne la rattrape pas.
   if (ligne.rang_salle !== null) {
-    if (rang > ligne.rang_salle)
+    if (rang > ligne.rang_salle) {
       return { statut: "conflit", raison: "question_pas_encore_ouverte" };
+    }
+    // Passée pour la salle et jamais envoyée à ce joueur : pas de rattrapage avec un chrono neuf.
+    if (rang < ligne.rang_salle && ligne.envoye_le === null) {
+      return { statut: "conflit", raison: "question_manquee" };
+    }
   } else if (rang > 1) {
     const [precedente] = await db
       .select({

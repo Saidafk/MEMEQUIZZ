@@ -6,6 +6,8 @@ import postgres from "postgres";
 
 import * as schema from "@/db/schema";
 import { semer } from "@/db/seed";
+import { lireClassement } from "@/lib/classement";
+import { lireResultat } from "@/lib/parties";
 import { servirQuestion } from "@/lib/questions";
 import { enregistrerReponse } from "@/lib/reponses";
 import {
@@ -189,10 +191,57 @@ describe.skipIf(!BASE_TEST_ACTIVE)("salles multijoueur (SCRUM-83/84)", () => {
     }
     const fin = await lireEtatSalle(db, { code: s.code, jetonHash: s.hote.jetonHash });
     expect(fin.statut === "ok" && fin.etat.statut).toBe("terminee");
+    // Une question passée sans avoir été envoyée ne se rattrape pas avec un chrono neuf (audit v0.9).
+    expect(await servirQuestion(db, demande(s.hote, 1))).toEqual({
+      statut: "conflit",
+      raison: "partie_terminee",
+    });
     const ouvertes = await db
       .select({ id: schema.partie.id_partie })
       .from(schema.partie)
       .where(and(eq(schema.partie.id_salle, s.id_salle), eq(schema.partie.statut, "en_cours")));
     expect(ouvertes).toEqual([]);
+  });
+
+  test("une question manquée en salle ne se rattrape pas", async () => {
+    const s = await salleADeux();
+    await lancerSalle(db, { code: s.code, jetonHash: s.hote.jetonHash });
+    // La question 1 passe par délai sans que l'invité l'ait demandée.
+    await db
+      .update(schema.salle)
+      .set({
+        question_ouverte_le: sql`now() - make_interval(secs => ${DELAI_QUESTION_SALLE_S + 1})`,
+      })
+      .where(eq(schema.salle.id_salle, s.id_salle));
+    await avancerSalle(db, s.id_salle);
+    expect(await servirQuestion(db, demande(s.invite, 1))).toEqual({
+      statut: "conflit",
+      raison: "question_manquee",
+    });
+    expect((await servirQuestion(db, demande(s.invite, 2))).statut).toBe("ok");
+  });
+
+  test("les parties jouées en salle ne comptent pas au classement général", async () => {
+    const s = await salleADeux();
+    await lancerSalle(db, { code: s.code, jetonHash: s.hote.jetonHash });
+    for (let rang = 1; rang <= 10; rang += 1) {
+      await db
+        .update(schema.salle)
+        .set({
+          question_ouverte_le: sql`now() - make_interval(secs => ${DELAI_QUESTION_SALLE_S + 1})`,
+        })
+        .where(eq(schema.salle.id_salle, s.id_salle));
+      await avancerSalle(db, s.id_salle);
+    }
+    // Mèmes communs : une deuxième session pourrait répondre en connaissant la correction de la
+    // première. Ces parties ne sont donc pas classées (audit v0.9).
+    const classement = await lireClassement(db, {
+      periode: "toujours",
+      jetonHash: s.hote.jetonHash,
+      limite: 1000,
+    });
+    expect(classement.some((l) => l.moi)).toBe(false);
+    const resultat = await lireResultat(db, s.hote);
+    expect(resultat.statut === "ok" && resultat.resultat.rang).toBeNull();
   });
 });

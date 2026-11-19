@@ -64,7 +64,7 @@ adresses. Une partie complète fait environ 30 requêtes, dont 11 écritures, do
 jouer normalement.
 
 Le flux temps réel des salles (SSE, SCRUM-84) garde une connexion ouverte : il est plafonné à part
-(3 flux par session, 300 au total, 30 minutes). Voir [temps-reel.md](temps-reel.md).
+(3 flux par session, 30 par IP, 300 au total, 30 minutes). Voir [temps-reel.md](temps-reel.md).
 
 ## En-têtes posés sur toutes les réponses
 

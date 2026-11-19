@@ -102,7 +102,13 @@ export function Partie({ idPartie, salle }: { idPartie: number; salle?: RythmeSa
           }
           const { erreur } = await lireCorps(reponse);
           if (reponse.status === 409 && erreur === "partie_terminee") return versResultat();
-          if (reponse.status === 409 && erreur === "question_deja_repondue") continue;
+          // Question déjà close, ou manquée en salle : on passe à la suivante.
+          if (
+            reponse.status === 409 &&
+            (erreur === "question_deja_repondue" || erreur === "question_manquee")
+          ) {
+            continue;
+          }
           if (reponse.status === 409 && erreur === "question_pas_encore_ouverte") {
             setEtat({ phase: "attente", rang });
             return;

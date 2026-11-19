@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, isNull, sql } from "drizzle-orm";
 
 import { joueur, partie } from "@/db/schema";
 import type { BaseDonnees } from "@/lib/questions";
@@ -46,6 +46,9 @@ export async function lireClassement(
     .where(
       and(
         eq(partie.statut, "terminee"),
+        // Parties solo seulement : en salle, les mèmes sont communs, une deuxième session pourrait
+        // répondre en connaissant la correction de la première (audit v0.9).
+        isNull(partie.id_salle),
         periode === "aujourdhui" ? gte(partie.termine_le, debutDuJour) : undefined,
       ),
     )

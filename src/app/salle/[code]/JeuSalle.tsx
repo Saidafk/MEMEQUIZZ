@@ -162,8 +162,11 @@ function BoutonLancer({ code, nombre }: { code: string; nombre: number }) {
       });
       // Succès : le flux SSE annonce la question 1, rien d'autre à faire ici.
       if (!reponse.ok) {
+        const corps = (await reponse.json().catch(() => ({}))) as { erreur?: string };
         setErreur(
-          reponse.status === 403 ? MESSAGE_JETON_CSRF : "La partie n'a pas pu être lancée.",
+          corps.erreur === "jeton_csrf_invalide"
+            ? MESSAGE_JETON_CSRF
+            : "La partie n'a pas pu être lancée.",
         );
         setEnvoi(false);
       }

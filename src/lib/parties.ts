@@ -1,4 +1,4 @@
-import { and, eq, gt, sql } from "drizzle-orm";
+import { and, eq, gt, isNull, sql } from "drizzle-orm";
 
 import { joueur, meme, partie, partieQuestion } from "@/db/schema";
 import type { BaseDonnees, ErreurQuestion } from "@/lib/questions";
@@ -96,7 +96,12 @@ export async function lireResultat(
 
   // Seul le propriétaire (jeton de session) lit sa partie ; une autre partie est « introuvable ».
   const [ligne] = await db
-    .select({ statut: partie.statut, score: partie.score_total, pseudo: joueur.pseudo })
+    .select({
+      statut: partie.statut,
+      score: partie.score_total,
+      pseudo: joueur.pseudo,
+      id_salle: partie.id_salle,
+    })
     .from(partie)
     .innerJoin(joueur, eq(joueur.id_joueur, partie.id_joueur))
     .where(and(eq(partie.id_partie, id_partie), eq(joueur.token_session_hash, jetonHash)));
@@ -117,15 +122,22 @@ export async function lireResultat(
 
   let rang: number | null = null;
   let nombreJoueurs: number | null = null;
-  if (ligne.statut === "terminee") {
+  // Rang au classement général : parties solo seulement (voir classement.ts).
+  if (ligne.statut === "terminee" && ligne.id_salle === null) {
     const [mieux] = await db
       .select({ n: sql<number>`count(*)::int`.mapWith(Number) })
       .from(partie)
-      .where(and(eq(partie.statut, "terminee"), gt(partie.score_total, ligne.score)));
+      .where(
+        and(
+          eq(partie.statut, "terminee"),
+          isNull(partie.id_salle),
+          gt(partie.score_total, ligne.score),
+        ),
+      );
     const [total] = await db
       .select({ n: sql<number>`count(*)::int`.mapWith(Number) })
       .from(partie)
-      .where(eq(partie.statut, "terminee"));
+      .where(and(eq(partie.statut, "terminee"), isNull(partie.id_salle)));
     rang = (mieux?.n ?? 0) + 1;
     nombreJoueurs = total?.n ?? 1;
   }

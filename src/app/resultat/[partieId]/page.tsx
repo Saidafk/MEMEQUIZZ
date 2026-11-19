@@ -53,10 +53,13 @@ async function Resultat({ params }: PageProps<"/resultat/[partieId]">) {
           </span>
           bonnes réponses
         </p>
-        <p className={styles.carte}>
-          <span className={styles.gros}>{r.rang}e</span>
-          sur {r.nombre_joueurs} {(r.nombre_joueurs ?? 0) > 1 ? "joueurs" : "joueur"}
-        </p>
+        {/* Pas de rang général pour une partie jouée en salle : elle n'est pas classée. */}
+        {r.rang !== null && (
+          <p className={styles.carte}>
+            <span className={styles.gros}>{r.rang}e</span>
+            sur {r.nombre_joueurs} {(r.nombre_joueurs ?? 0) > 1 ? "joueurs" : "joueur"}
+          </p>
+        )}
       </div>
 
       <section className={styles.recap} aria-labelledby="titre-recap">
