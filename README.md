@@ -100,17 +100,17 @@ Ne jamais commiter le fichier `.env`.
 
 ## Commandes utiles
 
-| Commande              | Effet                                                  |
-| --------------------- | ------------------------------------------------------ |
-| `bun run dev`         | serveur de développement                               |
-| `bun run build`       | build de production                                    |
-| `bun run lint`        | ESLint                                                 |
-| `bun run typecheck`   | vérification des types TypeScript                      |
-| `bun run format`      | formate le code avec Prettier                          |
-| `bun run test`        | tests unitaires                                        |
-| `bun run db:generate` | génère une migration SQL après un changement de schéma |
-| `bun run db:reset`    | recrée la base locale (refuse toute base non locale)   |
-| `bun run db:seed`     | rejoue le jeu de données initial                       |
+| Commande              | Effet                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------ |
+| `bun run dev`         | serveur de développement                                                                               |
+| `bun run build`       | build de production                                                                                    |
+| `bun run lint`        | ESLint                                                                                                 |
+| `bun run typecheck`   | vérification des types TypeScript                                                                      |
+| `bun run format`      | formate le code avec Prettier                                                                          |
+| `bun run test`        | tous les tests ; ceux d'intégration seulement si `TEST_DATABASE_URL` est définie                       |
+| `bun run db:generate` | génère une migration SQL après un changement de schéma ; relire puis commiter le fichier de `drizzle/` |
+| `bun run db:reset`    | recrée la base locale (refuse toute base non locale)                                                   |
+| `bun run db:seed`     | rejoue le jeu de données initial                                                                       |
 
 ## Tests et qualité
 

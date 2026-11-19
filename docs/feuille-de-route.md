@@ -110,7 +110,7 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 ## Version v1.0 (0/7)
 
 - [ ] SCRUM-87 — Audit final Lighthouse et WCAG 2.2
-- [ ] SCRUM-88 — README et documentation d'installation
+- [ ] SCRUM-88 — README et documentation d'installation _(en cours)_
 - [ ] SCRUM-89 — Support de présentation orale
 - [ ] SCRUM-90 — Démo en ligne vérifiée et jeu de données propre
 - [ ] SCRUM-91 — Relecture finale du code et nettoyage
