@@ -184,7 +184,10 @@ redémarrage :
 `unless-stopped` ne relance pas un conteneur arrêté volontairement (`docker compose stop`) : après une
 maintenance, finir par `docker compose -f compose.prod.yaml up -d`.
 
-Vérification (critère du ticket), à faire une fois, de préférence à une heure creuse :
+Vérification (critère du ticket), à faire une fois, de préférence à une heure creuse. Taper `reboot`
+seul, jamais au milieu d'un bloc collé : la session SSH se coupe aussitôt.
+
+Faite le 19/11/2026 : après redémarrage, le site est revenu seul (200, en-têtes de sécurité intacts).
 
 ```bash
 systemctl is-enabled docker          # doit afficher « enabled » (sinon : systemctl enable docker)

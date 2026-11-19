@@ -27,6 +27,9 @@ Testés en local le 19/11/2026 sur la base de développement : archive de 32 Ko,
 (5 tables : `meme` 221 lignes, `partie_question` 150, `joueur` 15, `partie` 15, `abonnement_push` 0),
 rotation qui ne supprime que les `memequizz-*.dump` de plus de 14 jours.
 
+Testés en production le 19/11/2026 : archive de 40 Ko, restauration complète dans le conteneur jetable
+(`meme` 210 lignes, comme la base de prod ; `partie_question` 390, `joueur` 39, `partie` 39).
+
 ## Mise en place sur le VPS (une seule fois)
 
 ```bash
@@ -42,7 +45,14 @@ Comparer les nombres de lignes affichés avec la prod :
 docker compose -f compose.prod.yaml exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT count(*) FROM meme;"'
 ```
 
-Puis planifier la sauvegarde avec `crontab -e` (ajouter la ligne) :
+Puis planifier la sauvegarde. Debian 13 minimal (le VPS) n'installe pas `cron` : l'ajouter d'abord.
+
+```bash
+apt install -y cron && systemctl enable --now cron
+crontab -e                                       # ajouter la ligne ci-dessous, enregistrer
+```
+
+Ligne à ajouter :
 
 ```
 15 3 * * * bash "$HOME/memequizz/scripts/sauvegarder-base.sh" >> "$HOME/sauvegardes/memequizz.log" 2>&1
