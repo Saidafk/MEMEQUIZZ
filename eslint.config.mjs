@@ -18,6 +18,9 @@ const eslintConfig = defineConfig([
     // Profils de navigateur des captures, non suivis : parfois verrouillés par Windows.
     ".captures/**",
     ".video*/**",
+    // Rapports Playwright (SCRUM-62), générés.
+    "playwright-report/**",
+    "test-results/**",
   ]),
 ]);
 
