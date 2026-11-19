@@ -6,6 +6,7 @@ import { type FormEvent, useId, useRef, useState, useSyncExternalStore } from "r
 import { ActiverNotifications } from "@/components/ActiverNotifications";
 import boutons from "@/components/BoutonLien.module.css";
 import { MESSAGE_RESEAU } from "@/lib/affichage-reponse";
+import { entetesJsonCsrf } from "@/lib/csrf";
 import { pseudoSchema } from "@/lib/validation";
 import styles from "./page.module.css";
 
@@ -47,7 +48,7 @@ export function FormulairePartie() {
     try {
       const reponse = await fetch("/api/parties", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: entetesJsonCsrf(),
         body: JSON.stringify({ pseudo: verif.data }),
       });
       if (reponse.status === 201) {

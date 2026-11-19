@@ -8,6 +8,11 @@ const QUESTIONS = 10;
 test("une partie complète va de l'accueil au classement", async ({ page }) => {
   // Pseudo unique (20 caractères au plus) pour retrouver le joueur dans le classement.
   const pseudo = `e2e-${Date.now().toString(36)}`;
+  // CSP (SCRUM-68) : aucune violation signalée dans la console sur tout le parcours.
+  const violationsCsp: string[] = [];
+  page.on("console", (message) => {
+    if (/Content Security Policy/i.test(message.text())) violationsCsp.push(message.text());
+  });
 
   await page.goto("/");
   await verifierAccessibilite(page, "accueil");
@@ -46,6 +51,7 @@ test("une partie complète va de l'accueil au classement", async ({ page }) => {
   // Partie terminée aujourd'hui : le joueur figure dans le classement du jour.
   await expect(page.getByText(pseudo)).toBeVisible();
   await verifierAccessibilite(page, "classement");
+  expect(violationsCsp).toEqual([]);
 });
 
 test("un pseudo vide est refusé sans quitter l'accueil", async ({ page }) => {

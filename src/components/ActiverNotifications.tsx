@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { entetesJsonCsrf } from "@/lib/csrf";
 import styles from "./ActiverNotifications.module.css";
 
 type Etat = "inactif" | "en_cours" | "actif" | "refuse" | "erreur";
@@ -41,7 +42,7 @@ export function ActiverNotifications() {
       });
       const envoi = await fetch("/api/push/abonnements", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: entetesJsonCsrf(),
         body: JSON.stringify(abonnement.toJSON()),
       });
       setEtat(envoi.ok ? "actif" : "erreur");

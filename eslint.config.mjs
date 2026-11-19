@@ -8,6 +8,8 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Désactive les règles de style qui entreraient en conflit avec Prettier.
   prettier,
+  // XSS (SCRUM-69) : tout texte passe par l'échappement de React ; injecter du HTML brut est interdit.
+  { rules: { "react/no-danger": "error" } },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

@@ -12,6 +12,7 @@ import { Chrono } from "@/components/Chrono";
 import { FicheMeme } from "@/components/FicheMeme";
 import { MESSAGE_RESEAU, detailCorrection, etatReponse } from "@/lib/affichage-reponse";
 import { echeance, secondesRestantes } from "@/lib/chrono";
+import { entetesJsonCsrf } from "@/lib/csrf";
 import type { ResultatPartie } from "@/lib/parties";
 import type { QuestionServie } from "@/lib/questions";
 import type { Correction } from "@/lib/reponses";
@@ -133,7 +134,7 @@ export function Partie({ idPartie }: { idPartie: number }) {
       try {
         const reponse = await fetch("/api/reponses", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: entetesJsonCsrf(),
           body: JSON.stringify({ id_partie: idPartie, rang: etat.question.rang, id_meme: idMeme }),
         });
         if (reponse.ok) {
