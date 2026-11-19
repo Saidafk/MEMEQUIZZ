@@ -8,7 +8,8 @@ Pour toute tâche : suivre le skill [git-workflow](.claude/skills/git-workflow/S
 
 - Jamais de commit direct sur `main` : branche `<type>/SCRUM-<n>-<slug>`, puis PR.
 - Commits au format `<type>(<scope>): <description> (SCRUM-<n>)`.
-- Ticket Jira en « En cours » au démarrage, lien de la PR en commentaire, « Terminé » après le merge.
+- Jira mis à jour **une fois par version**, à la fin (statuts « Terminé » et liens des PR) ; entre-temps, seule [docs/feuille-de-route.md](docs/feuille-de-route.md) est cochée au fil des merges.
+- Une session Claude par version : on en ouvre une nouvelle dès qu'une version est finie.
 - Saïd relit et merge toutes les PR. Ne jamais merger soi-même.
 
 ## Tests
@@ -19,5 +20,6 @@ Pour toute tâche : suivre le skill [git-workflow](.claude/skills/git-workflow/S
 
 ## Avant chaque PR
 
-1. Lancer l'agent [code-reviewer](.claude/agents/code-reviewer.md) sur la branche et corriger ce qu'il remonte de bloquant.
-2. Passer la [checklist de posture critique](docs/checklist-posture-critique.md) (comprendre, relire, tester) et la résumer, avec le verdict du code-reviewer, dans la section « Utilisation de l'IA » de la PR.
+1. Relire soi-même le diff (`git diff main...HEAD`). L'agent [code-reviewer](.claude/agents/code-reviewer.md) n'est plus lancé systématiquement, seulement si Saïd le demande.
+2. Vérifications en une seule passe groupée par ticket (lint, types, tests sur ce qui change) ; pas de build local quand la CI le fait déjà.
+3. Passer la [checklist de posture critique](docs/checklist-posture-critique.md) (comprendre, relire, tester) et la résumer dans la section « Utilisation de l'IA » de la PR.

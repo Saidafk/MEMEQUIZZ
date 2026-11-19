@@ -12,9 +12,8 @@ Dépôt : `https://github.com/Saidafk/MEMEQUIZZ`, branche principale `main`.
 
 ## 1. Démarrer une tâche
 
-1. Lire le ticket (`getJiraIssue`) : description et critère d'acceptation.
-2. Passer le ticket en « En cours » (`transitionJiraIssue`, transitionName `En cours`).
-3. Partir d'un `main` à jour :
+1. Lire le ticket (`getJiraIssue`) : description et critère d'acceptation. Ne pas changer son statut : Jira est mis à jour en fin de version (voir § 6).
+2. Partir d'un `main` à jour :
    ```
    git switch main
    git pull
@@ -55,7 +54,7 @@ Commits petits et cohérents : un commit = un changement compréhensible seul. J
 
 - Lint, types et tests passent : `bun run lint`, `bun run typecheck`, `bun run test`.
 - Relire son propre diff (`git diff main...HEAD`) : pas de code mort, de `console.log` ou de fichier hors sujet.
-- Lancer l'agent `code-reviewer` sur la branche, corriger le bloquant, et reporter son verdict dans la section « Utilisation de l'IA » de la PR.
+- Vérifications en une seule passe groupée ; pas de build local quand la CI le fait. L'agent `code-reviewer` seulement si Saïd le demande.
 
 ## 5. Pull request
 
@@ -97,5 +96,5 @@ Si `gh` n'est pas disponible : pousser la branche et donner à Saïd le lien
 
 ## 6. Clôturer
 
-- Après l'ouverture de la PR : commentaire sur le ticket Jira avec le lien de la PR (`addOrEditJiraIssueComment`).
-- Après le merge par Saïd : passer le ticket en « Terminé » (`transitionJiraIssue`, transitionName `Terminé`), puis `git switch main; git pull; git branch -d <branche>`.
+- Après le merge par Saïd : cocher le ticket dans `docs/feuille-de-route.md` (dans la branche suivante), puis `git switch main; git pull; git branch -d <branche>`.
+- **En fin de version** (une seule fois) : passer en « Terminé » dans Jira tous les tickets mergés de la version, avec le lien de leur PR en commentaire, puis ouvrir une nouvelle session pour la version suivante.
