@@ -1,6 +1,6 @@
 # Feuille de route — MEMEQUIZZ
 
-État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **73 tâches faites sur 95, 22 restantes.**
+État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **79 tâches faites sur 95, 16 restantes.**
 
 Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la case quand le ticket passe en « Terminé » dans Jira.
 
@@ -78,16 +78,16 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-66 — Agent test-runner
 - [x] SCRUM-67 — Agent refactorer (refactoring assisté)
 
-## Version v0.7 (2/8)
+## Version v0.7 (8/8)
 
-- [ ] SCRUM-68 — Content Security Policy avec nonce
-- [ ] SCRUM-69 — Protection XSS (échappement, pseudos nettoyés)
-- [ ] SCRUM-70 — Protection CSRF sur les requêtes POST
+- [x] SCRUM-68 — Content Security Policy avec nonce
+- [x] SCRUM-69 — Protection XSS (échappement, pseudos nettoyés)
+- [x] SCRUM-70 — Protection CSRF sur les requêtes POST
 - [x] SCRUM-71 — Gestion des secrets (pas de secret dans l'image ni le dépôt)
-- [ ] SCRUM-72 — En-têtes de sécurité et limitation de débit de l'API
+- [x] SCRUM-72 — En-têtes de sécurité et limitation de débit de l'API
 - [x] SCRUM-73 — Audit des dépendances
-- [ ] SCRUM-74 — Skill security-checklist
-- [ ] SCRUM-75 — Agent security-auditor
+- [x] SCRUM-74 — Skill security-checklist
+- [x] SCRUM-75 — Agent security-auditor
 
 ## Version v0.8 (4/8)
 
