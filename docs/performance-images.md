@@ -6,24 +6,26 @@ Les images des mèmes (`public/memes/*.webp`, 221 fichiers, jusqu'à 100 Ko) ét
 
 | Page            | Avant                                   | Après                                                                                 |
 | --------------- | --------------------------------------- | ------------------------------------------------------------------------------------- |
-| `/meme/[slug]`  | fichier d'origine, préchargé            | optimisée par `next/image`, `sizes` = largeur de la feuille, préchargée               |
+| `/meme/[slug]`  | fichier d'origine, préchargé            | optimisée par `next/image`, `sizes` = largeur du contenu de la feuille, préchargée    |
 | `/jeu`          | fichier d'origine, préchargé            | optimisée, `sizes` = colonne de gauche en grand écran, préchargée                     |
 | `/admin`        | 221 fichiers d'origine (64 px affichés) | vignettes optimisées (64/128 px), chargement différé (`lazy`, défaut de `next/image`) |
 | `/entrainement` | fichier d'origine                       | **inchangé**, voir ci-dessous                                                         |
 
 `next/image` sert `/_next/image?url=…&w=…` : l'image est redimensionnée à la largeur demandée (choisie par le navigateur grâce à `srcset` et `sizes`) et réencodée en WebP par `sharp`, déjà présent pour le backoffice (`src/lib/image-meme.ts`).
 
+Les valeurs de `sizes` reprennent les largeurs de `Feuille.module.css` et `Partie.module.css`. L'optimiseur n'accepte que `/memes/**` sans paramètre (`images.localPatterns` dans `next.config.ts`).
+
 Mesuré sur un build de production local (`doge.webp`, 64 Ko à l'origine) :
 
 | Usage                                   | Largeur | Poids         |
 | --------------------------------------- | ------- | ------------- |
-| Mobile (largeur choisie par Lighthouse) | 750     | 46 Ko (−28 %) |
-| Petit écran                             | 640     | 33 Ko (−48 %) |
+| Grand écran ou mobile haute densité     | 750     | 46 Ko (−28 %) |
+| Mobile (largeur choisie par Lighthouse) | 640     | 33 Ko (−48 %) |
 | Vignette admin (écran haute densité)    | 128     | 3 Ko (−95 %)  |
 
 ## Exception : l'entraînement hors ligne
 
-`/entrainement` garde `unoptimized`. Le service worker met en cache `/memes/*` (voir [strategie-cache.md](strategie-cache.md)) et le mode hors ligne rejoue ces fichiers : une URL `/_next/image` ne serait pas disponible hors ligne.
+`/entrainement` garde `unoptimized`. Le service worker met en cache `/memes/*` (voir [strategie-cache.md](strategie-cache.md)) et le mode hors ligne rejoue ces fichiers : le service worker n'intercepte pas `/_next/image` (ni fichier statique ni navigation), qui passe par le réseau : une image optimisée ne serait donc pas disponible hors ligne.
 
 ## Point de vigilance : image remplacée
 
