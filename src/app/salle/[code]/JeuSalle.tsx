@@ -3,12 +3,15 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import boutons from "@/components/BoutonLien.module.css";
+import carte from "@/components/Carte.module.css";
 import { LigneClassement } from "@/components/LigneClassement";
 import { MESSAGE_RESEAU } from "@/lib/affichage-reponse";
 import { MESSAGE_JETON_CSRF, entetesJsonCsrf } from "@/lib/csrf";
 import type { EtatSalle, JoueurSalle } from "@/lib/salles";
 import { Partie } from "../../jeu/Partie";
 import styles from "../salle.module.css";
+
+const formatPoints = new Intl.NumberFormat("fr-FR");
 
 type Connexion =
   | { phase: "connexion" }
@@ -67,37 +70,52 @@ export function JeuSalle({ code }: { code: string }) {
 
   if (etat.statut === "attente") {
     return (
-      <div className={styles.page}>
-        <h1 className={styles.titre}>Salle d&apos;attente</h1>
-        <p>Code de la salle, à partager :</p>
-        <p className={styles.code}>{etat.code}</p>
-        {alerteReconnexion}
-        <ListeJoueurs etat={etat} titre="Joueurs présents" />
-        {etat.hote ? (
-          <BoutonLancer code={etat.code} nombre={etat.joueurs.length} />
-        ) : (
-          <p>En attente du lancement par l&apos;hôte…</p>
-        )}
+      <div className={carte.colonnes}>
+        <div className={styles.bloc}>
+          <h1 className={styles.titre}>Salle d&apos;attente</h1>
+          <p>Donne ce code à tes amis : ils le saisissent sur la page « Jouer entre amis ».</p>
+          <p className={styles.code}>{etat.code}</p>
+          <BoutonCopier />
+          {alerteReconnexion}
+          {etat.hote ? (
+            <BoutonLancer code={etat.code} nombre={etat.joueurs.length} />
+          ) : (
+            <p>En attente du lancement par l&apos;hôte…</p>
+          )}
+        </div>
+        <ListeJoueurs etat={etat} titre="Joueurs présents" grille />
       </div>
     );
   }
 
   if (etat.statut === "terminee") {
+    const moi = etat.joueurs.find((j) => j.moi);
     return (
-      <div className={styles.page}>
-        <h1 className={styles.titre}>Partie terminée !</h1>
+      <div className={carte.colonnes}>
+        <div className={styles.bloc}>
+          <h1 className={styles.titre}>Partie terminée !</h1>
+          {moi && (
+            <p className={`${carte.surligne} ${styles.place}`}>
+              Ta place dans la salle
+              <span className={styles.gros}>
+                {moi.rang}
+                <sup>e</sup> sur {etat.joueurs.length} · {formatPoints.format(moi.score)} pts
+              </span>
+            </p>
+          )}
+          <nav aria-label="Après la partie" className={styles.actions}>
+            <Link
+              href={`/resultat/${etat.id_partie}`}
+              className={`${boutons.bouton} ${boutons.plein}`}
+            >
+              Mon résultat détaillé
+            </Link>
+            <Link href="/salle" className={`${boutons.bouton} ${boutons.contour}`}>
+              Rejouer entre amis
+            </Link>
+          </nav>
+        </div>
         <ListeJoueurs etat={etat} titre="Classement de la salle" />
-        <nav aria-label="Après la partie" className={styles.actions}>
-          <Link
-            href={`/resultat/${etat.id_partie}`}
-            className={`${boutons.bouton} ${boutons.plein}`}
-          >
-            Mon résultat détaillé
-          </Link>
-          <Link href="/salle" className={`${boutons.bouton} ${boutons.contour}`}>
-            Rejouer entre amis
-          </Link>
-        </nav>
       </div>
     );
   }
@@ -111,7 +129,7 @@ export function JeuSalle({ code }: { code: string }) {
       ) : (
         <Partie idPartie={etat.id_partie} salle={{ rangOuvert: etat.rang_courant, surFin }} />
       )}
-      <ListeJoueurs etat={etat} titre="Classement en direct" />
+      <ListeJoueurs etat={etat} titre="Classement en direct" grille />
     </div>
   );
 }
@@ -121,17 +139,26 @@ function noteJoueur(j: JoueurSalle, statut: EtatSalle["statut"]): string | undef
   return j.hote ? "hôte" : undefined;
 }
 
-function ListeJoueurs({ etat, titre }: { etat: EtatSalle; titre: string }) {
+function ListeJoueurs({
+  etat,
+  titre,
+  grille = false,
+}: {
+  etat: EtatSalle;
+  titre: string;
+  // Joueurs sur plusieurs colonnes en grand écran (attente, bande « en direct » sous la question).
+  grille?: boolean;
+}) {
   const n = etat.joueurs.length;
   return (
-    <section aria-labelledby="titre-joueurs" className={styles.bloc}>
+    <section aria-labelledby="titre-joueurs" className={carte.carte}>
       <h2 id="titre-joueurs">{titre}</h2>
       {/* Seul le nombre de joueurs est annoncé : relire toute la liste à chaque point marqué
           couvrirait la question en cours. */}
       <p aria-live="polite">
         {n} joueur{n > 1 ? "s" : ""} dans la salle
       </p>
-      <ol className={styles.liste}>
+      <ol className={`${styles.liste} ${grille ? styles.grille : ""}`}>
         {etat.joueurs.map((j) => (
           <LigneClassement
             key={`${j.pseudo}-${j.rang}-${j.moi}`}
@@ -144,6 +171,31 @@ function ListeJoueurs({ etat, titre }: { etat: EtatSalle; titre: string }) {
         ))}
       </ol>
     </section>
+  );
+}
+
+// Copie l'adresse de la salle : plus simple à envoyer qu'un code à recopier.
+function BoutonCopier() {
+  const [message, setMessage] = useState("");
+  async function copier() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setMessage("Lien copié !");
+    } catch {
+      setMessage("Copie impossible : partage le code ci-dessus.");
+    }
+  }
+  return (
+    <div className={styles.copie}>
+      <button
+        type="button"
+        className={`${boutons.bouton} ${boutons.contour} ${styles.lancer}`}
+        onClick={() => void copier()}
+      >
+        Copier le lien de la salle
+      </button>
+      <p role="status">{message}</p>
+    </div>
   );
 }
 

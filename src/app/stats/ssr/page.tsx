@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { BlocStats } from "@/components/BlocStats";
 import { Feuille } from "@/components/Feuille";
+import { NavRendus } from "@/components/NavRendus";
 import { getDb } from "@/db";
 import { metadonneesPage } from "@/lib/seo";
 import { lireStats } from "@/lib/stats";
@@ -22,12 +22,12 @@ async function Stats() {
 
 export default function PageStatsSsr() {
   return (
-    <Feuille>
+    <Feuille largeur="large" retour={{ href: "/stats", libelle: "Les trois rendus" }}>
       <h1>Statistiques (SSR)</h1>
+      <NavRendus actif="SSR" />
       <Suspense fallback={<p role="status">Chargement des statistiques…</p>}>
         <Stats />
       </Suspense>
-      <Link href="/stats">Comparer les trois rendus</Link>
     </Feuille>
   );
 }

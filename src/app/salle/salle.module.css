@@ -61,9 +61,48 @@
   color: var(--couleur-erreur);
 }
 
+.place {
+  display: flex;
+  flex-direction: column;
+}
+
+.gros {
+  font-family: var(--police-titre);
+  font-size: var(--taille-xl);
+  font-weight: 700;
+}
+
+.copie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espace-3);
+}
+
+.etapes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espace-2) var(--espace-8);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
 @media (min-width: 1024px) {
   .colonnes {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     column-gap: var(--espace-12);
+    align-items: stretch;
+  }
+
+  .code {
+    font-size: 4rem;
+  }
+
+  /* Joueurs côte à côte : la liste tient sous la question sans faire défiler. */
+  .grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    column-gap: var(--espace-6);
   }
 }

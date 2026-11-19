@@ -4,12 +4,14 @@ import { notFound } from "next/navigation";
 import { cacheLife } from "next/cache";
 import { Suspense } from "react";
 import { BoutonLien } from "@/components/BoutonLien";
+import carte from "@/components/Carte.module.css";
 import { Feuille } from "@/components/Feuille";
 import { FicheMeme } from "@/components/FicheMeme";
 import { getDb } from "@/db";
 import { MEMES } from "@/db/data/memes";
 import { lireMemeParSlug, listerSlugsMemesActifs, type PageMeme } from "@/lib/fiche-meme";
 import { metadonneesPage } from "@/lib/seo";
+import styles from "./page.module.css";
 
 // `next build` dans l'image Docker n'a pas de base. Cache Components exige au moins une page au
 // build : sans DATABASE_URL, on part de la liste curée du dépôt (les mèmes importés ou ajoutés
@@ -61,7 +63,7 @@ async function Contenu({ params }: PageProps<"/meme/[slug]">) {
   if (!m) notFound();
 
   return (
-    <>
+    <div className={carte.colonnes}>
       <Image
         src={m.image_chemin}
         alt={`Mème « ${m.nom} »`}
@@ -69,28 +71,32 @@ async function Contenu({ params }: PageProps<"/meme/[slug]">) {
         height={320}
         // Largeur du contenu de la feuille étroite : 760 px en grand écran, sinon au plus 560 px
         // moins les marges intérieures (88 px).
-        sizes="(min-width: 1024px) 760px, min(560px, calc(100vw - 88px))"
+        // Grand écran : colonne de gauche (5/12 de la feuille large, 500 px au plus). Sinon : au plus
+        // 560 px moins les marges intérieures (88 px).
+        sizes="(min-width: 1024px) 500px, min(560px, calc(100vw - 88px))"
         style={{ width: "100%", height: "auto" }}
         priority
       />
-      <FicheMeme
-        niveauTitre="h1"
-        fiche={{ nom: m.nom, origine: m.origine ?? "" }}
-        articleUrl={m.article_url}
-        credits={{ auteur: m.auteur, licence: m.licence, sourceUrl: m.source_url }}
-      />
-      {m.annee_origine && <p>Apparu vers {m.annee_origine}.</p>}
-    </>
+      <div className={styles.fiche}>
+        <FicheMeme
+          niveauTitre="h1"
+          fiche={{ nom: m.nom, origine: m.origine ?? "" }}
+          articleUrl={m.article_url}
+          credits={{ auteur: m.auteur, licence: m.licence, sourceUrl: m.source_url }}
+        />
+        {m.annee_origine && <p>Apparu vers {m.annee_origine}.</p>}
+        <BoutonLien href="/">Jouer à MEMEQUIZZ</BoutonLien>
+      </div>
+    </div>
   );
 }
 
 export default function PageMeme(props: PageProps<"/meme/[slug]">) {
   return (
-    <Feuille>
+    <Feuille largeur="large" retour={{ href: "/", libelle: "Accueil" }}>
       <Suspense fallback={<p role="status">Chargement du mème…</p>}>
         <Contenu {...props} />
       </Suspense>
-      <BoutonLien href="/">Jouer à MEMEQUIZZ</BoutonLien>
     </Feuille>
   );
 }

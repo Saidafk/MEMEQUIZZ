@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { cacheLife } from "next/cache";
-import Link from "next/link";
 import { BlocStats } from "@/components/BlocStats";
 import { Feuille } from "@/components/Feuille";
+import { NavRendus } from "@/components/NavRendus";
 import { getDb } from "@/db";
 import { metadonneesPage } from "@/lib/seo";
 import { type Stats, lireStats } from "@/lib/stats";
@@ -33,10 +33,10 @@ async function chargerStats(): Promise<Stats> {
 
 export default async function PageStatsSsg() {
   return (
-    <Feuille>
+    <Feuille largeur="large" retour={{ href: "/stats", libelle: "Les trois rendus" }}>
       <h1>Statistiques (SSG)</h1>
+      <NavRendus actif="SSG" />
       <BlocStats rendu="SSG" stats={await chargerStats()} />
-      <Link href="/stats">Comparer les trois rendus</Link>
     </Feuille>
   );
 }

@@ -82,6 +82,9 @@ export type ResultatPartie = {
   // Position dans le classement des parties terminées (égalité = même rang) ; absent en cours de partie.
   rang: number | null;
   nombre_joueurs: number | null;
+  // Nom du mème et points de chaque question, seulement une fois la partie terminée : en cours de
+  // partie, ce serait donner les réponses des questions à venir.
+  details: { nom: string; juste: boolean; points: number }[];
 };
 
 export type ResultatLecturePartie =
@@ -113,8 +116,11 @@ export async function lireResultat(
       id_meme: partieQuestion.id_meme,
       reponse: partieQuestion.reponse_id_meme,
       repondu_le: partieQuestion.repondu_le,
+      points: partieQuestion.points,
+      nom: meme.nom,
     })
     .from(partieQuestion)
+    .innerJoin(meme, eq(meme.id_meme, partieQuestion.id_meme))
     .where(eq(partieQuestion.id_partie, id_partie))
     .orderBy(partieQuestion.rang);
   // Une question sans réponse n'est jamais « juste » : on ne révèle rien sur celles à venir.
@@ -155,6 +161,10 @@ export async function lireResultat(
       repondues: questions.filter((q) => q.repondu_le !== null).length,
       rang,
       nombre_joueurs: nombreJoueurs,
+      details:
+        ligne.statut === "terminee"
+          ? questions.map((q, i) => ({ nom: q.nom, juste: reponses[i] ?? false, points: q.points }))
+          : [],
     },
   };
 }

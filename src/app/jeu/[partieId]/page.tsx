@@ -19,7 +19,7 @@ async function Contenu({ params }: PageProps<"/jeu/[partieId]">) {
 
 export default function PageJeu(props: PageProps<"/jeu/[partieId]">) {
   return (
-    <Feuille largeur="large">
+    <Feuille largeur="large" retour={{ href: "/", libelle: "Quitter la partie", quitter: true }}>
       {/* Titre de page pour les lecteurs d'écran : h1 → h2 (question) → h3 (fiche du mème). */}
       <h1 className="masque-visuel">Partie en cours</h1>
       <Suspense fallback={<p role="status">Chargement de la partie…</p>}>

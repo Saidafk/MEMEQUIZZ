@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Feuille } from "@/components/Feuille";
+import { NavRendus } from "@/components/NavRendus";
 import { metadonneesPage } from "@/lib/seo";
 import { StatsClient } from "./StatsClient";
 
@@ -12,10 +12,10 @@ export const metadata: Metadata = metadonneesPage({
 
 export default function PageStatsCsr() {
   return (
-    <Feuille>
+    <Feuille largeur="large" retour={{ href: "/stats", libelle: "Les trois rendus" }}>
       <h1>Statistiques (CSR)</h1>
+      <NavRendus actif="CSR" />
       <StatsClient />
-      <Link href="/stats">Comparer les trois rendus</Link>
     </Feuille>
   );
 }

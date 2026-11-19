@@ -119,3 +119,11 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Bandeau d'information surligné (entraînement : « ne compte pas au classement »). */
+.bandeau-info {
+  padding: var(--espace-2) var(--espace-4);
+  font-size: var(--taille-s);
+  background: var(--couleur-surligneur);
+  border-radius: 6px;
+}

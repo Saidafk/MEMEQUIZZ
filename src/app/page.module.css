@@ -1,15 +1,24 @@
 .accueil {
   display: flex;
-  flex: 1;
   flex-direction: column;
   gap: var(--espace-6);
+}
+
+.navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espace-1) var(--espace-6);
+  font-size: var(--taille-s);
+}
+
+.navigation a {
+  padding: var(--espace-2) 0;
 }
 
 .texte {
   display: flex;
   flex-direction: column;
   gap: var(--espace-4);
-  margin-top: var(--espace-6);
 }
 
 .titre {
@@ -24,16 +33,51 @@
   color: var(--couleur-encre-2);
 }
 
-.dessin {
+.sousTitre {
+  font-size: var(--taille-l);
+}
+
+.encartTop {
+  gap: var(--espace-2);
+}
+
+.top {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.top li {
+  display: flex;
+  gap: var(--espace-3);
+  padding: var(--espace-2) 0;
+  border-bottom: 2px solid var(--couleur-ligne);
+}
+
+.pseudo {
+  flex: 1;
+}
+
+.note {
+  font-size: var(--taille-s);
+  color: var(--couleur-encre-2);
+}
+
+.pied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-3);
+  font-size: var(--taille-s);
 }
 
 .formulaire {
   display: flex;
   flex-direction: column;
   gap: var(--espace-3);
-  margin-top: auto;
 }
 
 .etiquette {
@@ -60,7 +104,6 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
   gap: var(--espace-1) var(--espace-4);
 }
 
@@ -90,43 +133,45 @@
   opacity: 0.8;
 }
 
+/* Bureau (maquette v1.1) : titre et top 3 en haut, cartes Solo et Salle côte à côte. */
 @media (min-width: 1024px) {
   .accueil {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas:
-      "logo logo"
-      "texte dessin"
-      "formulaire dessin";
-    column-gap: var(--espace-12);
+      "texte top"
+      "solo salle"
+      "pied pied";
+    gap: var(--espace-8) var(--espace-12);
     align-items: start;
-  }
-
-  .accueil > :first-child {
-    grid-area: logo;
   }
 
   .texte {
     grid-area: texte;
-    margin-top: var(--espace-12);
+    margin-top: var(--espace-6);
   }
 
   .titre {
     font-size: 4.5rem;
   }
 
-  .dessin {
-    grid-area: dessin;
-    align-items: center;
+  .encartTop {
+    grid-area: top;
+    justify-self: end;
+    width: min(100%, 440px);
   }
 
-  .dessin svg {
-    width: 520px;
+  .solo {
+    grid-area: solo;
+    height: 100%;
   }
 
-  .formulaire {
-    grid-area: formulaire;
-    max-width: 460px;
-    margin-top: var(--espace-6);
+  .salle {
+    grid-area: salle;
+    height: 100%;
+  }
+
+  .pied {
+    grid-area: pied;
   }
 }

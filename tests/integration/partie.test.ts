@@ -127,7 +127,12 @@ describe.skipIf(!BASE_TEST_ACTIVE)("partie complète (SCRUM-42)", () => {
       expect(c.score_total).toBe(somme);
       // Seule la réponse à la dernière question clôt la partie.
       expect(c.partie_terminee).toBe(rang === 10);
-      if (rang < 10) expect((await lire(p)).statut).toBe("en_cours");
+      if (rang < 10) {
+        const enCours = await lire(p);
+        expect(enCours.statut).toBe("en_cours");
+        // Anti-triche : aucun nom de mème tant que la partie n'est pas finie.
+        expect(enCours.details).toEqual([]);
+      }
     }
 
     const resultat = await lire(p);
@@ -150,6 +155,9 @@ describe.skipIf(!BASE_TEST_ACTIVE)("partie complète (SCRUM-42)", () => {
     expect(resultat.rang).toBe(1);
     expect(resultat.nombre_joueurs).toBe(1);
     expect(resultat.repondues).toBe(10);
+    expect(resultat.details).toHaveLength(10);
+    expect(resultat.details.map((d) => d.juste)).toEqual(resultat.reponses);
+    expect(resultat.details.reduce((total, d) => total + d.points, 0)).toBe(somme);
 
     const [partie] = await db
       .select()

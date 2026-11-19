@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useId, useRef, useState, useSyncExternalStore } from "react";
-import { ActiverNotifications } from "@/components/ActiverNotifications";
 import boutons from "@/components/BoutonLien.module.css";
 import { MESSAGE_RESEAU } from "@/lib/affichage-reponse";
 import { MESSAGE_JETON_CSRF, entetesJsonCsrf } from "@/lib/csrf";
@@ -98,24 +96,6 @@ export function FormulairePartie() {
       >
         {envoi ? "Démarrage…" : "C'est parti →"}
       </button>
-      <nav aria-label="Autres pages" className={styles.liens}>
-        <Link href="/salle" className={styles.lien}>
-          Jouer entre amis
-        </Link>
-        <Link href="/classement" className={styles.lien}>
-          Classement
-        </Link>
-        <Link href="/entrainement" className={styles.lien}>
-          S&apos;entraîner
-        </Link>
-        <Link href="/credits" className={styles.lien}>
-          Crédits
-        </Link>
-        <ActiverNotifications />
-        <Link href="/admin" className={styles.lien}>
-          Espace admin
-        </Link>
-      </nav>
     </form>
   );
 }

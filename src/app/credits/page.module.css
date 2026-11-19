@@ -1,0 +1,25 @@
+/* Une carte par image : nom, auteur, licence, lien vers la source. */
+.grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--espace-4);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.credit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-1);
+  padding: var(--espace-4);
+  font-size: var(--taille-s);
+  background: var(--couleur-papier);
+  border: var(--trait-fin);
+  border-radius: var(--rayon-croquis);
+}
+
+.nom {
+  font-family: var(--police-titre);
+  font-size: var(--taille-m);
+}

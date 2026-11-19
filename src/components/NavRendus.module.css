@@ -1,0 +1,32 @@
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espace-3);
+}
+
+.rendu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 44px;
+  padding: var(--espace-2) var(--espace-4);
+  text-decoration: none;
+  color: var(--couleur-encre);
+  background: var(--couleur-papier);
+  border: var(--trait-fin);
+  border-radius: 10px;
+}
+
+.actif {
+  background: var(--couleur-surligneur);
+}
+
+.sigle {
+  font-family: var(--police-titre);
+  font-size: var(--taille-l);
+  font-weight: 700;
+}
+
+.detail {
+  font-size: var(--taille-s);
+}

@@ -61,30 +61,44 @@
   font-weight: 700;
 }
 
-.recap {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espace-2);
-}
-
 .sousTitre {
   font-size: var(--taille-l);
 }
 
-.pastilles {
+.recap {
   display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
   list-style: none;
 }
 
-.pastille {
+.reponse {
   display: flex;
   align-items: center;
+  gap: var(--espace-3);
+  padding: var(--espace-2) 0;
+  font-size: var(--taille-s);
+  border-bottom: 2px solid var(--couleur-ligne);
+}
+
+.rang {
+  min-width: 2ch;
+}
+
+.nom {
+  flex: 1;
+}
+
+/* Pastille ✓ / ✗ : symbole + texte masqué, jamais la couleur seule (1.4.1). */
+.juste,
+.fausse {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
   justify-content: center;
-  width: 25px;
-  height: 25px;
-  font-size: var(--taille-xs);
+  width: 28px;
+  height: 28px;
   font-weight: 700;
   border: 2px solid var(--couleur-encre);
   border-radius: 50%;
@@ -96,11 +110,8 @@
 }
 
 .fausse {
-  background: var(--couleur-erreur-fond);
-}
-
-.fausse span[aria-hidden] {
   color: var(--couleur-erreur);
+  background: var(--couleur-erreur-fond);
 }
 
 .legende {
@@ -108,24 +119,7 @@
   color: var(--couleur-encre-2);
 }
 
-.dessin {
-  display: flex;
-  justify-content: center;
-}
-
 .actions {
   display: grid;
   gap: var(--espace-3);
-}
-
-@media (min-width: 1024px) {
-  .actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .dessin {
-    position: absolute;
-    right: 120px;
-    bottom: var(--espace-8);
-  }
 }
