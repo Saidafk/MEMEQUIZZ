@@ -1,6 +1,6 @@
 # Feuille de route — MEMEQUIZZ
 
-État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **64 tâches faites sur 94, 30 restantes.**
+État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **66 tâches faites sur 95, 29 restantes.**
 
 Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la case quand le ticket passe en « Terminé » dans Jira.
 
@@ -63,7 +63,7 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-54 — Mesurer les Web Vitals des trois modes et comparer
 - [x] SCRUM-55 — SEO : balises meta, Open Graph, sitemap.xml, robots.txt
 - [x] SCRUM-56 — Optimisation des images (next/image, tailles, chargement différé)
-- [ ] SCRUM-57 — Améliorer le score Lighthouse (perf, accessibilité, SEO) selon WCAG 2.2
+- [x] SCRUM-57 — Améliorer le score Lighthouse (perf, accessibilité, SEO) selon WCAG 2.2
 - [ ] SCRUM-58 — Agent a11y-auditor
 - [ ] SCRUM-59 — Agent perf-analyst
 
@@ -130,3 +130,4 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-108 — Mettre à jour la fiche de l'oral et préparer la présentation (20 min)
 - [x] SCRUM-109 — Règle de tests dans CLAUDE.md : tests utiles uniquement, couverture comme indicateur (repère 60 %)
 - [ ] SCRUM-110 — Sécuriser le VPS (suite) : SSH par clé uniquement et utilisateur non root pour le CD
+- [x] SCRUM-111 — Ignorer les dossiers locaux de captures dans lint et format
