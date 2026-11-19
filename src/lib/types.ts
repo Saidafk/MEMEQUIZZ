@@ -1,5 +1,8 @@
 export type LettreReponse = "A" | "B" | "C" | "D";
 
+// État d'un bouton de réponse (voir etatReponse dans affichage-reponse.ts).
+export type EtatReponse = "normal" | "correct" | "faux" | "desactive";
+
 export type FicheMemeDonnees = {
   nom: string;
   origine: string;

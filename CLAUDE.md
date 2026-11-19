@@ -14,6 +14,8 @@ Pour toute tâche : suivre le skill [git-workflow](.claude/skills/git-workflow/S
 
 ## Tests
 
+Conventions (bun test, Playwright, axe, sécurité de la base de test) : skill [testing](.claude/skills/testing/SKILL.md). Pour lancer les tests et analyser un échec : agent [test-runner](.claude/agents/test-runner.md).
+
 - N'écrire que des **tests utiles** : chacun vérifie une règle métier (score, chrono, anti-triche…), un cas d'erreur ou un bug déjà rencontré. Jamais de test écrit pour faire monter le pourcentage.
 - La **couverture est un indicateur, pas un objectif** : 60 % est le repère minimal acceptable du projet. Une baisse se regarde (code nouveau non testé ?), mais on ne la corrige pas avec des tests sans vérification réelle.
 - C'est le seuil bloquant de la CI, 80 % ([scripts/verifier-couverture.ts](scripts/verifier-couverture.ts), étape « Seuil de couverture » de [ci.yml](.github/workflows/ci.yml)), qui fait foi : un filet de sécurité, pas un chiffre à viser.

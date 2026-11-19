@@ -1,9 +1,9 @@
 "use client";
 
-import type { LettreReponse } from "@/lib/types";
+import type { EtatReponse, LettreReponse } from "@/lib/types";
 import styles from "./BoutonReponse.module.css";
 
-export type EtatReponse = "normal" | "correct" | "faux" | "desactive";
+export type { EtatReponse };
 
 type Props = {
   lettre: LettreReponse;
