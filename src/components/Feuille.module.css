@@ -81,3 +81,10 @@
     max-width: 1200px;
   }
 }
+
+/* Grand écran (1600 px et plus) : les pages larges profitent de la place disponible. */
+@media (min-width: 1600px) {
+  .large .contenu {
+    max-width: 1440px;
+  }
+}

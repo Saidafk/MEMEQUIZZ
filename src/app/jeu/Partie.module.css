@@ -65,19 +65,20 @@
   color: var(--couleur-erreur);
 }
 
-/* Bureau : image à gauche sur toute la hauteur, question et réponses à droite. */
+/* Bureau (maquette v1.1) : l'image, élément principal, prend 7/12 de la largeur sans dépasser la
+   hauteur de l'écran ; les réponses s'étirent jusqu'au bas de l'image. */
 @media (min-width: 1024px) {
   .partie {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     grid-template-areas:
       "image barre"
       "image titre"
       "image etat"
       "image reponses"
       "image suite";
-    grid-template-rows: repeat(4, auto) 1fr;
-    column-gap: var(--espace-12);
+    grid-template-rows: repeat(3, auto) 1fr auto;
+    column-gap: var(--espace-8);
     align-items: start;
   }
 
@@ -87,6 +88,8 @@
 
   .image {
     grid-area: image;
+    width: 100%;
+    max-width: calc((100dvh - 260px) * 5 / 4);
   }
 
   .titre {
@@ -100,7 +103,13 @@
 
   .reponses {
     grid-area: reponses;
+    align-self: stretch;
+    grid-auto-rows: minmax(110px, 1fr);
     gap: var(--espace-4);
+  }
+
+  .reponses > button {
+    font-size: var(--taille-m);
   }
 
   .suite {

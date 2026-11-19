@@ -341,9 +341,9 @@ export function Partie({ idPartie, salle }: { idPartie: number; salle?: RythmeSa
               alt={bonne ? `Image du mème « ${bonne.nom} »` : "Image d'un mème à identifier"}
               width={800}
               height={640}
-              // Grand écran : colonne de gauche (5/11 de la feuille large, 505 px au plus).
+              // Grand écran : colonne de gauche (7/12 de la feuille large, 820 px au plus).
               // Sinon : contenu de la feuille, au plus 560 px moins les marges intérieures (88 px).
-              sizes="(min-width: 1024px) min(505px, calc((100vw - 328px) * 5 / 11)), min(560px, calc(100vw - 88px))"
+              sizes="(min-width: 1024px) min(820px, calc((100vw - 280px) * 7 / 12)), min(560px, calc(100vw - 88px))"
               // Pas d'optimiseur : l'image vient d'une route privée (cookie de session, anti-triche) que
               // /_next/image ne peut ni appeler avec le cookie ni mettre en cache (SCRUM-112). La route sert
               // déjà du WebP.
