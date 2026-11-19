@@ -1,6 +1,6 @@
 # Feuille de route — MEMEQUIZZ
 
-État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **66 tâches faites sur 95, 29 restantes.**
+État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **68 tâches faites sur 95, 27 restantes.**
 
 Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la case quand le ticket passe en « Terminé » dans Jira.
 
@@ -64,8 +64,8 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-55 — SEO : balises meta, Open Graph, sitemap.xml, robots.txt
 - [x] SCRUM-56 — Optimisation des images (next/image, tailles, chargement différé)
 - [x] SCRUM-57 — Améliorer le score Lighthouse (perf, accessibilité, SEO) selon WCAG 2.2
-- [ ] SCRUM-58 — Agent a11y-auditor
-- [ ] SCRUM-59 — Agent perf-analyst
+- [x] SCRUM-58 — Agent a11y-auditor
+- [x] SCRUM-59 — Agent perf-analyst
 
 ## Version v0.6 (3/8)
 
