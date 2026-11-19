@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
+import { entetesSecurite } from "./src/lib/entetes-securite";
+
 const nextConfig: NextConfig = {
+  // En-têtes de sécurité et CSP (SCRUM-68, SCRUM-72) sur toutes les réponses, pages statiques comprises.
+  async headers() {
+    return [{ source: "/:path*", headers: entetesSecurite(process.env.NODE_ENV !== "production") }];
+  },
+  // Ne pas annoncer la technologie du serveur (`X-Powered-By: Next.js`).
+  poweredByHeader: false,
   // Produit .next/standalone : un serveur autonome utilisé par l'image Docker.
   output: "standalone",
   cacheComponents: true,
