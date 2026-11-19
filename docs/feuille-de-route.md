@@ -1,6 +1,6 @@
 # Feuille de route — MEMEQUIZZ
 
-État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **68 tâches faites sur 95, 27 restantes.**
+État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **70 tâches faites sur 95, 25 restantes.**
 
 Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la case quand le ticket passe en « Terminé » dans Jira.
 
@@ -67,12 +67,12 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-58 — Agent a11y-auditor
 - [x] SCRUM-59 — Agent perf-analyst
 
-## Version v0.6 (3/8)
+## Version v0.6 (5/8)
 
 - [x] SCRUM-60 — Tests unitaires Vitest (score, tirage de questions, validation)
 - [x] SCRUM-61 — Tests d'intégration des routes API
-- [ ] SCRUM-62 — Tests end-to-end Playwright : partie complète
-- [ ] SCRUM-63 — Tests d'accessibilité automatisés (axe)
+- [x] SCRUM-62 — Tests end-to-end Playwright : partie complète
+- [x] SCRUM-63 — Tests d'accessibilité automatisés (axe)
 - [x] SCRUM-64 — Rapport de couverture et seuil en CI
 - [ ] SCRUM-65 — Skill testing
 - [ ] SCRUM-66 — Agent test-runner
