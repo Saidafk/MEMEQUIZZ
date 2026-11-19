@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Profils de navigateur des captures, non suivis : parfois verrouillés par Windows.
+    ".captures/**",
+    ".video*/**",
   ]),
 ]);
 
