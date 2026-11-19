@@ -1,6 +1,6 @@
 # Feuille de route — MEMEQUIZZ
 
-État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **84 tâches faites sur 96, 12 restantes.**
+État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **88 tâches faites sur 96, 8 restantes.**
 
 Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la case quand le ticket passe en « Terminé » dans Jira.
 
@@ -101,12 +101,12 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [x] SCRUM-82 — Skill docker-deploy
 - [x] SCRUM-99 — CD : renommer le workflow et vérifier la CI avant un déploiement manuel
 
-## Version v0.9 (0/4)
+## Version v0.9 (4/4)
 
-- [ ] SCRUM-83 — Salles avec code : créer et rejoindre
-- [ ] SCRUM-84 — Temps réel via SSE (question suivante, classement en direct)
-- [ ] SCRUM-85 — Option : service Bun WebSocket séparé dans docker-compose
-- [ ] SCRUM-86 — Tests end-to-end multijoueur
+- [x] SCRUM-83 — Salles avec code : créer et rejoindre
+- [x] SCRUM-84 — Temps réel via SSE (question suivante, classement en direct)
+- [x] SCRUM-85 — Option : service Bun WebSocket séparé dans docker-compose
+- [x] SCRUM-86 — Tests end-to-end multijoueur
 
 ## Version v1.0 (1/7)
 

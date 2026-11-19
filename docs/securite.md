@@ -63,6 +63,9 @@ plusieurs instances, il faudrait un stockage partagé (Redis). La table est born
 adresses. Une partie complète fait environ 30 requêtes, dont 11 écritures, donc les seuils laissent
 jouer normalement.
 
+Le flux temps réel des salles (SSE, SCRUM-84) garde une connexion ouverte : il est plafonné à part
+(3 flux par session, 300 au total, 30 minutes). Voir [temps-reel.md](temps-reel.md).
+
 ## En-têtes posés sur toutes les réponses
 
 `Content-Security-Policy`, `Strict-Transport-Security` (1 an), `X-Content-Type-Options: nosniff`,
