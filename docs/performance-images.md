@@ -35,9 +35,11 @@ Le backoffice remplace une image sous le même nom. `next/image` garde en cache 
 
 Production, Lighthouse 12.8.2, mobile (4G lente simulée, CPU ×4), médiane de 3 passes, page `/meme/doge` (l'image est l'élément LCP).
 
-| Moment        | Score                       | LCP    | Image LCP reçue | Répartition du LCP (médiane)                                    |
-| ------------- | --------------------------- | ------ | --------------- | --------------------------------------------------------------- |
-| Avant (19/11) | 59                          | 8,17 s | 63 Kio          | TTFB 0,8 s · attente 2,3 s · téléchargement 1,9 s · rendu 3,2 s |
-| Après         | à mesurer après déploiement |        |                 |                                                                 |
+| Moment        | Score | LCP    | Image LCP reçue | Répartition du LCP (médiane)                                    |
+| ------------- | ----- | ------ | --------------- | --------------------------------------------------------------- |
+| Avant (19/11) | 59    | 8,17 s | 63 Kio          | TTFB 0,8 s · attente 2,3 s · téléchargement 1,9 s · rendu 3,2 s |
+| Après (19/11) | 66    | 8,05 s | 33 Kio (640w)   | très variable d'une passe à l'autre (TTFB de 0,8 à 5 s)         |
 
 L'image ne pèse qu'une partie du LCP : l'attente avant téléchargement et le retard de rendu viennent surtout des 44 polices préchargées (voir [strategies-de-rendu.md](strategies-de-rendu.md#web-vitals-des-trois-rendus-scrum-54)), à traiter dans SCRUM-57. Le gain attendu ici porte sur la phase de téléchargement.
+
+**Bilan** : l'image LCP pèse deux fois moins (33 Kio au lieu de 63) et le score médian passe de 59 à 66, mais le LCP ne baisse que de 0,12 s (8,17 → 8,05 s, passes de 7,8 à 8,2 s) : un écart dans le bruit de mesure. Le goulot reste les polices, traitées dans SCRUM-57.

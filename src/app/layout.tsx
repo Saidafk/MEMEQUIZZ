@@ -8,6 +8,10 @@ const gaegu = Gaegu({
   variable: "--font-gaegu",
   weight: ["400", "700"],
   subsets: ["latin"],
+  // Gaegu est une police coréenne que Google découpe en ~90 tranches par graisse : next/font en
+  // préchargeait 44, téléchargées avant le titre (LCP ~8 s, SCRUM-54). Sans préchargement, le
+  // navigateur ne récupère que les tranches contenant des caractères affichés (SCRUM-57).
+  preload: false,
 });
 
 const patrickHand = Patrick_Hand({
