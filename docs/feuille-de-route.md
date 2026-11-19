@@ -1,6 +1,6 @@
 # Feuille de route — MEMEQUIZZ
 
-État au 19/11/2026, repris du backlog Jira (projet SCRUM). **56 tâches faites sur 93, 37 restantes.**
+État au 19/11/2026, repris du backlog Jira (projet SCRUM) après le tri du 19/11. **61 tâches faites sur 94, 33 restantes.**
 
 Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la case quand le ticket passe en « Terminé » dans Jira.
 
@@ -67,10 +67,10 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [ ] SCRUM-58 — Agent a11y-auditor
 - [ ] SCRUM-59 — Agent perf-analyst
 
-## Version v0.6 (1/8)
+## Version v0.6 (3/8)
 
-- [ ] SCRUM-60 — Tests unitaires Vitest (score, tirage de questions, validation)
-- [ ] SCRUM-61 — Tests d'intégration des routes API
+- [x] SCRUM-60 — Tests unitaires Vitest (score, tirage de questions, validation)
+- [x] SCRUM-61 — Tests d'intégration des routes API
 - [ ] SCRUM-62 — Tests end-to-end Playwright : partie complète
 - [ ] SCRUM-63 — Tests d'accessibilité automatisés (axe)
 - [x] SCRUM-64 — Rapport de couverture et seuil en CI
@@ -107,25 +107,26 @@ Légende : `[x]` fait · `[ ]` à faire · _(en cours)_ commencé. Cocher la cas
 - [ ] SCRUM-85 — Option : service Bun WebSocket séparé dans docker-compose
 - [ ] SCRUM-86 — Tests end-to-end multijoueur
 
-## Version v1.0 (0/7)
+## Version v1.0 (1/7)
 
 - [ ] SCRUM-87 — Audit final Lighthouse et WCAG 2.2
 - [ ] SCRUM-88 — README et documentation d'installation _(en cours)_
-- [ ] SCRUM-89 — Support de présentation orale
+- [x] SCRUM-89 — Support de présentation orale
 - [ ] SCRUM-90 — Démo en ligne vérifiée et jeu de données propre
 - [ ] SCRUM-91 — Relecture finale du code et nettoyage
 - [ ] SCRUM-92 — Documenter les prompts et l'usage des IA
 - [ ] SCRUM-93 — Tag v1.0.0 et notes de version
 
-## Hors version (oral, production, suivi) (6/10)
+## Hors version (oral, production, suivi) (8/11)
 
 - [ ] SCRUM-95 — PWA : mode solo hors ligne
 - [x] SCRUM-100 — Bug critique : un test d'intégration peut supprimer le dossier du projet
 - [x] SCRUM-102 — Révoquer la clé SSH de déploiement exposée et la remplacer
 - [x] SCRUM-103 — Activer le déploiement automatique (variable DEPLOY_AUTO)
 - [x] SCRUM-104 — Surveillance de disponibilité avec UptimeRobot
-- [ ] SCRUM-105 — Sécuriser le VPS : utilisateur non root, SSH par clé uniquement, fail2ban, mises à jour automatiques _(en cours)_
+- [x] SCRUM-105 — Sécuriser le VPS : utilisateur non root, SSH par clé uniquement, fail2ban, mises à jour automatiques
 - [ ] SCRUM-106 — Métriques du serveur (processeur, mémoire, conteneurs)
 - [x] SCRUM-107 — Mettre à jour Next.js en 16.4.6 (faille modérée GHSA-mfr8-8qww-v76h)
-- [ ] SCRUM-108 — Mettre à jour la fiche de l'oral et préparer la présentation (20 min) _(en cours)_
+- [x] SCRUM-108 — Mettre à jour la fiche de l'oral et préparer la présentation (20 min)
 - [x] SCRUM-109 — Règle de tests dans CLAUDE.md : tests utiles uniquement, couverture comme indicateur (repère 60 %)
+- [ ] SCRUM-110 — Sécuriser le VPS (suite) : SSH par clé uniquement et utilisateur non root pour le CD
